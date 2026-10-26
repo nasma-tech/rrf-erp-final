@@ -163,3 +163,6 @@ $router->mount('/IssuingPlace', function () use ($router) {
 $router->mount('/UserContactTypes', function () use ($router) {
     dynamicRoute($router, App\Controllers\UserContactTypes\UserContactTypes::class);
 });
+$router->mount('/ProductList', function () use ($router) {
+    dynamicRoute($router, App\Controllers\ProductList\ProductList::class);
+});
