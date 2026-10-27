@@ -163,3 +163,15 @@ $router->mount('/IssuingPlace', function () use ($router) {
 $router->mount('/UserContactTypes', function () use ($router) {
     dynamicRoute($router, App\Controllers\UserContactTypes\UserContactTypes::class);
 });
+$router->mount('/ProductList', function () use ($router) {
+    dynamicRoute($router, App\Controllers\ProductList\ProductList::class);
+});
+$router->mount('/ProductGroup', function () use ($router) {
+    dynamicRoute($router, App\Controllers\ProductGroup\ProductGroup::class);
+});
+$router->mount('/ProductGrad', function () use ($router) {
+    dynamicRoute($router, App\Controllers\ProductGrad\ProductGrad::class);
+});
+$router->mount('/brands', function () use ($router) {
+    dynamicRoute($router, App\Controllers\brands\brands::class);
+});

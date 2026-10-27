@@ -20,16 +20,13 @@
                             <div class="row">
                                 <div class="col-md-2">
                                     <label>نام واحد</label>
-                                    <input class="form-control" name="unite_name">
+                                    <input class="form-control" name="unit_name">
                                 </div>
                                 <div class="col-md-2">
                                     <label>شناسه واحد</label>
                                     <input class="form-control" name="unit_symbol">
                                 </div>
-                                <div class="col-md-8">
-                                    <label>فرمول</label>
-                                    <input class="form-control" name="unit_formula">
-                                </div>
+                            
                             </div>
                             <div class="col-12 d-flex flex-sm-row flex-column justify-content-end mt-1">
                                 <button type="submit"
