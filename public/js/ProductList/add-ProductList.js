@@ -1,930 +1,406 @@
 $(function () {
-    let groups = [
-        {
-            id: 0,
-            title: "گروه اول"
-        },
-        {
-            id: 2,
-            title: "گروه دوم"
-        }
-    ];
-    let grades = [
-        {
-            id: 0,
-            title: "گرید اول"
-        },
-        {
-            id: 2,
-            title: "گرید دوم"
-        }
-    ];
-    let brands = [
-        {
-            id: 0,
-            title: "برند اول"
-        },
-        {
-            id: 2,
-            title: "برند دوم"
-        }
-    ];
-    let quality = [
-        {
-            id: 0,
-            title: "کیفیت اول"
-        },
-        {
-            id: 2,
-            title: "کیفیت دوم"
-        }
-    ];
-    let unit = [
-        {
-            id: 0,
-            title: "واحد اول"
-        },
-        {
-            id: 2,
-            title: "واحد دوم"
-        }
-    ];
+    let brandPercentage = 0;
 
-    function GetGroups(group_id = null) {
-        let html = '<option selected disabled>انتخاب کنید</option>';
-
-        groups.forEach(value => {
-            html += `<option value="${value.id}" ${value.id == group_id ? 'selected' : ''}>${value.title}</option>`;
-        });
-
-        return html;
+    function numberFormat(number) {
+        return Number(number).toLocaleString('en-US');
     }
 
-    function GetGrades(grades_id = null) {
-        let html = '<option selected disabled>انتخاب کنید</option>';
+    $('.addFormAjax').on('click', function () {
+        let formId = 'mainForm';
+        let url = 'add';
+        let resultBack = 'addSuccess';
+        let form = $("#" + formId);
+        let formData = new FormData(form[0]);
 
-        grades.forEach(value => {
-            html += `<option value="${value.id}" ${value.id == grades_id ? 'selected' : ''} >${value.title}</option>`;
-        });
-
-        return html;
-    }
-
-    function GetBrands(brand_id = null) {
-        let html = '<option selected disabled>انتخاب کنید</option>';
-
-        brands.forEach(value => {
-            html += `<option value="${value.id}" ${value.id == brand_id ? 'selected' : ''} >${value.title}</option>`;
-        });
-
-        return html;
-    }
-
-    function GetQuality(quality_id = null) {
-        let html = '<option selected disabled>انتخاب کنید</option>';
-
-        quality.forEach(value => {
-            html += `<option value="${value.id}" ${value.id == quality_id ? 'selected' : ''} >${value.title}</option>`;
-        });
-
-        return html;
-    }
-
-    function GetUnits(unit_id = null) {
-        let html = '<option selected disabled>انتخاب کنید</option>';
-
-        unit.forEach(value => {
-            html += `<option value="${value.id}" ${value.id == unit_id ? 'selected' : ''} >${value.title}</option>`;
-        });
-
-        return html;
-    }
-
-    const data = {
-        id: 'md',
-        data: {
-            imageURL: '/Storage/DefaultImages/Default.jpg',
-            name: 'Devlin Cowins',
-            title: 'Managing director',
-            metrics: [
-                {label: 'Quality of work', value: 90},
-                {label: 'Initiative', value: 85},
-                {label: 'Cooperative', value: 95}
-            ]
-        },
-
-    };
-
-    const container = document.getElementById('svg-tree');
-
-    if (!container) return;
-
-    let tree;
-    let nodeCounter = 0;
-
-    const metricLabels = [
-        'Quality of work',
-        'Initiative',
-        'Cooperative'
-    ];
-
-    function escapeHtml(value = '') {
-        return String(value ?? '').replace(/[&<>"']/g, char => ({
-            '&': '&amp;',
-            '<': '&lt;',
-            '>': '&gt;',
-            '"': '&quot;',
-            "'": '&#39;'
-        }[char]));
-    }
-
-    function avatarUrl(name) {
-        return 'https://api.dicebear.com/9.x/initials/svg?seed=' +
-            encodeURIComponent(name || 'Employee');
-    }
-
-    function normalizeNodes(node) {
-        node.data = node.data || {};
-        node.data.nodeId = node.id;
-
-        if (!Array.isArray(node.data.metrics)) {
-            node.data.metrics = metricLabels.map(label => ({
-                label,
-                value: 0
-            }));
+        if ($('.row').find('.tiny') !== undefined) {
+            $('.row').find('.tiny').each(function () {
+                formData.append($(this).attr('name'), tinyEditorGetValue($(this).attr('id')));
+            });
         }
 
-        node.children = node.children || [];
+        $("#" + formId).find(':input').each(function () {
+            if ($(this).prop('required')) {
+                let value = $(this).val();
 
-        node.children.forEach(normalizeNodes);
-    }
-
-    normalizeNodes(data);
-
-    function findNode(node, id) {
-        if (String(node.id) === String(id)) return node;
-
-        for (const child of node.children || []) {
-            const found = findNode(child, id);
-
-            if (found) return found;
-        }
-
-        return null;
-    }
-
-    function findParent(node, id) {
-        for (const child of node.children || []) {
-            if (String(child.id) === String(id)) {
-                return node;
-            }
-
-            const found = findParent(child, id);
-
-            if (found) return found;
-        }
-
-        return null;
-    }
-
-    function createEmptyNode() {
-        const id = `employee_${Date.now()}_${++nodeCounter}`;
-
-        return {
-            id,
-            data: {
-                nodeId: id,
-                imageURL: '',
-                name: '',
-                title: '',
-                isNew: true,
-                metrics: metricLabels.map(label => ({
-                    label,
-                    value: 0
-                }))
-            },
-            children: []
-        };
-    }
-
-    function refreshTree() {
-        tree.render(data);
-    }
-
-    function addChild(parentId) {
-        const parent = findNode(data, parentId);
-
-        if (!parent) return;
-
-        const child = createEmptyNode();
-
-        parent.children = parent.children || [];
-        parent.children.push(child);
-
-        refreshTree();
-
-        // Open the form immediately after adding.
-        editNode(child.id);
-    }
-
-    function editNode(nodeId) {
-        const node = findNode(data, nodeId);
-
-        if (!node) return;
-
-        const info = node.data;
-
-        Swal.fire({
-            title: info.isNew ? 'افزودن محصول' : 'ویرایش محصول',
-
-            width: '850px',
-            html: `
-    <div class="product-form" dir="rtl" style="text-align:right;">
-
-        <!-- Product Image -->
-        <div class="text-center mb-4">
-            <label class="d-block mb-2 fw-bold">تصویر محصول</label>
-        <div id="photos">
-
-            <button
-                type="button"
-                class="btn p-0 border-0 bg-transparent ProductImage"
-                style="cursor:pointer;"
-            >
-                <img
-                    class="productImagePreview"
-                    src="${escapeHtml(info.imageURL || '/Storage/DefaultImages/Default.jpg')}"
-                    alt="تصویر محصول"
-                    style="
-                        width:100px;
-                        height:100px;
-                        object-fit:cover;
-                        border-radius:14px;
-                        border:2px dashed #cbd5e1;
-                        padding:5px;
-                    "
-                >
-            </button>
-</div>
-            <div class="small text-muted mt-2">
-                <button class="btn btn-sm btn-primary" id="appendPhoto">افزودن عکس </button>
-            </div>
-
-            <input
-                type="file"
-                id="productImageInput"
-                name="product_image"
-                accept="image/*"
-                hidden
-            >
-        </div>
-
-        <div class="row g-3">
-
-            <!-- Product Name -->
-            <div class="col-md-6">
-                <label class="form-label fw-semibold">
-                    عنوان محصول
-                    
-                </label>
-
-                <input
-                    type="text"
-                    id="employeeName"
-                    name="name"
-                    class="form-control"
-                    placeholder="عنوان محصول را وارد کنید"
-                    value="${escapeHtml(info.name || '')}"
-                >
-            </div>
-
-            <!-- Serial Number -->
-            <div class="col-md-6">
-                <label class="form-label fw-semibold">
-                    کد محصول
-                </label>
-
-                <input
-                    type="text"
-                    name="serial_number"
-                    id="serial_number"
-                    class="form-control"
-                    placeholder="کد محصول"
-                    value="${escapeHtml(info.serial_number || '')}"
-                >
-            </div>
-
-            <!-- Parent Ratio -->
-            <div class="col-md-6 col-lg-3">
-                <label class="form-label fw-semibold">
-                    نسبت به محصول قبل
-                </label>
-
-                <input
-                    type="number"
-                    name="parent_unit_ratio"
-                    id="parent_unit_ratio"
-                    class="form-control"
-                    min="0"
-                    step="any"
-                    value="${escapeHtml(info.parent_unit_ratio ?? '')}"
-                >
-            </div>
-
-            <!-- Cost Price -->
-            <div class="col-md-6 col-lg-3">
-                <label class="form-label fw-semibold">
-                    بهای تمام‌شده
-                </label>
-
-                <input
-                    type="number"
-                    name="cost_price"
-                    id="cost_price"
-                    class="form-control"
-                    min="0"
-                    step="any"
-                    value="${escapeHtml(info.cost_price ?? '')}"
-                >
-            </div>
-
-            <!-- Factory Price -->
-            <div class="col-md-6 col-lg-3">
-                <label class="form-label fw-semibold">
-                    قیمت فروش کارخانه
-                </label>
-
-                <input
-                    type="number"
-                    name="sale_price"
-                    id="sale_price"
-                    class="form-control"
-                    min="0"
-                    step="any"
-                    value="${escapeHtml(info.sale_price ?? '')}"
-                >
-            </div>
-
-            <!-- Customer Price -->
-            <div class="col-md-6 col-lg-3">
-                <label class="form-label fw-semibold">
-                    قیمت مصرف‌کننده
-                </label>
-
-                <input
-                    type="number"
-                    name="customer_price"
-                    id="customer_price"
-                    class="form-control"
-                    min="0"
-                    step="any"
-                    value="${escapeHtml(info.customer_price ?? '')}"
-                >
-            </div>
-
-            <div class="col-12">
-                <hr class="my-2">
-                <div class="fw-bold text-secondary mb-1">
-                    دسته‌بندی و مشخصات محصول
-                </div>
-            </div>
-
-            <!-- Group -->
-            <div class="col-md-6 col-lg-4">
-                <label class="form-label fw-semibold">
-                    گروه محصول
-                </label>
-
-                <select
-                    class="form-control select2"
-                    name="group_id"
-                    id="group_id"
-                    style="width:100%;"
-                >
-                    ${GetGroups(info.group_id)}
-                </select>
-            </div>
-
-            <!-- Grade -->
-            <div class="col-md-6 col-lg-4">
-                <label class="form-label fw-semibold">
-                    درجه محصول
-                </label>
-
-                <select
-                    class="form-control select2"
-                    name="grades_id"
-                    id="grades_id"
-                    style="width:100%;"
-                >
-                    ${GetGrades(info.grades_id)}
-                </select>
-            </div>
-
-            <!-- Brand -->
-            <div class="col-md-6 col-lg-4">
-                <label class="form-label fw-semibold">
-                    برند محصول
-                </label>
-
-                <select
-                    class="form-control select2"
-                    name="brand_id"
-                    id="brand_id"
-                    style="width:100%;"
-                >
-                    ${GetBrands(info.brand_id)}
-                </select>
-            </div>
-
-            <!-- Quality -->
-            <div class="col-md-6">
-                <label class="form-label fw-semibold">
-                    کیفیت محصول
-                </label>
-
-                <select
-                    class="form-control select2"
-                    name="quality_id"
-                    id="quality_id"
-                    style="width:100%;"
-                >
-                    ${GetQuality(info.quality_id)}
-                </select>
-            </div>
-
-            <!-- Unit -->
-            <div class="col-md-6">
-                <label class="form-label fw-semibold">
-                    واحد محصول
-                </label>
-
-                <select
-                    class="form-control select2"
-                    name="unit_id"
-                    id="unit_id"
-                    style="width:100%;"
-                >
-                    ${GetUnits(info.unit_id)}
-                </select>
-            </div>
-
-        </div>
-    </div>
-`,
-            didOpen: () => {
-                $("#appendPhoto").on('click',function () {
-                    $("#photos").append(`<button
-                        type="button"
-                        class="btn p-0 border-0 bg-transparent ProductImage"
-                        style="cursor:pointer;"
-                    >
-                        <img
-                            class="productImagePreview"
-                            src="${escapeHtml(info.imageURL || '/Storage/DefaultImages/Default.jpg')}"
-                            alt="تصویر محصول"
-                            style="
-                        width:100px;
-                        height:100px;
-                        object-fit:cover;
-                        border-radius:14px;
-                        border:2px dashed #cbd5e1;
-                        padding:5px;
-                    "
-                        >
-                    </button>`)
-                })
-                const popup = Swal.getPopup();
-
-                // Initialize Select2 inside SweetAlert
-                $(popup).find('.select2').select2({
-                    dropdownParent: $(popup),
-                    width: '100%',
-                    dir: 'rtl'
-                });
-
-                // Open image picker
-                $(popup).find('#ProductImage').on('click', function () {
-                    $(popup).find('#productImageInput').trigger('click');
-                });
-
-                // Preview selected image
-                $(popup).find('#productImageInput').on('change', function () {
-                    const file = this.files?.[0];
-
-                    if (!file) return;
-
-                    if (!file.type.startsWith('image/')) {
-                        Swal.showValidationMessage('لطفاً یک فایل تصویری انتخاب کنید');
-                        this.value = '';
-                        return;
+                if ($(this).is('select')) {
+                    if (!value || value === '') {
+                        $(this).addClass('is-invalid');
+                        $(this).parent('div').addClass('has-error');
+                    } else {
+                        $(this).removeClass('is-invalid');
+                        $(this).addClass('is-valid');
+                        $(this).parent('div').removeClass('has-error');
                     }
-
-                    const reader = new FileReader();
-
-                    reader.onload = function (event) {
-                        $(popup)
-                            .find('#productImagePreview')
-                            .attr('src', event.target.result);
-                    };
-
-                    reader.readAsDataURL(file);
-                });
-            },
-
-
-            showCancelButton: true,
-            confirmButtonText: 'ذخیره اطلاعات',
-            cancelButtonText: 'انصراف',
-            confirmButtonColor: '#2563eb',
-
-            preConfirm: () => {
-                const name = $('#employeeName').val().trim();
-                const title = $('#employeeTitle').val().trim();
-
-                return {
-                    //مواردی که پر شد اینجا برمیگرده
-                };
+                } else {
+                    if (!value || value.trim() === '') {
+                        $(this).addClass('is-invalid');
+                        $(this).parent('div').addClass('has-error');
+                    } else {
+                        $(this).removeClass('is-invalid');
+                        $(this).addClass('is-valid');
+                        $(this).parent('div').removeClass('has-error');
+                    }
+                }
             }
-        }).then(result => {
-            if (!result.isConfirmed) return;
-
-            const {name, title, scores} = result.value;
-
-            node.data = {
-                ...node.data,
-                nodeId: node.id,
-                imageURL: avatarUrl(name),
-                name,
-                title,
-                metrics: metricLabels.map((label, index) => ({
-                    label,
-                    value: scores[index]
-                })),
-                isNew: false
-            };
-
-            refreshTree();
-
-            Swal.fire({
-                icon: 'success',
-                title: 'ذخیره شد',
-                timer: 1000,
-                showConfirmButton: false
-            });
         });
-    }
 
-    function countDescendants(node) {
-        return (node.children || []).reduce(
-            (total, child) => total + 1 + countDescendants(child),
-            0
-        );
-    }
+        $(form).each(function () {
+            if ($(this).find(':input').parent().hasClass('has-error') || $(this).find(':input').hasClass('is-invalid')) {
+                swal.fire({
+                    icon: 'warning',
+                    title: 'توجه !',
+                    text: 'لطفا موارد را با دقت پر کنید',
+                    timer: 3000,
+                    confirmButtonText: 'بستن'
+                });
+            } else {
+                $('.addFormAjax').hide();
 
-    function deleteNode(nodeId) {
-        if (String(nodeId) === String(data.id)) {
-            Swal.fire({
-                icon: 'warning',
-                title: 'حذف غیرمجاز',
-                text: 'گره اصلی سازمان قابل حذف نیست.'
+                $.ajax({
+                    url: url,
+                    type: 'POST',
+                    processData: false,
+                    contentType: false,
+                    cache: false,
+                    data: formData,
+                    success: result => {
+                        if (result === resultBack) {
+                            successMessage();
+                            buttonLoadingOff('.addFormAjax', 'ثبت اطلاعات');
+                        } else if (result === 'duplicate-id') {
+                            errorMessage('این کد محصول از قبل وجود دارد.');
+                            $('.addFormAjax').show();
+                        } else if (result === 'duplicate-type') {
+                            errorMessage('محصولی با مشخصات مشابه از قبل وجود دارد.');
+                            $('.addFormAjax').show();
+                        } else {
+                            errorMessage('مشکلی در افزودن محصول رخ داده است.');
+                            $('.addFormAjax').show();
+                        }
+                    }
+                });
+            }
+        });
+    });
+
+    let lastManualId = '';
+    $('#group_id').on('change', function () {
+        let id = $(this).val();
+        const categories = $('#category_id');
+        const previousCategoryId = categories.val();
+        categories.empty();
+        $.ajax({
+            url: '/Products/getGroupCategories',
+            type: 'POST',
+            data: {id},
+            dataType: 'json',
+        }).then(function (result) {
+            $.each(result, function (index, item) {
+                categories.append(
+                    '<option value="' + item.id + '">' + item.title + '</option>'
+                );
             });
+            if (categories.find('option[value="' + previousCategoryId + '"]').length) {
+                categories.val(previousCategoryId).trigger('change');
+            }
+        });
+    }).trigger('change');
+
+    function getSelectedKey(name) {
+        return $('#' + name + ' option:selected')?.text()?.trim()?.replace(/\s/g, '')?.replace(/[^a-zA-Z0-9]/g, '')?.toUpperCase()
+    }
+
+    async function generateProductKey() {
+        const isManual = $('#manual_product_id').is(':checked');
+        if (isManual) {
             return;
         }
-
-        const node = findNode(data, nodeId);
-        const parent = findParent(data, nodeId);
-
-        if (!node || !parent) return;
-
-        const descendants = countDescendants(node);
-
-        Swal.fire({
-            icon: 'warning',
-            title: 'حذف محصول',
-            html: `
-                <div style="direction:rtl;">
-                    آیا از حذف
-                    <strong>${escapeHtml(node.data.name || 'محصول جدید')}</strong>
-                    مطمئن هستید؟
-
-                    ${
-                descendants > 0
-                    ? `<p style="color:#dc2626;">
-                                تعداد ${descendants} زیرمجموعه نیز حذف خواهد شد.
-                               </p>`
-                    : ''
+        const brandName = $('#brand_id')?.find('option:selected')?.data('brand')?.trim();
+        if (brandName) {
+            const symbolName = $('#unit_id')?.find('option:selected')?.data('symbol')?.trim();
+            const gradeName = getSelectedKey('grade_id');
+            const qualityName = getSelectedKey('quality_id');
+            const unitAmount = $('#unit_amount');
+            let productKey = (brandName) ? brandName : '';
+            productKey += (gradeName) ? '-' + gradeName : '';
+            productKey += (qualityName) ? '-' + qualityName : '';
+            productKey += (symbolName) ? '-' + symbolName : '';
+            if (unitAmount.is(':visible') && unitAmount.val() !== '') {
+                productKey += 'x' + unitAmount.val();
             }
-                </div>
-            `,
-            showCancelButton: true,
-            confirmButtonText: 'بله، حذف شود',
-            cancelButtonText: 'انصراف',
-            confirmButtonColor: '#dc2626'
-        }).then(result => {
+            $('#product_id').val(productKey);
+        }
+    }
 
-            if (!result.isConfirmed) return;
+    $('#title').on('input', generateProductKey);
+    $('#group_id, #category_id, #grade_id, #quality_id, #unit_id, #unit_amount').on('change', generateProductKey);
 
-            parent.children = parent.children.filter(
-                child => String(child.id) !== String(nodeId)
-            );
+    function setProductIdMode() {
+        const isManual = $('#manual_product_id').is(':checked');
+        const $productId = $('#product_id');
+        const $help = $('#product_id_help');
+        if (isManual) {
+            $productId.prop('readonly', false);
+            if (!window.editProduct) {
+                $productId.val('');
+            }
+            if (lastManualId !== '') {
+                $productId.val(lastManualId);
+            }
+            $help.removeClass('text-muted')
+                .addClass('text-warning')
+                .text('کد محصول را به صورت دستی وارد کنید.');
+            $productId.focus();
+        } else {
+            lastManualId = $productId.val();
+            $productId.prop('readonly', true);
+            $help.removeClass('text-warning')
+                .addClass('text-muted')
+                .text('کد محصول به صورت خودکار ایجاد میشود.');
+            generateProductKey();
+        }
+    }
 
-            refreshTree();
+    $('#manual_product_id').on('change', function () {
+        setProductIdMode();
+    });
 
-            Swal.fire({
-                icon: 'success',
-                title: 'حذف شد',
-                timer: 1000,
-                showConfirmButton: false
+    function normalizePersianNumbers(value) {
+        return value
+            .replace(/[۰-۹]/g, function (digit) {
+                return String('۰۱۲۳۴۵۶۷۸۹'.indexOf(digit));
+            })
+            .replace(/[٠-٩]/g, function (digit) {
+                return String('٠١٢٣٤٥٦٧٨٩'.indexOf(digit));
             });
+    }
+
+    function formatPrice(value) {
+        value = normalizePersianNumbers(value);
+        value = value.replace(/\D/g, '');
+        return value.replace(/\B(?=(\d{3})+(?!\d))/g, ',');
+    }
+
+    $('.price-input').on('input', function () {
+        this.value = formatPrice(this.value);
+    }).trigger('input');
+
+    const imageInput = document.getElementById('product_images');
+    const chooseImagesBtn = document.getElementById('chooseImagesBtn');
+    const imageDropZone = document.getElementById('imageDropZone');
+    const imagePreviewContainer = document.getElementById('imagePreviewContainer');
+
+    chooseImagesBtn.addEventListener('click', function () {
+        imageInput.click();
+    });
+
+    imageDropZone.addEventListener('click', function () {
+        imageInput.click();
+    });
+
+    imageInput.addEventListener('change', function () {
+        renderImages();
+    });
+
+    imageDropZone.addEventListener('dragover', function (e) {
+        e.preventDefault();
+        imageDropZone.classList.add('bg-light');
+    });
+
+    imageDropZone.addEventListener('dragleave', function (e) {
+        e.preventDefault();
+        imageDropZone.classList.remove('bg-light');
+    });
+
+    imageDropZone.addEventListener('drop', function (e) {
+        e.preventDefault();
+        imageDropZone.classList.remove('bg-light');
+        const files = e.dataTransfer.files;
+        if (!files.length) {
+            return;
+        }
+        const dataTransfer = new DataTransfer();
+        Array.from(imageInput.files).forEach(function (file) {
+            dataTransfer.items.add(file);
+        });
+        Array.from(files).forEach(function (file) {
+            if (!file.type.startsWith('image/')) {
+                return;
+            }
+            const exists = Array.from(dataTransfer.files).some(function (existingFile) {
+                return (
+                    existingFile.name === file.name &&
+                    existingFile.size === file.size &&
+                    existingFile.lastModified === file.lastModified
+                );
+            });
+            if (!exists) {
+                dataTransfer.items.add(file);
+            }
+        });
+        imageInput.files = dataTransfer.files;
+        renderImages();
+    });
+
+    function renderImages() {
+        imagePreviewContainer.innerHTML = '';
+        const files = Array.from(imageInput.files);
+        files.forEach(function (file, index) {
+            const reader = new FileReader();
+            reader.onload = function (e) {
+                const html = `
+                <div class="image-item border rounded p-3 mb-3" data-index="${index}">
+                    <div class="row">
+                        <div class="col-md-3 col-lg-2">
+                            <div class="border rounded overflow-hidden" style="height:180px;background:#f8f9fa">
+                                <img src="${e.target.result}" style="width:100%;height:100%;object-fit:cover">
+                            </div>
+                        </div>
+                        <div class="col-md-8 col-lg-9 mt-3 mt-md-0">
+                            <div>
+                                <label for="image-title-${index}">عنوان تصویر</label>
+                                <input type="text" class="form-control image-title" name="image_titles[${index}]"
+                                    id="image-title-${index}" placeholder="مثلاً تصویر بسته‌بندی محصول" required>
+                            </div>
+                            <div class="mt-3">
+                                <label for="image-description-${index}">توضیحات تصویر</label>
+                                <textarea class="form-control image-description" name="image_descriptions[${index}]" id="image-description-${index}"
+                                    rows="4" placeholder="توضیحات مربوط به این تصویر..." required></textarea>
+                            </div>
+                        </div>
+                        <div class="col-md-1 mt-3 mt-md-0 text-left">
+                            <button type="button" class="btn btn-outline-danger remove-image" data-index="${index}" title="حذف تصویر">
+                                <i class="bx bx-trash"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            `;
+                imagePreviewContainer.insertAdjacentHTML('beforeend', html);
+            };
+            reader.readAsDataURL(file);
         });
     }
 
-    const options = {
-        contentKey: 'data',
-        width: '100%',
-        viewPortWidth: 1200,
-        viewPortHeight: 700,
-        nodeWidth: 200,
-        nodeHeight: 220,
-        childrenSpacing: 60,
-        siblingSpacing: 25,
-        direction: 'top',
-        edgeStyle: 'curved',
-        borderRadius: '12px',
-        borderColor: '#e0e0e0',
-        borderWidth: 1,
-        nodeBGColor: '#ffffff',
-        nodeShadow: '0 2px 8px rgba(0,0,0,0.08)',
-        nodeShadowHover: '0 4px 16px rgba(0,0,0,0.13)',
-        enableToolbar: true,
-        enableExpandCollapse: true,
-
-        fontFamily: '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif',
-
-        nodeTemplate: (content) => {
-
-            const nodeId = escapeHtml(content.nodeId);
-
-            if (content.isNew) {
-                return `
-                    <div
-                        class="employee-card new-employee"
-                        data-node-id="${nodeId}"
-                        style="
-                            height:100%;
-                            display:flex;
-                            align-items:center;
-                            justify-content:center;
-                            flex-direction:column;
-                            cursor:pointer;
-                            background:#eff6ff;
-                            border-radius:12px;
-                            gap:8px;
-                        "
-                    >
-                        <div style="font-size:40px;color:#2563eb;">+</div>
-
-                        <div style="font-size:13px;font-weight:600;color:#2563eb;">
-                            محصول جدید
-                        </div>
-
-                        <div style="font-size:10px;color:#64748b;">
-                            برای ثبت اطلاعات کلیک کنید
-                        </div>
-
-                        <button
-                            type="button"
-                            class="delete-node-btn"
-                            style="
-                                margin-top:10px;
-                                border:0;
-                                background:#fee2e2;
-                                color:#dc2626;
-                                padding:5px 12px;
-                                border-radius:6px;
-                                cursor:pointer;
-                            "
-                        >
-                            حذف
-                        </button>
-                    </div>
-                `;
+    $(document).on('click', '.remove-image', function () {
+        const index = parseInt($(this).data('index'));
+        const dataTransfer = new DataTransfer();
+        Array.from(imageInput.files).forEach(function (file, fileIndex) {
+            if (fileIndex !== index) {
+                dataTransfer.items.add(file);
             }
+        });
+        imageInput.files = dataTransfer.files;
+        renderImages();
+    });
 
-            const metricsHtml = (content.metrics || [])
-                .map(m => {
-
-                    const value = Math.max(
-                        0,
-                        Math.min(100, Number(m.value) || 0)
-                    );
-
-                    const color =
-                        value >= 90 ? '#4caf50' :
-                            value >= 80 ? '#8bc34a' :
-                                value >= 70 ? '#ffc107' :
-                                    '#ff9800';
-
-                    return `
-                        <div style="
-                            display:flex;
-                            align-items:center;
-                            gap:6px;
-                            margin-bottom:4px;
-                        ">
-                            <span style="
-                                font-size:9px;
-                                color:#555;
-                                width:84px;
-                                flex-shrink:0;
-                                white-space:nowrap;
-                                overflow:hidden;
-                                text-overflow:ellipsis;
-                            ">
-                                • ${escapeHtml(m.label)}
-                            </span>
-
-                            <div style="
-                                flex:1;
-                                height:5px;
-                                background:#e8e8e8;
-                                border-radius:3px;
-                                overflow:hidden;
-                            ">
-                                <div style="
-                                    width:${value}%;
-                                    height:100%;
-                                    background:${color};
-                                    border-radius:3px;
-                                "></div>
-                            </div>
-                        </div>
-                    `;
-                }).join('');
-
-            return `
-                <div
-                    class="employee-card"
-                    data-node-id="${nodeId}"
-                    style="
-                        display:flex;
-                        flex-direction:column;
-                        align-items:center;
-                        height:100%;
-                        padding:12px 10px 10px;
-                        text-align:center;
-                        position:relative;
-                        box-sizing:border-box;
-                    "
-                >
-
-                    <img
-                        src="${escapeHtml(content.imageURL || avatarUrl(content.name))}"
-                        alt=""
-                        style="
-                            width:56px;
-                            height:56px;
-                            border-radius:50%;
-                            object-fit:cover;
-                            border:3px solid #e8e8e8;
-                            margin-bottom:6px;
-                        "
-                    >
-
-                    <div style="
-                        font-weight:700;
-                        font-size:12px;
-                        line-height:1.3;
-                        color:#1a1a2e;
-                        margin-bottom:3px;
-                    ">
-                        ${escapeHtml(content.name)}
-                    </div>
-
-                    <div style="
-                        font-size:10px;
-                        color:#666;
-                        margin-bottom:8px;
-                    ">
-                        ${escapeHtml(content.title)}
-                    </div>
-
-                    <div style="width:100%;padding:0 2px;">
-                        ${metricsHtml}
-                    </div>
-
-                    <div style="
-                        position:absolute;
-                        bottom:8px;
-                        left:8px;
-                        right:8px;
-                        display:flex;
-                        justify-content:center;
-                        gap:5px;
-                    ">
-
-                        <button
-                            type="button"
-                            class="add-child-btn"
-                            style="
-                                border:0;
-                                background:#2563eb;
-                                color:white;
-                                padding:5px 9px;
-                                border-radius:5px;
-                                cursor:pointer;
-                                font-size:11px;
-                            "
-                        >
-                            + Add
-                        </button>
-
-                        <button
-                            type="button"
-                            class="edit-node-btn"
-                            style="
-                                border:0;
-                                background:#e2e8f0;
-                                color:#334155;
-                                padding:5px 9px;
-                                border-radius:5px;
-                                cursor:pointer;
-                                font-size:11px;
-                            "
-                        >
-                            Edit
-                        </button>
-
-                        ${
-                String(content.nodeId) !== String(data.id)
-                    ? `
-                                    <button
-                                        type="button"
-                                        class="delete-node-btn"
-                                        style="
-                                            border:0;
-                                            background:#fee2e2;
-                                            color:#dc2626;
-                                            padding:5px 9px;
-                                            border-radius:5px;
-                                            cursor:pointer;
-                                            font-size:11px;
-                                        "
-                                    >
-                                        Delete
-                                    </button>
-                                `
-                    : ''
-            }
-
-                    </div>
-
-                </div>
-            `;
+    $('#sale_price').on('input change', function () {
+        const brand = $(this).data('brand') || 0;
+        let percentage = brandPercentage;
+        console.log($('#brand_id').val());
+        if ($('#brand_id').val() == brand) {
+            percentage = Number($(this).data('percentage')) || brandPercentage;
         }
-    };
-
-    tree = new ApexTree(container, options);
-
-    refreshTree();
-
-    // Add child
-    $('#svg-tree').on('click', '.add-child-btn', function (e) {
-        e.preventDefault();
-        e.stopPropagation();
-
-        const nodeId = $(this)
-            .closest('[data-node-id]')
-            .attr('data-node-id');
-
-        addChild(nodeId);
+        const price = Number($(this).val().replace(/,/g, '')) || 0;
+        const customerPrice = Math.round(price + ((price * percentage) / 100));
+        $('#customer_price').val(numberFormat(customerPrice));
+        if (percentage > 0) {
+            $('#percentage').html('<strong style="color:red">' + percentage + '</strong> درصد به صورت خودکار اضافه میشود')
+        } else {
+            $('#percentage').html('به صورت خودکار محاسبه میشود')
+        }
     });
 
-    // Edit employee
-    $('#svg-tree').on('click', '.edit-node-btn, .new-employee', function (e) {
-        if ($(e.target).closest('.delete-node-btn').length) return;
-
-        e.preventDefault();
-        e.stopPropagation();
-
-        const nodeId = $(this)
-            .closest('[data-node-id]')
-            .attr('data-node-id');
-
-        editNode(nodeId);
+    $('#brand_id').on('change', function () {
+        const brandId = $(this).val();
+        $('#brand_latin_name').val($(this).find('option:selected').data('value'));
+        $('#title').removeAttr('readonly');
+        if (!window.editProduct) {
+            $('#product_id').val('')
+            generateProductKey();
+        }
+        brandPercentage = 0;
+        $.ajax({
+            url: '/Products/getBrandPercentage',
+            type: 'POST',
+            data: {brandId},
+            success: result => {
+                brandPercentage = parseInt(result);
+                $('#sale_price').trigger('change');
+            }
+        });
     });
 
-    // Delete employee
-    $('#svg-tree').on('click', '.delete-node-btn', function (e) {
-        e.preventDefault();
-        e.stopPropagation();
+    $('#brand_latin_name').val($(this).find('option:selected').data('value'));
 
-        const nodeId = $(this)
-            .closest('[data-node-id]')
-            .attr('data-node-id');
-
-        deleteNode(nodeId);
+    $('#brand_id').select2({
+        templateResult: function (brand) {
+            if (!brand.id) {
+                return brand.text;
+            }
+            const logo = $(brand.element).data('logo');
+            return $(`
+            <div class="brand-select-option">
+                <div class="brand-select-logo">
+                    ${
+                logo
+                    ? `<img src="${logo}" alt="">`
+                    : '<i class="bx bx-image"></i>'
+            }
+                </div>
+                <span>${brand.text}</span>
+            </div>
+        `);
+        },
+        templateSelection: function (brand) {
+            if (!brand.id) {
+                return brand.text;
+            }
+            const logo = $(brand.element).data('logo');
+            return $(`
+            <div class="brand-select-selection">
+                <div class="brand-select-logo">
+                    ${
+                logo
+                    ? `<img src="${logo}" alt="">`
+                    : '<i class="bx bx-image"></i>'
+            }
+                </div>
+                <span>${brand.text}</span>
+            </div>
+        `);
+        },
+        escapeMarkup: function (markup) {
+            return markup;
+        },
+        width: '100%'
     });
 
+    const $unitSelect = $('#unit_id');
+    const $unitSelectWrapper = $('#unitSelectWrapper');
+    const $unitAmountWrapper = $('#unitAmountWrapper');
+    const $unitAmount = $('#unit_amount');
+    const $subUnitName = $('#sub_unit_name');
+
+    function updateUnitContent() {
+        const $selected = $unitSelect.find('option:selected');
+        const hasContent = String($selected.data('has-content')) === '1';
+        const contentUnitName = $selected.text() || 'واحد';
+        if (hasContent) {
+            $unitSelectWrapper.removeClass('col-12').addClass('col-md-6');
+            $unitAmountWrapper.removeClass('col-12').addClass('col-md-6').show();
+            $subUnitName.text(contentUnitName);
+            $unitAmount.prop('required', true);
+        } else {
+            $unitSelectWrapper.removeClass('col-md-6').addClass('col-12');
+            $unitAmountWrapper.hide().removeClass('col-md-6').addClass('col-12');
+            $unitAmount.prop('required', false).val('');
+            $subUnitName.text('واحد');
+        }
+        generateProductKey();
+    }
+
+    $unitSelect.on('change', updateUnitContent);
+    updateUnitContent();
+    $('#sale_price').trigger('change');
 });
