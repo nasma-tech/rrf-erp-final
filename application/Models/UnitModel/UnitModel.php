@@ -7,7 +7,7 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 
 class UnitModel extends Model
 {
-    protected $table = 'units';
+    protected $table = 'measurement_units';
     protected $primaryKey = 'id';
     public $timestamps = false;
 
