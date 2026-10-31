@@ -14,10 +14,10 @@ class ProductQualitiesModel extends Model
     use SoftDeletes;
 
     protected $fillable = [
-        "title",
+        "label",
         "user_id",
-        "created_at",
-        "updated_at",
+        "create_at",
+        "update_at",
         "deleted_at",
     ];
 

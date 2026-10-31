@@ -25,7 +25,7 @@
                                     <option value="2" selected>محصول پایه2</option>
                                     {foreach $parentProducts as $parentProduct}
                                         <option value="{$parentProduct->id}">{$parentProduct->serial_number}
-                                            - {$parentProduct->title}</option>
+                                            - {$parentProduct->label}</option>
                                     {/foreach}
                                 </select>
                             </div>
