@@ -62,7 +62,7 @@ class ButtonHelper
     {
         $menuId = $this->getCurrentMenuId();
         if (PermissionHelper::can('edit', $menuId)) {
-            return '<a href="editIndex/' . $params . '" class="badge badge-warning badge-icon text-white" data-toggle="tooltip" data-placement="top" title="" data-original-title="ویرایش" style="margin-right: 2px;"><i class="bx bxs-edit-alt" style="font-size: 14px"></i></a>';
+            return '<a href="editIndex/' . $params . '" class="badge badge-warning badge-icon text-white"><i class="bx bxs-edit-alt" style="font-size: 14px"></i></a>';
         }
         return '';
     }
@@ -72,7 +72,7 @@ class ButtonHelper
     {
         $menuId = $this->getCurrentMenuId();
         if (PermissionHelper::can('delete', $menuId)) {
-            return '<a href="deleteIndex/' . $params . '" data-id="' . $params . '" class="badge badge-danger badge-icon deleteButton" data-toggle="tooltip" data-placement="top" title="" data-original-title="حذف" style="margin-right: 2px"><i class="bx bxs-trash-alt" style="font-size: 14px"></i></a>';
+            return '<a href="deleteIndex/' . $params . '" data-id="' . $params . '" class="badge badge-danger badge-icon deleteButton" style="margin-right: 2px"><i class="bx bxs-trash-alt" style="font-size: 14px"></i></a>';
         }
         return '';
     }
@@ -82,7 +82,7 @@ class ButtonHelper
     {
         $menuId = $this->getCurrentMenuId();
         if (PermissionHelper::can('view', $menuId)) {
-            return '<a href="viewIndex/' . $params . '" class="badge badge-info badge-icon text-white" style="margin-right: 2px" data-toggle="tooltip" data-placement="top" title="" data-original-title="مشاهده"><i class="bx bx-show-alt" style="font-size: 14px"></i></a>';
+            return '<a href="viewIndex/' . $params . '" class="badge badge-info badge-icon text-white" style="margin-right: 2px"><i class="bx bx-show-alt" style="font-size: 14px"></i></a>';
         }
         return '';
     }

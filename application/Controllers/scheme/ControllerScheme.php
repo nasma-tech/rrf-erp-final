@@ -97,7 +97,6 @@ class ControllerScheme
     protected function validateCSRF()
     {
         csrf->csrfValidate();
-        unset($_POST['csrfToken']);
     }
 
     public function add()

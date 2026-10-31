@@ -163,15 +163,28 @@ $router->mount('/IssuingPlace', function () use ($router) {
 $router->mount('/UserContactTypes', function () use ($router) {
     dynamicRoute($router, App\Controllers\UserContactTypes\UserContactTypes::class);
 });
-$router->mount('/ProductList', function () use ($router) {
-    dynamicRoute($router, App\Controllers\ProductList\ProductList::class);
+$router->mount('/Products', function () use ($router) {
+    dynamicRoute($router, App\Controllers\Products\Products::class);
 });
 $router->mount('/ProductGroup', function () use ($router) {
     dynamicRoute($router, App\Controllers\ProductGroup\ProductGroup::class);
 });
 $router->mount('/ProductGrad', function () use ($router) {
-    dynamicRoute($router, App\Controllers\ProductGrad\ProductGrad::class);
+    dynamicRoute($router, App\Controllers\ProductGrad\ProductGrad::class, [
+        [
+            'method' => 'GET',
+            'path' => '/edit',
+            'action' => 'edit'
+        ]
+    ]);
 });
 $router->mount('/brands', function () use ($router) {
     dynamicRoute($router, App\Controllers\brands\brands::class);
+});
+$router->mount('/ProductQualities', function () use ($router) {
+    dynamicRoute($router, App\Controllers\ProductQualities\ProductQualities::class);
+});
+
+$router->mount('/ProductsPriceList', function () use ($router) {
+    dynamicRoute($router, App\Controllers\ProductsPriceList\ProductsPriceList::class);
 });
