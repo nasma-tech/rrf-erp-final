@@ -15,21 +15,21 @@ class ProductModel extends Model
 
     protected $fillable = [
         "parent_id",
+        "parent_unit_ratio",
+        "label",
+        "serial_number",
         "group_id",
         "grade_id",
         "brand_id",
         "quality_level_id",
-        "unit_id",
-        "parent_unit_ratio",
-        "title",
-        "serial_number",
-        "column_name",
+        "measurement_unit_id",
+        "cost_price",
         "sale_price",
         "customer_price",
         "file_address",
+        "description",
+        "complete_description",
         "user_id",
-        "updated_at",
-        "deleted_at",
     ];
 
 }
