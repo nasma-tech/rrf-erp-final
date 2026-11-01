@@ -188,3 +188,9 @@ $router->mount('/ProductQualities', function () use ($router) {
 $router->mount('/ProductsPriceList', function () use ($router) {
     dynamicRoute($router, App\Controllers\ProductsPriceList\ProductsPriceList::class);
 });
+$router->mount('/ProductCategories', function () use ($router) {
+    dynamicRoute($router, App\Controllers\ProductCategories\ProductCategories::class);
+});
+$router->mount('/MeasurementUnit', function () use ($router) {
+    dynamicRoute($router, App\Controllers\MeasurementUnit\MeasurementUnit::class);
+});

@@ -20,7 +20,7 @@
                                 <div class="row">
                                     <div class="col-md-3">
                                         <label for="">عنوان</label>
-                                        <input type="text" class="form-control" name="title" required></div>
+                                        <input type="text" class="form-control" name="label" required></div>
                                     <div class="col-md-3">
                                         <label for="">کتگوری</label>
                                         <select name="category_id" id=""  class="form-control select2">

@@ -18,7 +18,7 @@
                     <div class="card-content">
                         <div class="card-body">
                             <div class="table-responsive">
-                                <table class="table tableDataShow"
+                                <table class="table tableDataShow text-center"
                                        style="background-color: #fff;border-radius: 5px;">
                                     <thead class="thead-dark">
                                     <tr>
@@ -33,10 +33,16 @@
                                     {foreach $getData AS $data}
                                         <tr>
                                             <td class="border">{$data['label']}</td>
-                                            <td class="border"><img src="/Storage/{$data['id']}/{$data['logo_address']}" alt="{$data['label']}"></td>
+                                            <td class="border text-center align-middle">
+                                                {if !empty($data['logo_address'])}
+                                                    <div class="avatar  avatar-xl"><img src="/Storage/brands/{$data['logo_address']}" alt="{$data['label']}"></div>
+                                                {else}
+                                                    <span class="text-muted">بدون لوگو</span>
+                                                {/if}
+                                            </td>
                                             <td class="border">{$data->users->full_name}</td>
                                             <td class="border">{jdate("Y/m/d",strtotime($data['created_at']))}</td>
-                                            <td class="border">{$buttonHelper->actionButtons($data['id'])}</td>
+                                            <td class="border text-center">{$buttonHelper->actionButtons($data['id'])}</td>
                                         </tr>
                                     {/foreach}
                                     </tbody>

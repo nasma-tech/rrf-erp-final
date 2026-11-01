@@ -2,6 +2,7 @@
 
 namespace App\Models\ProductQualitiesModel;
 
+use App\Models\UserModel\UserModel;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
@@ -16,9 +17,13 @@ class ProductQualitiesModel extends Model
     protected $fillable = [
         "label",
         "user_id",
-        "create_at",
-        "update_at",
+        "created_at",
+        "updated_at",
         "deleted_at",
     ];
 
+    public function userData()
+    {
+        return $this->hasOne(UserModel::class , 'id' , 'user_id');
+    }
 }
