@@ -2,15 +2,8 @@
 
 namespace App\Controllers\brands;
 
-use App\Controllers\ProductGrad\ProductGrad;
 use App\Controllers\scheme\ControllerScheme;
 use App\Models\brandsModel\brandsModel;
-use App\Models\ProductCategoriesModel\ProductCategoriesModel;
-use App\Models\ProductGradModel\ProductGradModel;
-use App\Models\ProductGroupModel\ProductGroupModel;
-use App\Models\ProductQualitiesModel\ProductQualitiesModel;
-use App\Models\UnitModel\UnitModel;
-use UnitsModel;
 
 class brands extends ControllerScheme
 {

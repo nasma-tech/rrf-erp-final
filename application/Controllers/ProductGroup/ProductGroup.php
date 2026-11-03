@@ -84,7 +84,7 @@ class ProductGroup extends ControllerScheme
     public function edit($id)
     {
         $data = $this->requestArray();
-        $edit = productGroupsModel::query()->find($id)->update([
+        $edit = ProductGroupModel::query()->find($id)->update([
             "label" => $data['title'],
             "category_id" => $data['category_id'],
             'updated_at' => date("Y-m-d H:i:s"),
