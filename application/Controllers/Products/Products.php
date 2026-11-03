@@ -4,6 +4,7 @@ namespace App\Controllers\Products;
 
 use App\Controllers\scheme\ControllerScheme;
 use App\Models\brandsModel\brandsModel;
+use App\Models\MeasurementUnitModel\MeasurementUnitModel;
 use App\Models\ProductGroupModel\ProductGroupModel;
 use App\Models\ProductModel\ProductModel;
 use App\Models\ProductQualitiesModel\ProductQualitiesModel;
@@ -54,7 +55,7 @@ class Products extends ControllerScheme
             [
                 "parentProducts" => ProductModel::all(),
                 "productGroups" => ProductGroupModel::all(),
-                'units' => [],
+                'measurement_unit' => measurementUnitModel::all(),
                 'brands' => brandsModel::all(),
                 'productQualities' => ProductQualitiesModel::all()
             ]
@@ -77,8 +78,8 @@ class Products extends ControllerScheme
 
     public function add()
     {
-        $this->validateCSRF();
-//        var_print($_FILES);
-//        die();
+        $data = $this->requestArray();
+        var_print($data);
+        var_print($_FILES);
     }
 }

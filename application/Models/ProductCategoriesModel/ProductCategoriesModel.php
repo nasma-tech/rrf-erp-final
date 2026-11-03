@@ -2,6 +2,7 @@
 
 namespace App\Models\ProductCategoriesModel;
 
+use App\Models\UserModel\UserModel;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
@@ -20,4 +21,8 @@ class ProductCategoriesModel extends Model
         "deleted_at",
     ];
 
+    public function userData()
+    {
+        return $this->hasOne(UserModel::class, "id", "user_id");
+    }
 }

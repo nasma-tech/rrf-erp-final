@@ -1,8 +1,8 @@
--- MySQL dump 10.13  Distrib 8.4.10, for Linux (x86_64)
+-- MySQL dump 10.13  Distrib 8.4.11, for Linux (x86_64)
 --
--- Host: localhost    Database: erp2
+-- Host: localhost    Database: RRF_FinalArasbOilERP
 -- ------------------------------------------------------
--- Server version	8.4.10
+-- Server version	8.4.11-0ubuntu0.26.04.1
 
 /*!40101 SET @OLD_CHARACTER_SET_CLIENT=@@CHARACTER_SET_CLIENT */;
 /*!40101 SET @OLD_CHARACTER_SET_RESULTS=@@CHARACTER_SET_RESULTS */;
@@ -25,8 +25,8 @@ DROP TABLE IF EXISTS `bank_identifiers`;
 CREATE TABLE `bank_identifiers` (
   `id` int unsigned NOT NULL AUTO_INCREMENT,
   `bank_id` int unsigned NOT NULL,
-  `type` enum('card_bin','iban_code') COLLATE utf8mb4_persian_ci NOT NULL,
-  `value` varchar(16) COLLATE utf8mb4_persian_ci NOT NULL,
+  `type` enum('card_bin','iban_code') CHARACTER SET utf8mb4 COLLATE utf8mb4_persian_ci NOT NULL,
+  `value` varchar(16) CHARACTER SET utf8mb4 COLLATE utf8mb4_persian_ci NOT NULL,
   `user_id` int unsigned NOT NULL,
   `created_at` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
   `updated_at` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
@@ -58,7 +58,7 @@ DROP TABLE IF EXISTS `banks`;
 /*!50503 SET character_set_client = utf8mb4 */;
 CREATE TABLE `banks` (
   `id` int unsigned NOT NULL AUTO_INCREMENT,
-  `title` varchar(100) COLLATE utf8mb4_persian_ci NOT NULL,
+  `title` varchar(100) CHARACTER SET utf8mb4 COLLATE utf8mb4_persian_ci NOT NULL,
   `user_id` int unsigned NOT NULL,
   `created_at` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
   `updated_at` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
@@ -88,7 +88,7 @@ DROP TABLE IF EXISTS `blood_types`;
 /*!50503 SET character_set_client = utf8mb4 */;
 CREATE TABLE `blood_types` (
   `id` int unsigned NOT NULL AUTO_INCREMENT,
-  `title` varchar(100) COLLATE utf8mb4_persian_ci NOT NULL,
+  `title` varchar(100) CHARACTER SET utf8mb4 COLLATE utf8mb4_persian_ci NOT NULL,
   `user_id` int unsigned NOT NULL,
   `created_at` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
   `updated_at` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
@@ -111,6 +111,35 @@ INSERT INTO `blood_types` VALUES (1,'A+',1,'2026-10-10 07:02:54','2026-10-10 07:
 UNLOCK TABLES;
 
 --
+-- Table structure for table `brands`
+--
+
+DROP TABLE IF EXISTS `brands`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!50503 SET character_set_client = utf8mb4 */;
+CREATE TABLE `brands` (
+  `id` int NOT NULL AUTO_INCREMENT,
+  `label` varchar(191) DEFAULT NULL,
+  `logo_address` varchar(191) DEFAULT NULL,
+  `user_id` int DEFAULT NULL,
+  `created_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP,
+  `update_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP,
+  `deleted_at` datetime DEFAULT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB AUTO_INCREMENT=9 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `brands`
+--
+
+LOCK TABLES `brands` WRITE;
+/*!40000 ALTER TABLE `brands` DISABLE KEYS */;
+INSERT INTO `brands` VALUES (1,'آراسب پیشتاز',NULL,1,'2026-08-31 05:53:03','2026-10-13 12:17:40',NULL),(2,'ایگنایت',NULL,1,'2026-09-01 07:47:15','2026-10-13 12:17:52',NULL),(3,'نیترو پلاس',NULL,1,'2026-09-02 10:56:39','2026-10-27 10:47:15',NULL),(4,'موتول',NULL,1,'2026-09-05 06:24:27','2026-10-27 08:20:20',NULL),(5,'تست',NULL,1,'2026-09-12 08:06:09','2026-09-20 09:41:52',NULL),(6,'کینگ مکس',NULL,1,'2026-10-03 05:24:01','2026-10-13 12:18:24',NULL),(7,'ایزوپون',NULL,1,'2026-10-12 09:35:12','2026-10-27 08:24:01',NULL),(8,'کارخانه 1 خام ',NULL,1,'2026-10-20 10:03:42','2026-10-20 10:03:42',NULL);
+/*!40000 ALTER TABLE `brands` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
 -- Table structure for table `cartable_definitions`
 --
 
@@ -119,12 +148,12 @@ DROP TABLE IF EXISTS `cartable_definitions`;
 /*!50503 SET character_set_client = utf8mb4 */;
 CREATE TABLE `cartable_definitions` (
   `id` int NOT NULL AUTO_INCREMENT,
-  `form_persian_title` varchar(191) COLLATE utf8mb3_persian_ci DEFAULT NULL,
-  `form_english_title` varchar(191) COLLATE utf8mb3_persian_ci DEFAULT NULL,
+  `form_persian_title` varchar(191) CHARACTER SET utf8mb3 COLLATE utf8mb3_persian_ci DEFAULT NULL,
+  `form_english_title` varchar(191) CHARACTER SET utf8mb3 COLLATE utf8mb3_persian_ci DEFAULT NULL,
   `cartable_schema` json DEFAULT NULL,
-  `cartable_model` varchar(255) COLLATE utf8mb3_persian_ci DEFAULT NULL,
-  `view_address` varchar(191) COLLATE utf8mb3_persian_ci DEFAULT NULL COMMENT 'view address',
-  `service_address` varchar(191) COLLATE utf8mb3_persian_ci DEFAULT NULL,
+  `cartable_model` varchar(255) CHARACTER SET utf8mb3 COLLATE utf8mb3_persian_ci DEFAULT NULL,
+  `view_address` varchar(191) CHARACTER SET utf8mb3 COLLATE utf8mb3_persian_ci DEFAULT NULL COMMENT 'view address',
+  `service_address` varchar(191) CHARACTER SET utf8mb3 COLLATE utf8mb3_persian_ci DEFAULT NULL,
   `user_id` int NOT NULL,
   `created_at` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
   `updated_at` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
@@ -152,9 +181,9 @@ DROP TABLE IF EXISTS `cities`;
 CREATE TABLE `cities` (
   `id` int unsigned NOT NULL AUTO_INCREMENT,
   `state_id` int unsigned NOT NULL,
-  `title` varchar(100) COLLATE utf8mb4_persian_ci NOT NULL,
-  `latitude` varchar(255) COLLATE utf8mb4_persian_ci DEFAULT NULL,
-  `longitude` varchar(255) COLLATE utf8mb4_persian_ci DEFAULT NULL,
+  `title` varchar(100) CHARACTER SET utf8mb4 COLLATE utf8mb4_persian_ci NOT NULL,
+  `latitude` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_persian_ci DEFAULT NULL,
+  `longitude` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_persian_ci DEFAULT NULL,
   `user_id` int unsigned NOT NULL,
   `created_at` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
   `updated_at` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
@@ -186,11 +215,11 @@ DROP TABLE IF EXISTS `colors`;
 /*!50503 SET character_set_client = utf8mb4 */;
 CREATE TABLE `colors` (
   `id` int NOT NULL AUTO_INCREMENT,
-  `ral_code` varchar(191) COLLATE utf8mb3_persian_ci DEFAULT NULL,
-  `name` varchar(191) COLLATE utf8mb3_persian_ci DEFAULT NULL,
-  `persian_name` varchar(255) COLLATE utf8mb3_persian_ci DEFAULT NULL,
-  `rgb_color` varchar(191) COLLATE utf8mb3_persian_ci DEFAULT NULL,
-  `hex` varchar(191) COLLATE utf8mb3_persian_ci DEFAULT NULL,
+  `ral_code` varchar(191) CHARACTER SET utf8mb3 COLLATE utf8mb3_persian_ci DEFAULT NULL,
+  `name` varchar(191) CHARACTER SET utf8mb3 COLLATE utf8mb3_persian_ci DEFAULT NULL,
+  `persian_name` varchar(255) CHARACTER SET utf8mb3 COLLATE utf8mb3_persian_ci DEFAULT NULL,
+  `rgb_color` varchar(191) CHARACTER SET utf8mb3 COLLATE utf8mb3_persian_ci DEFAULT NULL,
+  `hex` varchar(191) CHARACTER SET utf8mb3 COLLATE utf8mb3_persian_ci DEFAULT NULL,
   `color_status` int NOT NULL DEFAULT '0' COMMENT 'وضعیت | 1 : فعال | 0 : غیر فعال',
   `user_id` int DEFAULT NULL,
   `created_at` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
@@ -219,7 +248,7 @@ DROP TABLE IF EXISTS `corporate_emails`;
 /*!50503 SET character_set_client = utf8mb4 */;
 CREATE TABLE `corporate_emails` (
   `id` int unsigned NOT NULL AUTO_INCREMENT,
-  `mail_address` varchar(254) COLLATE utf8mb4_persian_ci NOT NULL,
+  `mail_address` varchar(254) CHARACTER SET utf8mb4 COLLATE utf8mb4_persian_ci NOT NULL,
   `user_id` int unsigned NOT NULL,
   `created_at` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
   `updated_at` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
@@ -249,7 +278,7 @@ DROP TABLE IF EXISTS `corporate_internal_extensions`;
 /*!50503 SET character_set_client = utf8mb4 */;
 CREATE TABLE `corporate_internal_extensions` (
   `id` int unsigned NOT NULL AUTO_INCREMENT,
-  `internal_extension` varchar(20) COLLATE utf8mb4_persian_ci NOT NULL,
+  `internal_extension` varchar(20) CHARACTER SET utf8mb4 COLLATE utf8mb4_persian_ci NOT NULL,
   `user_id` int unsigned NOT NULL,
   `created_at` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
   `updated_at` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
@@ -279,10 +308,10 @@ DROP TABLE IF EXISTS `countries`;
 /*!50503 SET character_set_client = utf8mb4 */;
 CREATE TABLE `countries` (
   `id` int unsigned NOT NULL AUTO_INCREMENT,
-  `persian_title` varchar(100) COLLATE utf8mb4_persian_ci NOT NULL,
-  `english_title` varchar(100) COLLATE utf8mb4_persian_ci NOT NULL,
-  `area_code` varchar(10) COLLATE utf8mb4_persian_ci DEFAULT NULL,
-  `abbreviated_name` varchar(10) COLLATE utf8mb4_persian_ci DEFAULT NULL,
+  `persian_title` varchar(100) CHARACTER SET utf8mb4 COLLATE utf8mb4_persian_ci NOT NULL,
+  `english_title` varchar(100) CHARACTER SET utf8mb4 COLLATE utf8mb4_persian_ci NOT NULL,
+  `area_code` varchar(10) CHARACTER SET utf8mb4 COLLATE utf8mb4_persian_ci DEFAULT NULL,
+  `abbreviated_name` varchar(10) CHARACTER SET utf8mb4 COLLATE utf8mb4_persian_ci DEFAULT NULL,
   `user_id` int unsigned NOT NULL,
   `created_at` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
   `updated_at` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
@@ -313,7 +342,7 @@ DROP TABLE IF EXISTS `dependent_relation_types`;
 /*!50503 SET character_set_client = utf8mb4 */;
 CREATE TABLE `dependent_relation_types` (
   `id` int unsigned NOT NULL AUTO_INCREMENT,
-  `title` varchar(100) COLLATE utf8mb4_persian_ci NOT NULL,
+  `title` varchar(100) CHARACTER SET utf8mb4 COLLATE utf8mb4_persian_ci NOT NULL,
   `user_id` int unsigned NOT NULL,
   `created_at` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
   `updated_at` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
@@ -343,7 +372,7 @@ DROP TABLE IF EXISTS `icons`;
 /*!50503 SET character_set_client = utf8mb4 */;
 CREATE TABLE `icons` (
   `id` int NOT NULL AUTO_INCREMENT,
-  `title` varchar(255) COLLATE utf8mb3_persian_ci NOT NULL,
+  `title` varchar(255) CHARACTER SET utf8mb3 COLLATE utf8mb3_persian_ci NOT NULL,
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=1067 DEFAULT CHARSET=utf8mb3 COLLATE=utf8mb3_persian_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
@@ -367,8 +396,8 @@ DROP TABLE IF EXISTS `issuing_places`;
 /*!50503 SET character_set_client = utf8mb4 */;
 CREATE TABLE `issuing_places` (
   `id` int unsigned NOT NULL AUTO_INCREMENT,
-  `code` varchar(3) COLLATE utf8mb4_persian_ci NOT NULL,
-  `title` varchar(100) COLLATE utf8mb4_persian_ci NOT NULL,
+  `code` varchar(3) CHARACTER SET utf8mb4 COLLATE utf8mb4_persian_ci NOT NULL,
+  `title` varchar(100) CHARACTER SET utf8mb4 COLLATE utf8mb4_persian_ci NOT NULL,
   `user_id` int unsigned NOT NULL,
   `created_at` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
   `updated_at` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
@@ -398,10 +427,10 @@ DROP TABLE IF EXISTS `mailbox_queue`;
 /*!50503 SET character_set_client = utf8mb4 */;
 CREATE TABLE `mailbox_queue` (
   `id` int NOT NULL AUTO_INCREMENT,
-  `mail_subject` varchar(191) COLLATE utf8mb4_persian_ci DEFAULT NULL COMMENT 'موضوع ایمیل',
-  `mail_receiver_address` varchar(191) COLLATE utf8mb4_persian_ci DEFAULT NULL COMMENT 'آدرس ایمیل مقصد',
+  `mail_subject` varchar(191) CHARACTER SET utf8mb4 COLLATE utf8mb4_persian_ci DEFAULT NULL COMMENT 'موضوع ایمیل',
+  `mail_receiver_address` varchar(191) CHARACTER SET utf8mb4 COLLATE utf8mb4_persian_ci DEFAULT NULL COMMENT 'آدرس ایمیل مقصد',
   `mail_cc_address_data` json DEFAULT NULL COMMENT 'آدرس cc',
-  `mail_body` longtext COLLATE utf8mb4_persian_ci COMMENT 'محتویات ایمیل',
+  `mail_body` longtext CHARACTER SET utf8mb4 COLLATE utf8mb4_persian_ci COMMENT 'محتویات ایمیل',
   `mail_attachment` json DEFAULT NULL COMMENT 'ضمیمه های ایمیل',
   `status` int DEFAULT NULL COMMENT 'وضعیت ارسال |-1: کنسل شده | 0: در صف ارسال | 1:در حال  ارسال | 2: ارسال شده | 3: لغو ارسال',
   `status_log` json DEFAULT NULL,
@@ -429,7 +458,7 @@ DROP TABLE IF EXISTS `marital_status_types`;
 /*!50503 SET character_set_client = utf8mb4 */;
 CREATE TABLE `marital_status_types` (
   `id` int unsigned NOT NULL AUTO_INCREMENT,
-  `title` varchar(100) COLLATE utf8mb4_persian_ci NOT NULL,
+  `title` varchar(100) CHARACTER SET utf8mb4 COLLATE utf8mb4_persian_ci NOT NULL,
   `user_id` int unsigned NOT NULL,
   `created_at` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
   `updated_at` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
@@ -452,6 +481,33 @@ INSERT INTO `marital_status_types` VALUES (1,'متاهل',1,'2026-10-10 08:11:09
 UNLOCK TABLES;
 
 --
+-- Table structure for table `measurement_units`
+--
+
+DROP TABLE IF EXISTS `measurement_units`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!50503 SET character_set_client = utf8mb4 */;
+CREATE TABLE `measurement_units` (
+  `id` int NOT NULL AUTO_INCREMENT,
+  `label` varchar(191) COLLATE utf8mb4_persian_ci DEFAULT NULL,
+  `user_id` int DEFAULT NULL,
+  `create_at` datetime DEFAULT CURRENT_TIMESTAMP,
+  `update_at` datetime DEFAULT CURRENT_TIMESTAMP,
+  `deleted_at` datetime DEFAULT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_persian_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `measurement_units`
+--
+
+LOCK TABLES `measurement_units` WRITE;
+/*!40000 ALTER TABLE `measurement_units` DISABLE KEYS */;
+/*!40000 ALTER TABLE `measurement_units` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
 -- Table structure for table `menus`
 --
 
@@ -461,9 +517,9 @@ DROP TABLE IF EXISTS `menus`;
 CREATE TABLE `menus` (
   `id` int NOT NULL AUTO_INCREMENT,
   `menu_parent` int NOT NULL COMMENT 'منو والد است یا خیر | بله : 0 | زیر مجموعه منو دیگر : میشود آیدی همین جدول',
-  `menu_persian_name` varchar(191) COLLATE utf8mb3_persian_ci DEFAULT NULL COMMENT 'نام منو به فارسی',
-  `menu_english_name` varchar(191) COLLATE utf8mb3_persian_ci DEFAULT NULL COMMENT 'نام منو به لاتین',
-  `menu_icon` varchar(191) COLLATE utf8mb3_persian_ci DEFAULT NULL,
+  `menu_persian_name` varchar(191) CHARACTER SET utf8mb3 COLLATE utf8mb3_persian_ci DEFAULT NULL COMMENT 'نام منو به فارسی',
+  `menu_english_name` varchar(191) CHARACTER SET utf8mb3 COLLATE utf8mb3_persian_ci DEFAULT NULL COMMENT 'نام منو به لاتین',
+  `menu_icon` varchar(191) CHARACTER SET utf8mb3 COLLATE utf8mb3_persian_ci DEFAULT NULL,
   `parent_menu_priority_order` int DEFAULT '0',
   `child_menu_priority_order` int DEFAULT '0',
   `hide_menu` tinyint DEFAULT '0' COMMENT 'قابل مشاهده بودن منو | قابل مشاهده : 0 | غیر قابل مشاهده : 1',
@@ -472,7 +528,7 @@ CREATE TABLE `menus` (
   `updated_at` datetime DEFAULT (now()),
   `deleted_at` datetime DEFAULT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=16 DEFAULT CHARSET=utf8mb3 COLLATE=utf8mb3_persian_ci COMMENT='لیست منو ها';
+) ENGINE=InnoDB AUTO_INCREMENT=25 DEFAULT CHARSET=utf8mb3 COLLATE=utf8mb3_persian_ci COMMENT='لیست منو ها';
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -481,7 +537,7 @@ CREATE TABLE `menus` (
 
 LOCK TABLES `menus` WRITE;
 /*!40000 ALTER TABLE `menus` DISABLE KEYS */;
-INSERT INTO `menus` VALUES (1,0,'داشبورد','dashboard','bxs-customize',0,0,0,1,'2026-10-08 13:48:38','2026-10-08 13:48:38',NULL),(2,0,'تنظیمات','settings','bxs-cog',0,0,0,1,'2026-10-08 13:48:38','2026-10-08 13:48:38',NULL),(3,0,'اطلاعات پایه','BaseInformation','bx-align-justify',0,0,0,1,'2026-10-08 13:48:38','2026-10-08 13:48:38',NULL),(4,2,'کاربران','users','bx-user',0,0,0,1,'2026-10-08 13:48:38','2026-10-08 13:48:38',NULL),(5,2,'دسترسی ها','roles','bx-command',0,0,0,1,'2026-10-08 13:48:38','2026-10-08 13:48:38',NULL),(6,3,'کشور ها','countries','bxs-planet',0,0,0,1,'2026-10-08 13:48:38','2026-10-08 13:48:38',NULL),(7,3,'استان ها','states','bxs-shield',0,0,0,1,'2026-10-08 13:48:38','2026-10-08 13:48:38',NULL),(8,3,'شهرها','cities','bx-buildings',0,0,0,1,'2026-10-08 13:48:38','2026-10-08 13:48:38',NULL),(9,3,'واحد ها','Units','bx-border-right',0,0,0,1,'2026-10-08 13:48:38','2026-10-08 13:48:38',NULL),(10,3,'رنگ ها','colors','bx-brush-alt',0,0,0,1,'2026-10-08 13:48:38','2026-10-08 13:48:38',NULL),(11,2,'منوها','MenuList','bx-align-right',0,0,0,1,'2026-10-08 13:48:38','2026-10-08 13:48:38',NULL),(12,3,'تعریف کارتابل','CartableDefinition','bx-archive-out',0,0,0,1,'2026-10-08 13:48:38','2026-10-08 13:48:38',NULL),(13,0,'منابع انسانی','Humanresources','bxs-user-detail',0,0,0,1,'2026-10-10 09:36:24','2026-10-10 09:36:24',NULL),(15,3,'محل صدور','IssuingPlace','bxs-check-square',0,0,0,1,'2026-10-12 12:08:27','2026-10-12 12:08:27',NULL);
+INSERT INTO `menus` VALUES (1,0,'داشبورد','dashboard','bxs-customize',0,0,0,1,'2026-10-08 13:48:38','2026-10-08 13:48:38',NULL),(2,0,'تنظیمات','settings','bxs-cog',0,0,0,1,'2026-10-08 13:48:38','2026-10-08 13:48:38',NULL),(3,0,'اطلاعات پایه','BaseInformation','bx-align-justify',0,0,0,1,'2026-10-08 13:48:38','2026-10-08 13:48:38',NULL),(4,2,'کاربران','users','bx-user',0,0,0,1,'2026-10-08 13:48:38','2026-10-08 13:48:38',NULL),(5,2,'دسترسی ها','roles','bx-command',0,0,0,1,'2026-10-08 13:48:38','2026-10-08 13:48:38',NULL),(6,3,'کشور ها','countries','bxs-planet',0,0,0,1,'2026-10-08 13:48:38','2026-10-08 13:48:38',NULL),(7,3,'استان ها','states','bxs-shield',0,0,0,1,'2026-10-08 13:48:38','2026-10-08 13:48:38',NULL),(8,3,'شهرها','cities','bx-buildings',0,0,0,1,'2026-10-08 13:48:38','2026-10-08 13:48:38',NULL),(9,3,'واحد ها','Units','bx-border-right',0,0,0,1,'2026-10-08 13:48:38','2026-10-08 13:48:38',NULL),(10,3,'رنگ ها','colors','bx-brush-alt',0,0,0,1,'2026-10-08 13:48:38','2026-10-08 13:48:38',NULL),(11,2,'منوها','MenuList','bx-align-right',0,0,0,1,'2026-10-08 13:48:38','2026-10-08 13:48:38',NULL),(12,3,'تعریف کارتابل','CartableDefinition','bx-archive-out',0,0,0,1,'2026-10-08 13:48:38','2026-10-08 13:48:38',NULL),(13,0,'منابع انسانی','Humanresources','bxs-user-detail',0,0,0,1,'2026-10-10 09:36:24','2026-10-10 09:36:24',NULL),(15,3,'محل صدور','IssuingPlace','bxs-check-square',0,0,0,1,'2026-10-12 12:08:27','2026-10-12 12:08:27',NULL),(16,0,'محصولات','Products','bxs-cube',0,0,0,1,'2026-10-26 13:17:20','2026-10-26 13:17:20',NULL),(18,16,'لیست محصولات','Products','bx-cube',0,0,0,1,'2026-10-26 13:18:17','2026-10-27 20:18:05',NULL),(19,16,'لیست قیمت محصولات','ProductsPriceList','bxs-layer',0,0,0,1,'2026-10-27 08:15:02','2026-10-28 14:04:05',NULL),(20,3,'گروه محصول','ProductGroup','bxs-widget',0,0,0,1,'2026-10-27 14:12:55','2026-10-27 14:12:55',NULL),(21,3,'گرید محصولات','ProductGrad','bxs-flask',0,0,0,1,'2026-10-27 14:16:07','2026-10-27 14:16:07',NULL),(22,3,'برندها','brands','bxs-extension',0,0,0,1,'2026-10-27 14:36:48','2026-10-27 14:36:48',NULL),(23,3,' دسته بندی محصول','ProductCategories','bxs-folder-open',0,0,0,1,'2026-10-27 20:49:25','2026-10-27 20:49:25',NULL),(24,3,'سطح کیفی','ProductQualities','bx-bar-chart-alt-2',0,0,0,1,'2026-10-28 09:55:02','2026-10-28 09:55:02',NULL);
 /*!40000 ALTER TABLE `menus` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -494,7 +550,7 @@ DROP TABLE IF EXISTS `military_status_types`;
 /*!50503 SET character_set_client = utf8mb4 */;
 CREATE TABLE `military_status_types` (
   `id` int unsigned NOT NULL AUTO_INCREMENT,
-  `title` varchar(100) COLLATE utf8mb4_persian_ci NOT NULL,
+  `title` varchar(100) CHARACTER SET utf8mb4 COLLATE utf8mb4_persian_ci NOT NULL,
   `user_id` int unsigned NOT NULL,
   `created_at` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
   `updated_at` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
@@ -517,6 +573,306 @@ INSERT INTO `military_status_types` VALUES (1,'پایان خدمت',1,'2026-10-1
 UNLOCK TABLES;
 
 --
+-- Table structure for table `price_change_logs`
+--
+
+DROP TABLE IF EXISTS `price_change_logs`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!50503 SET character_set_client = utf8mb4 */;
+CREATE TABLE `price_change_logs` (
+  `id` int NOT NULL AUTO_INCREMENT,
+  `product_id` int DEFAULT NULL,
+  `previous_price` int DEFAULT NULL,
+  `new_price` int DEFAULT NULL,
+  `user_id` int DEFAULT NULL,
+  `modified_at` datetime DEFAULT NULL,
+  `created_at` datetime DEFAULT NULL,
+  `deleted_at` datetime DEFAULT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_persian_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `price_change_logs`
+--
+
+LOCK TABLES `price_change_logs` WRITE;
+/*!40000 ALTER TABLE `price_change_logs` DISABLE KEYS */;
+/*!40000 ALTER TABLE `price_change_logs` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
+-- Table structure for table `price_change_package_items`
+--
+
+DROP TABLE IF EXISTS `price_change_package_items`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!50503 SET character_set_client = utf8mb4 */;
+CREATE TABLE `price_change_package_items` (
+  `id` int NOT NULL AUTO_INCREMENT,
+  `package_id` int DEFAULT NULL,
+  `product_id` int DEFAULT NULL,
+  `previous_price` varchar(191) COLLATE utf8mb4_persian_ci DEFAULT NULL,
+  `new_price` varchar(191) COLLATE utf8mb4_persian_ci DEFAULT NULL,
+  `user_id` int unsigned DEFAULT NULL,
+  `status` tinyint(1) DEFAULT NULL,
+  `created_at` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `updated_at` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `deleted_at` datetime DEFAULT NULL,
+  PRIMARY KEY (`id`),
+  KEY `price_change_package_items_price_change_packages_id_fk` (`package_id`),
+  KEY `price_change_package_items_products_id_fk` (`product_id`),
+  CONSTRAINT `price_change_package_items_price_change_packages_id_fk` FOREIGN KEY (`package_id`) REFERENCES `price_change_packages` (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_persian_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `price_change_package_items`
+--
+
+LOCK TABLES `price_change_package_items` WRITE;
+/*!40000 ALTER TABLE `price_change_package_items` DISABLE KEYS */;
+/*!40000 ALTER TABLE `price_change_package_items` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
+-- Table structure for table `price_change_packages`
+--
+
+DROP TABLE IF EXISTS `price_change_packages`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!50503 SET character_set_client = utf8mb4 */;
+CREATE TABLE `price_change_packages` (
+  `id` int NOT NULL,
+  `brand_id` int DEFAULT NULL,
+  `label` varchar(191) COLLATE utf8mb4_persian_ci DEFAULT NULL,
+  `status` tinyint(1) DEFAULT NULL,
+  `approval_workflow` json DEFAULT NULL COMMENT 'User approval workflow and sequence',
+  `user_id` int unsigned DEFAULT NULL,
+  `created_at` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `updated_at` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `deleted_at` datetime DEFAULT NULL,
+  PRIMARY KEY (`id`),
+  KEY `price_change_packages_brands_id_fk` (`brand_id`),
+  KEY `price_change_packages_users_id_fk` (`user_id`),
+  CONSTRAINT `price_change_packages_brands_id_fk` FOREIGN KEY (`brand_id`) REFERENCES `brands` (`id`),
+  CONSTRAINT `price_change_packages_users_id_fk` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_persian_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `price_change_packages`
+--
+
+LOCK TABLES `price_change_packages` WRITE;
+/*!40000 ALTER TABLE `price_change_packages` DISABLE KEYS */;
+/*!40000 ALTER TABLE `price_change_packages` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
+-- Table structure for table `price_change_policies`
+--
+
+DROP TABLE IF EXISTS `price_change_policies`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!50503 SET character_set_client = utf8mb4 */;
+CREATE TABLE `price_change_policies` (
+  `id` int NOT NULL AUTO_INCREMENT,
+  `brand_id` int DEFAULT NULL,
+  `approval_workflow` json DEFAULT NULL COMMENT 'User approval workflow and sequence',
+  `user_id` int unsigned DEFAULT NULL,
+  `created_at` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `updated_at` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `deleted_at` datetime DEFAULT NULL,
+  PRIMARY KEY (`id`),
+  KEY `price_change_policies_brands_id_fk` (`brand_id`),
+  KEY `price_change_policies_users_id_fk` (`user_id`),
+  CONSTRAINT `price_change_policies_brands_id_fk` FOREIGN KEY (`brand_id`) REFERENCES `brands` (`id`),
+  CONSTRAINT `price_change_policies_users_id_fk` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_persian_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `price_change_policies`
+--
+
+LOCK TABLES `price_change_policies` WRITE;
+/*!40000 ALTER TABLE `price_change_policies` DISABLE KEYS */;
+/*!40000 ALTER TABLE `price_change_policies` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
+-- Table structure for table `product_categories`
+--
+
+DROP TABLE IF EXISTS `product_categories`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!50503 SET character_set_client = utf8mb4 */;
+CREATE TABLE `product_categories` (
+  `id` int NOT NULL AUTO_INCREMENT,
+  `label` varchar(191) COLLATE utf8mb4_persian_ci DEFAULT NULL COMMENT 'عنوان',
+  `user_id` int unsigned NOT NULL,
+  `create_at` datetime DEFAULT (now()),
+  `update_at` datetime DEFAULT (now()),
+  `deleted_at` datetime DEFAULT NULL,
+  PRIMARY KEY (`id`),
+  KEY `product_categories_users_id_fk` (`user_id`),
+  CONSTRAINT `product_categories_users_id_fk` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`)
+) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_persian_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `product_categories`
+--
+
+LOCK TABLES `product_categories` WRITE;
+/*!40000 ALTER TABLE `product_categories` DISABLE KEYS */;
+INSERT INTO `product_categories` VALUES (1,'روغن موتور خودرو',1,'2026-10-28 16:26:47','2026-10-28 16:26:47',NULL);
+/*!40000 ALTER TABLE `product_categories` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
+-- Table structure for table `product_grades`
+--
+
+DROP TABLE IF EXISTS `product_grades`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!50503 SET character_set_client = utf8mb4 */;
+CREATE TABLE `product_grades` (
+  `id` int NOT NULL AUTO_INCREMENT,
+  `label` varchar(191) DEFAULT NULL,
+  `user_id` int DEFAULT NULL,
+  `create_at` datetime DEFAULT CURRENT_TIMESTAMP,
+  `update_at` datetime DEFAULT CURRENT_TIMESTAMP,
+  `deleted_at` datetime DEFAULT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB AUTO_INCREMENT=5 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `product_grades`
+--
+
+LOCK TABLES `product_grades` WRITE;
+/*!40000 ALTER TABLE `product_grades` DISABLE KEYS */;
+INSERT INTO `product_grades` VALUES (1,'تسیتqadw',1,'2026-10-28 16:32:16','2026-10-28 16:32:16',NULL),(2,'تستتت',1,'2026-10-28 16:39:12','2026-10-28 16:39:12',NULL),(3,'تسیت  جدید',1,'2026-10-28 16:43:46','2026-10-28 16:43:46',NULL),(4,'adawadawd',1,'2026-10-29 12:15:24','2026-10-29 12:15:24',NULL);
+/*!40000 ALTER TABLE `product_grades` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
+-- Table structure for table `product_groups`
+--
+
+DROP TABLE IF EXISTS `product_groups`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!50503 SET character_set_client = utf8mb4 */;
+CREATE TABLE `product_groups` (
+  `id` int NOT NULL AUTO_INCREMENT,
+  `label` varchar(191) DEFAULT NULL,
+  `category_id` int DEFAULT NULL,
+  `user_id` int unsigned DEFAULT NULL,
+  `created_at` datetime DEFAULT CURRENT_TIMESTAMP,
+  `updated_at` datetime DEFAULT CURRENT_TIMESTAMP,
+  `deleted_at` datetime DEFAULT NULL,
+  PRIMARY KEY (`id`),
+  KEY `product_groups_ProductCategories_id_fk` (`category_id`),
+  KEY `product_groups_users_id_fk` (`user_id`),
+  CONSTRAINT `product_groups_ProductCategories_id_fk` FOREIGN KEY (`category_id`) REFERENCES `product_categories` (`id`),
+  CONSTRAINT `product_groups_users_id_fk` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`)
+) ENGINE=InnoDB AUTO_INCREMENT=7 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `product_groups`
+--
+
+LOCK TABLES `product_groups` WRITE;
+/*!40000 ALTER TABLE `product_groups` DISABLE KEYS */;
+INSERT INTO `product_groups` VALUES (1,'روغن موتور خودرو های سبک',1,1,'2026-10-28 16:30:48','2026-10-28 16:30:48',NULL),(2,'روغن موتور خودرو های سبک98797',1,1,'2026-10-29 11:51:30','2026-10-29 11:51:30',NULL),(3,'روغن موتور خودرو های سبک98797',1,1,'2026-10-29 11:52:10','2026-10-29 11:52:10',NULL),(4,'روغن موتور خودرو های سبک98797',1,1,'2026-10-29 11:52:16','2026-10-29 11:52:16',NULL),(5,'روغن موتور خودرو های سبک78965',1,1,'2026-10-29 11:54:34','2026-10-29 11:54:34',NULL),(6,'روغن موتور خودرو 654684',1,1,'2026-10-29 11:57:18','2026-10-29 11:57:18',NULL);
+/*!40000 ALTER TABLE `product_groups` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
+-- Table structure for table `product_quality_levels`
+--
+
+DROP TABLE IF EXISTS `product_quality_levels`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!50503 SET character_set_client = utf8mb4 */;
+CREATE TABLE `product_quality_levels` (
+  `id` int NOT NULL AUTO_INCREMENT,
+  `title` varchar(191) DEFAULT NULL,
+  `user_id` int DEFAULT NULL,
+  `created_at` datetime DEFAULT CURRENT_TIMESTAMP,
+  `updated_at` datetime DEFAULT CURRENT_TIMESTAMP,
+  `deleted_at` datetime DEFAULT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `product_quality_levels`
+--
+
+LOCK TABLES `product_quality_levels` WRITE;
+/*!40000 ALTER TABLE `product_quality_levels` DISABLE KEYS */;
+/*!40000 ALTER TABLE `product_quality_levels` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
+-- Table structure for table `products`
+--
+
+DROP TABLE IF EXISTS `products`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!50503 SET character_set_client = utf8mb4 */;
+CREATE TABLE `products` (
+  `id` int NOT NULL AUTO_INCREMENT,
+  `parent_id` int DEFAULT NULL,
+  `parent_unit_ratio` int DEFAULT NULL,
+  `title` varchar(191) COLLATE utf8mb4_persian_ci DEFAULT NULL,
+  `serial_number` varchar(191) COLLATE utf8mb4_persian_ci DEFAULT NULL,
+  `group_id` int DEFAULT NULL,
+  `grade_id` int DEFAULT NULL,
+  `brand_id` int DEFAULT NULL,
+  `quality_level_id` int DEFAULT NULL,
+  `unit_id` int DEFAULT NULL,
+  `cost_price` int DEFAULT NULL,
+  `sale_price` int DEFAULT NULL,
+  `customer_price` int DEFAULT NULL,
+  `file_address` json DEFAULT NULL,
+  `description` text COLLATE utf8mb4_persian_ci,
+  `complete_description` text COLLATE utf8mb4_persian_ci,
+  `user_id` int DEFAULT NULL,
+  `created_at` datetime DEFAULT CURRENT_TIMESTAMP,
+  `updated_at` datetime DEFAULT CURRENT_TIMESTAMP,
+  `deleted_at` datetime DEFAULT NULL,
+  PRIMARY KEY (`id`),
+  KEY `products___fk` (`parent_id`),
+  KEY `products_brands_id_fk` (`brand_id`),
+  KEY `products_product_grades_id_fk` (`grade_id`),
+  KEY `products_product_groups_id_fk` (`group_id`),
+  KEY `products_product_quality_levels_id_fk` (`quality_level_id`),
+  KEY `products_measurement_units_id_fk` (`unit_id`),
+  CONSTRAINT `products___fk` FOREIGN KEY (`parent_id`) REFERENCES `products` (`id`),
+  CONSTRAINT `products_brands_id_fk` FOREIGN KEY (`brand_id`) REFERENCES `brands` (`id`),
+  CONSTRAINT `products_measurement_units_id_fk` FOREIGN KEY (`unit_id`) REFERENCES `measurement_units` (`id`),
+  CONSTRAINT `products_product_grades_id_fk` FOREIGN KEY (`grade_id`) REFERENCES `product_grades` (`id`),
+  CONSTRAINT `products_product_groups_id_fk` FOREIGN KEY (`group_id`) REFERENCES `product_groups` (`id`),
+  CONSTRAINT `products_product_quality_levels_id_fk` FOREIGN KEY (`quality_level_id`) REFERENCES `product_quality_levels` (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_persian_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `products`
+--
+
+LOCK TABLES `products` WRITE;
+/*!40000 ALTER TABLE `products` DISABLE KEYS */;
+/*!40000 ALTER TABLE `products` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
 -- Table structure for table `roles`
 --
 
@@ -525,7 +881,7 @@ DROP TABLE IF EXISTS `roles`;
 /*!50503 SET character_set_client = utf8mb4 */;
 CREATE TABLE `roles` (
   `id` int unsigned NOT NULL AUTO_INCREMENT,
-  `title` varchar(100) COLLATE utf8mb4_persian_ci NOT NULL,
+  `title` varchar(100) CHARACTER SET utf8mb4 COLLATE utf8mb4_persian_ci NOT NULL,
   `access_json` json DEFAULT NULL,
   `status` tinyint(1) DEFAULT NULL,
   `user_id` int unsigned NOT NULL,
@@ -559,11 +915,11 @@ DROP TABLE IF EXISTS `states`;
 CREATE TABLE `states` (
   `id` int unsigned NOT NULL AUTO_INCREMENT,
   `country_id` int unsigned NOT NULL,
-  `title` varchar(100) COLLATE utf8mb4_persian_ci NOT NULL,
-  `area_code` varchar(10) COLLATE utf8mb4_persian_ci DEFAULT NULL,
-  `latitude` varchar(255) COLLATE utf8mb4_persian_ci DEFAULT NULL,
-  `longitude` varchar(255) COLLATE utf8mb4_persian_ci DEFAULT NULL,
-  `hc_key` varchar(255) COLLATE utf8mb4_persian_ci DEFAULT NULL COMMENT 'کدگذاری نقشه ایران برای دریافت گزارش',
+  `title` varchar(100) CHARACTER SET utf8mb4 COLLATE utf8mb4_persian_ci NOT NULL,
+  `area_code` varchar(10) CHARACTER SET utf8mb4 COLLATE utf8mb4_persian_ci DEFAULT NULL,
+  `latitude` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_persian_ci DEFAULT NULL,
+  `longitude` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_persian_ci DEFAULT NULL,
+  `hc_key` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_persian_ci DEFAULT NULL COMMENT 'کدگذاری نقشه ایران برای دریافت گزارش',
   `user_id` int unsigned NOT NULL,
   `created_at` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
   `updated_at` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
@@ -587,34 +943,6 @@ INSERT INTO `states` VALUES (1,102,'آذربایجان شرقی','041','37.90357
 UNLOCK TABLES;
 
 --
--- Table structure for table `units`
---
-
-DROP TABLE IF EXISTS `units`;
-/*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!50503 SET character_set_client = utf8mb4 */;
-CREATE TABLE `units` (
-  `id` int NOT NULL AUTO_INCREMENT,
-  `unit_name` varchar(191) COLLATE utf8mb4_persian_ci NOT NULL,
-  `unit_symbol` varchar(191) COLLATE utf8mb4_persian_ci NOT NULL,
-  `user_id` int NOT NULL,
-  `created_at` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
-  `updated_at` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
-  `deleted_at` datetime DEFAULT NULL,
-  PRIMARY KEY (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_persian_ci;
-/*!40101 SET character_set_client = @saved_cs_client */;
-
---
--- Dumping data for table `units`
---
-
-LOCK TABLES `units` WRITE;
-/*!40000 ALTER TABLE `units` DISABLE KEYS */;
-/*!40000 ALTER TABLE `units` ENABLE KEYS */;
-UNLOCK TABLES;
-
---
 -- Table structure for table `user_addresses`
 --
 
@@ -626,15 +954,15 @@ CREATE TABLE `user_addresses` (
   `user_identity_id` int unsigned NOT NULL,
   `is_default` tinyint(1) NOT NULL DEFAULT '0',
   `city_id` int unsigned NOT NULL,
-  `main_street` varchar(150) COLLATE utf8mb4_persian_ci DEFAULT NULL,
-  `side_street` varchar(150) COLLATE utf8mb4_persian_ci DEFAULT NULL,
-  `alley_name` varchar(150) COLLATE utf8mb4_persian_ci DEFAULT NULL,
-  `plaque` varchar(20) COLLATE utf8mb4_persian_ci DEFAULT NULL,
-  `unit` varchar(20) COLLATE utf8mb4_persian_ci DEFAULT NULL,
-  `complete_address` varchar(255) COLLATE utf8mb4_persian_ci DEFAULT NULL,
-  `postal_code` varchar(20) COLLATE utf8mb4_persian_ci DEFAULT NULL,
-  `area_code` varchar(10) COLLATE utf8mb4_persian_ci DEFAULT NULL,
-  `landline_number` varchar(20) COLLATE utf8mb4_persian_ci DEFAULT NULL,
+  `main_street` varchar(150) CHARACTER SET utf8mb4 COLLATE utf8mb4_persian_ci DEFAULT NULL,
+  `side_street` varchar(150) CHARACTER SET utf8mb4 COLLATE utf8mb4_persian_ci DEFAULT NULL,
+  `alley_name` varchar(150) CHARACTER SET utf8mb4 COLLATE utf8mb4_persian_ci DEFAULT NULL,
+  `plaque` varchar(20) CHARACTER SET utf8mb4 COLLATE utf8mb4_persian_ci DEFAULT NULL,
+  `unit` varchar(20) CHARACTER SET utf8mb4 COLLATE utf8mb4_persian_ci DEFAULT NULL,
+  `complete_address` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_persian_ci DEFAULT NULL,
+  `postal_code` varchar(20) CHARACTER SET utf8mb4 COLLATE utf8mb4_persian_ci DEFAULT NULL,
+  `area_code` varchar(10) CHARACTER SET utf8mb4 COLLATE utf8mb4_persian_ci DEFAULT NULL,
+  `landline_number` varchar(20) CHARACTER SET utf8mb4 COLLATE utf8mb4_persian_ci DEFAULT NULL,
   `user_id` int unsigned NOT NULL,
   `created_at` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
   `updated_at` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
@@ -670,9 +998,9 @@ CREATE TABLE `user_bank_accounts` (
   `user_identity_id` int unsigned NOT NULL,
   `bank_id` int unsigned NOT NULL,
   `is_default` tinyint(1) NOT NULL DEFAULT '0',
-  `card_number` varchar(19) COLLATE utf8mb4_persian_ci DEFAULT NULL,
-  `account_number` varchar(50) COLLATE utf8mb4_persian_ci DEFAULT NULL,
-  `iban_number` varchar(34) COLLATE utf8mb4_persian_ci DEFAULT NULL,
+  `card_number` varchar(19) CHARACTER SET utf8mb4 COLLATE utf8mb4_persian_ci DEFAULT NULL,
+  `account_number` varchar(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_persian_ci DEFAULT NULL,
+  `iban_number` varchar(34) CHARACTER SET utf8mb4 COLLATE utf8mb4_persian_ci DEFAULT NULL,
   `user_id` int unsigned NOT NULL,
   `created_at` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
   `updated_at` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
@@ -707,10 +1035,10 @@ DROP TABLE IF EXISTS `user_contact_types`;
 /*!50503 SET character_set_client = utf8mb4 */;
 CREATE TABLE `user_contact_types` (
   `id` int unsigned NOT NULL AUTO_INCREMENT,
-  `code` varchar(50) COLLATE utf8mb4_persian_ci NOT NULL,
-  `title` varchar(100) COLLATE utf8mb4_persian_ci NOT NULL,
+  `code` varchar(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_persian_ci NOT NULL,
+  `title` varchar(100) CHARACTER SET utf8mb4 COLLATE utf8mb4_persian_ci NOT NULL,
   `is_required` tinyint(1) NOT NULL DEFAULT '0',
-  `validation_pattern` varchar(500) COLLATE utf8mb4_persian_ci DEFAULT NULL,
+  `validation_pattern` varchar(500) CHARACTER SET utf8mb4 COLLATE utf8mb4_persian_ci DEFAULT NULL,
   `user_id` int unsigned NOT NULL,
   `created_at` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
   `updated_at` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
@@ -743,7 +1071,7 @@ CREATE TABLE `user_contacts` (
   `id` int unsigned NOT NULL AUTO_INCREMENT,
   `user_identity_id` int unsigned NOT NULL,
   `contact_type_id` int unsigned NOT NULL,
-  `value` varchar(255) COLLATE utf8mb4_persian_ci NOT NULL,
+  `value` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_persian_ci NOT NULL,
   `user_id` int unsigned NOT NULL,
   `created_at` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
   `updated_at` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
@@ -810,12 +1138,12 @@ CREATE TABLE `user_dependents` (
   `id` int unsigned NOT NULL AUTO_INCREMENT,
   `user_identity_id` int unsigned NOT NULL,
   `dependent_relation_type_id` int unsigned NOT NULL,
-  `first_name` varchar(100) COLLATE utf8mb4_persian_ci NOT NULL,
-  `last_name` varchar(100) COLLATE utf8mb4_persian_ci NOT NULL,
-  `national_id` varchar(20) COLLATE utf8mb4_persian_ci DEFAULT NULL,
+  `first_name` varchar(100) CHARACTER SET utf8mb4 COLLATE utf8mb4_persian_ci NOT NULL,
+  `last_name` varchar(100) CHARACTER SET utf8mb4 COLLATE utf8mb4_persian_ci NOT NULL,
+  `national_id` varchar(20) CHARACTER SET utf8mb4 COLLATE utf8mb4_persian_ci DEFAULT NULL,
   `marital_status_type_id` int unsigned DEFAULT NULL,
   `birth_date` date DEFAULT NULL,
-  `phone_number` varchar(20) COLLATE utf8mb4_persian_ci DEFAULT NULL,
+  `phone_number` varchar(20) CHARACTER SET utf8mb4 COLLATE utf8mb4_persian_ci DEFAULT NULL,
   `user_id` int unsigned NOT NULL,
   `created_at` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
   `updated_at` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
@@ -852,12 +1180,12 @@ CREATE TABLE `user_identities` (
   `id` int unsigned NOT NULL AUTO_INCREMENT,
   `user_account_id` int unsigned NOT NULL,
   `is_iranian` tinyint(1) NOT NULL,
-  `national_id` varchar(20) COLLATE utf8mb4_persian_ci DEFAULT NULL,
+  `national_id` varchar(20) CHARACTER SET utf8mb4 COLLATE utf8mb4_persian_ci DEFAULT NULL,
   `issuing_place_id` int unsigned DEFAULT NULL,
-  `passport_number` varchar(30) COLLATE utf8mb4_persian_ci DEFAULT NULL,
+  `passport_number` varchar(30) CHARACTER SET utf8mb4 COLLATE utf8mb4_persian_ci DEFAULT NULL,
   `birth_date` date DEFAULT NULL,
-  `birth_place` varchar(150) COLLATE utf8mb4_persian_ci DEFAULT NULL,
-  `father_name` varchar(100) COLLATE utf8mb4_persian_ci DEFAULT NULL,
+  `birth_place` varchar(150) CHARACTER SET utf8mb4 COLLATE utf8mb4_persian_ci DEFAULT NULL,
+  `father_name` varchar(100) CHARACTER SET utf8mb4 COLLATE utf8mb4_persian_ci DEFAULT NULL,
   `military_status_type_id` int unsigned DEFAULT NULL,
   `blood_type_id` int unsigned DEFAULT NULL,
   `marital_status_type_id` int unsigned DEFAULT NULL,
@@ -934,13 +1262,13 @@ DROP TABLE IF EXISTS `users`;
 /*!50503 SET character_set_client = utf8mb4 */;
 CREATE TABLE `users` (
   `id` int unsigned NOT NULL AUTO_INCREMENT,
-  `gender` varchar(20) COLLATE utf8mb4_persian_ci DEFAULT NULL,
-  `first_name` varchar(100) COLLATE utf8mb4_persian_ci NOT NULL,
-  `last_name` varchar(100) COLLATE utf8mb4_persian_ci NOT NULL,
-  `full_name` varchar(255) COLLATE utf8mb4_persian_ci NOT NULL,
-  `username` varchar(100) COLLATE utf8mb4_persian_ci NOT NULL,
-  `password_hash` varchar(255) COLLATE utf8mb4_persian_ci NOT NULL,
-  `avatar` varchar(255) COLLATE utf8mb4_persian_ci DEFAULT NULL,
+  `gender` varchar(20) CHARACTER SET utf8mb4 COLLATE utf8mb4_persian_ci DEFAULT NULL,
+  `first_name` varchar(100) CHARACTER SET utf8mb4 COLLATE utf8mb4_persian_ci NOT NULL,
+  `last_name` varchar(100) CHARACTER SET utf8mb4 COLLATE utf8mb4_persian_ci NOT NULL,
+  `full_name` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_persian_ci NOT NULL,
+  `username` varchar(100) CHARACTER SET utf8mb4 COLLATE utf8mb4_persian_ci NOT NULL,
+  `password_hash` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_persian_ci NOT NULL,
+  `avatar` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_persian_ci DEFAULT NULL,
   `role_id` int unsigned DEFAULT '0',
   `user_id` int unsigned DEFAULT NULL,
   `created_at` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
@@ -974,9 +1302,9 @@ DROP TABLE IF EXISTS `years`;
 /*!50503 SET character_set_client = utf8mb4 */;
 CREATE TABLE `years` (
   `id` int NOT NULL AUTO_INCREMENT,
-  `year_value` varchar(191) COLLATE utf8mb4_persian_ci NOT NULL,
-  `from` varchar(191) COLLATE utf8mb4_persian_ci NOT NULL,
-  `to` varchar(191) COLLATE utf8mb4_persian_ci NOT NULL,
+  `year_value` varchar(191) CHARACTER SET utf8mb4 COLLATE utf8mb4_persian_ci NOT NULL,
+  `from` varchar(191) CHARACTER SET utf8mb4 COLLATE utf8mb4_persian_ci NOT NULL,
+  `to` varchar(191) CHARACTER SET utf8mb4 COLLATE utf8mb4_persian_ci NOT NULL,
   `created_at` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
   `updated_at` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
   `deleted_at` datetime DEFAULT NULL,
@@ -1002,4 +1330,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2026-10-13  9:52:00
+-- Dump completed on 2026-10-31 11:21:13

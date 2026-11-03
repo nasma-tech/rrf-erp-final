@@ -1,41 +1,42 @@
-{include "sections/header.tpl"}
-{include "sections/top-bar.tpl"}
-{include "sections/side-menu.tpl"}
-<div class="app-content content brand-edit-page">
+{include 'sections/header.tpl'}
+{include 'sections/top-bar.tpl'}
+{include 'sections/side-menu.tpl'}
+
+<div class="app-content content">
     <div class="content-wrapper">
+        {$flashMessageHelper->formCallBack()}
         <div class="row">
             <div class="col-md-12">
                 <div class="card">
-                    <div class="card-header d-flex align-items-center justify-content-between">
-                        <h4 class="card-title mb-0">
-                            ویرایش {$singleName}
-                        </h4>
-                        <div>
-                            {$buttonHelper->refreshAndBackBtn()}
-                        </div>
+                    <div class="card-header">
+                        <h4 class="card-title" style="float: right">افزودن {$singleName} جدید</h4>
+                        {$buttonHelper->refreshAndBackButton()}
                     </div>
+                    <hr>
                     <div class="card-content">
                         <div class="card-body">
-                            <ul class="nav nav-tabs brand-edit-page-tabs" id="brandEditPageTabs" role="tablist">
-                                <li class="nav-item">
-                                    <a class="nav-link active" id="brand-edit-page-info-tab" data-toggle="tab"
-                                       href="#brand-edit-page-info"
-                                       role="tab" aria-controls="brand-edit-page-info" aria-selected="true">
-                                        <i class="bx bx-purchase-tag"></i>
-                                        اطلاعات برند
-                                    </a>
-                                </li>
-                                <li class="nav-item">
-                                    <a class="nav-link" id="brand-edit-page-price-tab" data-toggle="tab"
-                                       href="#brand-edit-page-price"
-                                       role="tab" aria-controls="brand-edit-page-price" aria-selected="false">
-                                        <i class="bx bx-trending-up"></i>
-                                        درصد افزایش قیمت محصولات
-                                    </a>
-                                </li>
-                            </ul>
-                            <form id="mainForm" enctype="multipart/form-data">
+                            <form action="/brands/edit/{$getData['id']}" method="post" enctype="multipart/form-data">
                                 {$csrf->csrfTokenInput()}
+                                <div class="row">
+                                    <div class="col-md-3">
+                                        <label for="">عنوان</label>
+                                        <input type="text" class="form-control" name="label" required value="{$getData['label']}"></div>
+                                    <div class="col-md-3">
+                                        <label for="">لوگو مد نظر</label>
+                                        <div class="input-group">
+                                            <input type="file" class="form-control" name="logo_address" id="fileInput">
+                                            <div class="input-group-append">
+                                            </div>
+                                            <button type="button" class="btn btn-sm btn-primary viewFile"><i
+                                                        class="bx bx-file"></i></button>
+                                        </div>
+                                    </div>
+
+                                    <div class="col-12 d-flex flex-sm-row flex-column justify-content-end mt-1">
+                                        <button type="submit"
+                                                class="btn btn-sm btn-primary glow">
+                                            ثبت {$singleName}</button>
+                                    </div>
                             </form>
                         </div>
                     </div>
@@ -44,4 +45,6 @@
         </div>
     </div>
 </div>
-{include "sections/footer.tpl"}
+
+
+{include 'sections/footer.tpl'}
