@@ -5,9 +5,11 @@ namespace App\Controllers\Products;
 use App\Controllers\scheme\ControllerScheme;
 use App\Models\brandsModel\brandsModel;
 use App\Models\MeasurementUnitModel\MeasurementUnitModel;
+use App\Models\ProductGradeModel\ProductGradeModel;
 use App\Models\ProductGroupModel\ProductGroupModel;
 use App\Models\ProductModel\ProductModel;
 use App\Models\ProductQualitiesModel\ProductQualitiesModel;
+
 
 class Products extends ControllerScheme
 {
@@ -20,6 +22,7 @@ class Products extends ControllerScheme
         view->setPageTitle(self::pluralName);
         view->setSingleName(self::singleName);
         view->setPluralName(self::pluralName);
+        view->setModel($this->defaultModel::all());
         view->ui([
             'vendors/js/tables/datatable/datatables.min',
             'vendors/js/tables/datatable/dataTables.bootstrap4.min',
@@ -56,7 +59,8 @@ class Products extends ControllerScheme
                 "productGroups" => ProductGroupModel::all(),
                 'measurement_unit' => measurementUnitModel::all(),
                 'brands' => brandsModel::all(),
-                'productQualities' => ProductQualitiesModel::all()
+                'productQualities' => ProductQualitiesModel::all(),
+                'productGrades' => ProductGradeModel::all()
             ]
         )->display('Products/add-Products.tpl');
     }
@@ -77,8 +81,50 @@ class Products extends ControllerScheme
 
     public function add()
     {
+        csrf->csrfValidate();
         $data = $this->requestArray();
-        var_print($data);
-        var_print($_FILES);
+
+        $needle = [
+            "parent_id",
+            "parent_unit_ratio",
+            "label",
+            "serial_number",
+            "group_id",
+            "brand_id",
+            "quality_level_id",
+            "measurement_unit_id",
+            "cost_price",
+            "sale_price",
+            "customer_price",
+            "description",
+            "complete_description",
+        ];
+
+        if (validator->validateRequestsData($needle)) {
+            $files = fileHelper->normalizeUploadedFiles('images');
+
+            $add = $this->defaultModel::query()->create([
+                "parent_id" => ($data['parent_id'] ?: null),
+                "parent_unit_ratio" => numberNormalizer->removePriceSeparator(($data['parent_unit_ratio'] ?: 0)),
+                "label" => trim($data['label']),
+                "serial_number" => trim($data['serial_number']),
+                "group_id" => $data['group_id'],
+                "brand_id" => $data['brand_id'],
+                "quality_level_id" => $data['quality_level_id'],
+                "measurement_unit_id" => $data['measurement_unit_id'],
+                "cost_price" => numberNormalizer->removePriceSeparator($data['cost_price']),
+                "sale_price" => numberNormalizer->removePriceSeparator($data['sale_price']),
+                "customer_price" => numberNormalizer->removePriceSeparator($data['customer_price']),
+                "description" => trim($data['description']),
+                "complete_description" => trim($data['complete_description']),
+                "user_id" => userObject()->userId
+            ]);
+
+            if ($add) {
+                var_print('hi');
+            }
+//            var_print($files);
+        }
+
     }
 }

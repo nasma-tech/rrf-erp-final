@@ -1,8 +1,8 @@
--- MySQL dump 10.13  Distrib 8.4.11, for Linux (x86_64)
+-- MySQL dump 10.13  Distrib 8.4.10, for Linux (x86_64)
 --
--- Host: localhost    Database: RRF_FinalArasbOilERP
+-- Host: localhost    Database: erp
 -- ------------------------------------------------------
--- Server version	8.4.11-0ubuntu0.26.04.1
+-- Server version	8.4.10
 
 /*!40101 SET @OLD_CHARACTER_SET_CLIENT=@@CHARACTER_SET_CLIENT */;
 /*!40101 SET @OLD_CHARACTER_SET_RESULTS=@@CHARACTER_SET_RESULTS */;
@@ -489,13 +489,13 @@ DROP TABLE IF EXISTS `measurement_units`;
 /*!50503 SET character_set_client = utf8mb4 */;
 CREATE TABLE `measurement_units` (
   `id` int NOT NULL AUTO_INCREMENT,
-  `label` varchar(191) COLLATE utf8mb4_persian_ci DEFAULT NULL,
+  `label` varchar(191) CHARACTER SET utf8mb4 COLLATE utf8mb4_persian_ci DEFAULT NULL,
   `user_id` int DEFAULT NULL,
   `create_at` datetime DEFAULT CURRENT_TIMESTAMP,
   `update_at` datetime DEFAULT CURRENT_TIMESTAMP,
   `deleted_at` datetime DEFAULT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_persian_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_persian_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -504,6 +504,7 @@ CREATE TABLE `measurement_units` (
 
 LOCK TABLES `measurement_units` WRITE;
 /*!40000 ALTER TABLE `measurement_units` DISABLE KEYS */;
+INSERT INTO `measurement_units` VALUES (1,'لیتر',1,'2026-11-03 10:41:21','2026-11-03 10:41:21',NULL);
 /*!40000 ALTER TABLE `measurement_units` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -612,8 +613,8 @@ CREATE TABLE `price_change_package_items` (
   `id` int NOT NULL AUTO_INCREMENT,
   `package_id` int DEFAULT NULL,
   `product_id` int DEFAULT NULL,
-  `previous_price` varchar(191) COLLATE utf8mb4_persian_ci DEFAULT NULL,
-  `new_price` varchar(191) COLLATE utf8mb4_persian_ci DEFAULT NULL,
+  `previous_price` varchar(191) CHARACTER SET utf8mb4 COLLATE utf8mb4_persian_ci DEFAULT NULL,
+  `new_price` varchar(191) CHARACTER SET utf8mb4 COLLATE utf8mb4_persian_ci DEFAULT NULL,
   `user_id` int unsigned DEFAULT NULL,
   `status` tinyint(1) DEFAULT NULL,
   `created_at` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
@@ -645,7 +646,7 @@ DROP TABLE IF EXISTS `price_change_packages`;
 CREATE TABLE `price_change_packages` (
   `id` int NOT NULL,
   `brand_id` int DEFAULT NULL,
-  `label` varchar(191) COLLATE utf8mb4_persian_ci DEFAULT NULL,
+  `label` varchar(191) CHARACTER SET utf8mb4 COLLATE utf8mb4_persian_ci DEFAULT NULL,
   `status` tinyint(1) DEFAULT NULL,
   `approval_workflow` json DEFAULT NULL COMMENT 'User approval workflow and sequence',
   `user_id` int unsigned DEFAULT NULL,
@@ -710,7 +711,7 @@ DROP TABLE IF EXISTS `product_categories`;
 /*!50503 SET character_set_client = utf8mb4 */;
 CREATE TABLE `product_categories` (
   `id` int NOT NULL AUTO_INCREMENT,
-  `label` varchar(191) COLLATE utf8mb4_persian_ci DEFAULT NULL COMMENT 'عنوان',
+  `label` varchar(191) CHARACTER SET utf8mb4 COLLATE utf8mb4_persian_ci DEFAULT NULL COMMENT 'عنوان',
   `user_id` int unsigned NOT NULL,
   `create_at` datetime DEFAULT (now()),
   `update_at` datetime DEFAULT (now()),
@@ -755,7 +756,7 @@ CREATE TABLE `product_grades` (
 
 LOCK TABLES `product_grades` WRITE;
 /*!40000 ALTER TABLE `product_grades` DISABLE KEYS */;
-INSERT INTO `product_grades` VALUES (1,'تسیتqadw',1,'2026-10-28 16:32:16','2026-10-28 16:32:16',NULL),(2,'تستتت',1,'2026-10-28 16:39:12','2026-10-28 16:39:12',NULL),(3,'تسیت  جدید',1,'2026-10-28 16:43:46','2026-10-28 16:43:46',NULL),(4,'adawadawd',1,'2026-10-29 12:15:24','2026-10-29 12:15:24',NULL);
+INSERT INTO `product_grades` VALUES (1,'10W40',1,'2026-10-28 16:32:16','2026-10-28 16:32:16',NULL),(2,'20W50',1,'2026-10-28 16:39:12','2026-10-28 16:39:12',NULL),(3,'5W30',1,'2026-10-28 16:43:46','2026-10-28 16:43:46',NULL),(4,'0W20',1,'2026-10-29 12:15:24','2026-10-29 12:15:24',NULL);
 /*!40000 ALTER TABLE `product_grades` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -779,7 +780,7 @@ CREATE TABLE `product_groups` (
   KEY `product_groups_users_id_fk` (`user_id`),
   CONSTRAINT `product_groups_ProductCategories_id_fk` FOREIGN KEY (`category_id`) REFERENCES `product_categories` (`id`),
   CONSTRAINT `product_groups_users_id_fk` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=7 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=19 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -788,7 +789,7 @@ CREATE TABLE `product_groups` (
 
 LOCK TABLES `product_groups` WRITE;
 /*!40000 ALTER TABLE `product_groups` DISABLE KEYS */;
-INSERT INTO `product_groups` VALUES (1,'روغن موتور خودرو های سبک',1,1,'2026-10-28 16:30:48','2026-10-28 16:30:48',NULL),(2,'روغن موتور خودرو های سبک98797',1,1,'2026-10-29 11:51:30','2026-10-29 11:51:30',NULL),(3,'روغن موتور خودرو های سبک98797',1,1,'2026-10-29 11:52:10','2026-10-29 11:52:10',NULL),(4,'روغن موتور خودرو های سبک98797',1,1,'2026-10-29 11:52:16','2026-10-29 11:52:16',NULL),(5,'روغن موتور خودرو های سبک78965',1,1,'2026-10-29 11:54:34','2026-10-29 11:54:34',NULL),(6,'روغن موتور خودرو 654684',1,1,'2026-10-29 11:57:18','2026-10-29 11:57:18',NULL);
+INSERT INTO `product_groups` VALUES (1,'روغن موتور خودرو های سبک',1,1,'2026-10-28 16:30:48','2026-10-28 16:30:48',NULL),(2,'روغن موتور خودرو های سبک اوزون بورون',1,1,'2026-10-29 11:51:30','2026-11-03 14:02:05',NULL),(3,'روغن موتور خودرو های سبک برو فردا بیا',1,1,'2026-10-29 11:52:10','2026-11-03 14:02:27',NULL),(4,'روغن موتور خودرو های سبک باقرزاده',1,1,'2026-10-29 11:52:16','2026-11-03 14:02:39',NULL),(5,'روغن موتور خودرو های سبک بدتم نمیاد',1,1,'2026-10-29 11:54:34','2026-11-03 14:04:04',NULL),(6,'روغن موتور خودرو 654684',1,1,'2026-10-29 11:57:18','2026-10-29 11:57:18',NULL),(7,'روغن موتور خودرو های سبک جالب',1,1,'2026-11-03 10:27:47','2026-11-03 10:27:47',NULL),(8,'روغن موتور خودرو های سبک تلخ',1,1,'2026-11-03 10:28:02','2026-11-03 10:28:02',NULL),(9,'روغن موتور خودرو های سبک خاشخاشی',1,1,'2026-11-03 10:28:39','2026-11-03 10:28:39',NULL),(10,'روغن موتور خودرو های سبک رنگی',1,1,'2026-11-03 10:28:59','2026-11-03 10:28:59',NULL),(11,'روغن موتور خودرو های سبک ارزون',1,1,'2026-11-03 10:29:10','2026-11-03 10:29:10',NULL),(12,'روغن موتور خودرو های سبک فرنگی',1,1,'2026-11-03 10:29:19','2026-11-03 10:29:19',NULL),(13,'روغن موتور خودرو های سبک با مزه توت فرنگی',1,1,'2026-11-03 10:29:29','2026-11-03 10:29:29',NULL),(14,'روغن موتور خودرو های سبک تراریخته',1,1,'2026-11-03 10:29:38','2026-11-03 10:29:38',NULL),(15,'روغن موتور خودرو های سبک بدون پالم',1,1,'2026-11-03 10:29:51','2026-11-03 10:29:51',NULL),(16,'روغن موتور خودرو های سبک خشک',1,1,'2026-11-03 10:30:01','2026-11-03 10:30:01',NULL),(17,'روغن موتور خودرو های سبک دولتی',1,1,'2026-11-03 10:30:13','2026-11-03 10:30:13',NULL),(18,'روغن موتور خودرو های سبک نیمه دولتی',1,1,'2026-11-03 10:30:23','2026-11-03 10:30:23',NULL);
 /*!40000 ALTER TABLE `product_groups` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -801,13 +802,13 @@ DROP TABLE IF EXISTS `product_quality_levels`;
 /*!50503 SET character_set_client = utf8mb4 */;
 CREATE TABLE `product_quality_levels` (
   `id` int NOT NULL AUTO_INCREMENT,
-  `title` varchar(191) DEFAULT NULL,
+  `label` varchar(191) DEFAULT NULL,
   `user_id` int DEFAULT NULL,
   `created_at` datetime DEFAULT CURRENT_TIMESTAMP,
   `updated_at` datetime DEFAULT CURRENT_TIMESTAMP,
   `deleted_at` datetime DEFAULT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=5 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -816,6 +817,7 @@ CREATE TABLE `product_quality_levels` (
 
 LOCK TABLES `product_quality_levels` WRITE;
 /*!40000 ALTER TABLE `product_quality_levels` DISABLE KEYS */;
+INSERT INTO `product_quality_levels` VALUES (1,'SJ',1,'2026-11-03 10:27:01','2026-11-03 10:27:01',NULL),(2,'SL',1,'2026-11-03 10:27:06','2026-11-03 10:27:06',NULL),(3,'SM',1,'2026-11-03 10:27:10','2026-11-03 10:27:10',NULL),(4,'SN',1,'2026-11-03 10:27:18','2026-11-03 10:27:18',NULL);
 /*!40000 ALTER TABLE `product_quality_levels` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -830,19 +832,19 @@ CREATE TABLE `products` (
   `id` int NOT NULL AUTO_INCREMENT,
   `parent_id` int DEFAULT NULL,
   `parent_unit_ratio` int DEFAULT NULL,
-  `title` varchar(191) COLLATE utf8mb4_persian_ci DEFAULT NULL,
-  `serial_number` varchar(191) COLLATE utf8mb4_persian_ci DEFAULT NULL,
+  `label` varchar(191) COLLATE utf8mb4_persian_ci NOT NULL,
+  `serial_number` varchar(191) CHARACTER SET utf8mb4 COLLATE utf8mb4_persian_ci DEFAULT NULL,
   `group_id` int DEFAULT NULL,
   `grade_id` int DEFAULT NULL,
   `brand_id` int DEFAULT NULL,
   `quality_level_id` int DEFAULT NULL,
-  `unit_id` int DEFAULT NULL,
+  `measurement_unit_id` int DEFAULT NULL,
   `cost_price` int DEFAULT NULL,
   `sale_price` int DEFAULT NULL,
   `customer_price` int DEFAULT NULL,
   `file_address` json DEFAULT NULL,
-  `description` text COLLATE utf8mb4_persian_ci,
-  `complete_description` text COLLATE utf8mb4_persian_ci,
+  `description` text CHARACTER SET utf8mb4 COLLATE utf8mb4_persian_ci,
+  `complete_description` text CHARACTER SET utf8mb4 COLLATE utf8mb4_persian_ci,
   `user_id` int DEFAULT NULL,
   `created_at` datetime DEFAULT CURRENT_TIMESTAMP,
   `updated_at` datetime DEFAULT CURRENT_TIMESTAMP,
@@ -853,14 +855,14 @@ CREATE TABLE `products` (
   KEY `products_product_grades_id_fk` (`grade_id`),
   KEY `products_product_groups_id_fk` (`group_id`),
   KEY `products_product_quality_levels_id_fk` (`quality_level_id`),
-  KEY `products_measurement_units_id_fk` (`unit_id`),
+  KEY `products_measurement_units_id_fk` (`measurement_unit_id`),
   CONSTRAINT `products___fk` FOREIGN KEY (`parent_id`) REFERENCES `products` (`id`),
   CONSTRAINT `products_brands_id_fk` FOREIGN KEY (`brand_id`) REFERENCES `brands` (`id`),
-  CONSTRAINT `products_measurement_units_id_fk` FOREIGN KEY (`unit_id`) REFERENCES `measurement_units` (`id`),
+  CONSTRAINT `products_measurement_units_id_fk` FOREIGN KEY (`measurement_unit_id`) REFERENCES `measurement_units` (`id`),
   CONSTRAINT `products_product_grades_id_fk` FOREIGN KEY (`grade_id`) REFERENCES `product_grades` (`id`),
   CONSTRAINT `products_product_groups_id_fk` FOREIGN KEY (`group_id`) REFERENCES `product_groups` (`id`),
   CONSTRAINT `products_product_quality_levels_id_fk` FOREIGN KEY (`quality_level_id`) REFERENCES `product_quality_levels` (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_persian_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_persian_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -869,6 +871,7 @@ CREATE TABLE `products` (
 
 LOCK TABLES `products` WRITE;
 /*!40000 ALTER TABLE `products` DISABLE KEYS */;
+INSERT INTO `products` VALUES (1,NULL,0,'روغن روان','123',2,NULL,4,2,1,2000000,2545545,54545456,NULL,'<p>1234</p>','<p>23u43e4rftgfr</p>',1,'2026-11-03 12:29:34','2026-11-03 12:29:34',NULL);
 /*!40000 ALTER TABLE `products` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -1330,4 +1333,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2026-10-31 11:21:13
+-- Dump completed on 2026-11-03 12:46:02
