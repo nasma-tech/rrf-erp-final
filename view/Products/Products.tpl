@@ -24,11 +24,14 @@
                                         <th class="border">#</th>
                                         <th class="border">کد محصول</th>
                                         <th class="border">عنوان محصول</th>
-                                        <th class="border"></th>
-                                        <th class="border"></th>
-                                        <th class="border"></th>
+                                        <th class="border">گروه محصول</th>
+                                        <th class="border">قیمت فروش</th>
+                                        <th class="border">قیمت مصرف کننده</th>
                                     </tr>
                                     </thead>
+                                    <tbody>
+                                    {foreach }{/foreach}
+                                    </tbody>
                                 </table>
                             </div>
                         </div>
