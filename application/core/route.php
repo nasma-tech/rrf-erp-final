@@ -14,7 +14,6 @@ use App\Controllers\Units\Units;
 use App\Controllers\users\users;
 use Packages\View\handleHttpErrorView;
 
-
 $router = new \Bramus\Router\Router();
 
 
@@ -127,11 +126,6 @@ $router->mount('/Units', function () use ($router) {
     dynamicRoute($router, Units::class, [
         [
             'method' => 'GET',
-            'path' => "/findOneFilterUnit",
-            'action' => 'findOneFilterUnit'
-        ],
-        [
-            'method' => 'GET',
             'path' => "/getUnits",
             'action' => 'getUnits'
         ]
@@ -182,6 +176,7 @@ $router->mount('/ProductGrad', function () use ($router) {
 $router->mount('/brands', function () use ($router) {
     dynamicRoute($router, App\Controllers\brands\brands::class);
 });
+
 $router->mount('/ProductQualities', function () use ($router) {
     dynamicRoute($router, App\Controllers\ProductQualities\ProductQualities::class);
 });
@@ -294,5 +289,3 @@ $router->mount('/SocialNetworksList', function () use ($router) {
         ]
     ]);
 });
-
-

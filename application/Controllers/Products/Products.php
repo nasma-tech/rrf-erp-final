@@ -8,7 +8,6 @@ use App\Models\MeasurementUnitModel\MeasurementUnitModel;
 use App\Models\ProductGroupModel\ProductGroupModel;
 use App\Models\ProductModel\ProductModel;
 use App\Models\ProductQualitiesModel\ProductQualitiesModel;
-use App\Models\UnitModel\UnitModel;
 
 class Products extends ControllerScheme
 {
