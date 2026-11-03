@@ -34,7 +34,7 @@
                                 <input class="form-control" type="text" name="parent_unit_ratio" id="parent_unit_ratio">
                             </div>
                             <div class="col-md-3 mt-1">
-                                <label for="title">عنوان</label>
+                                <label for="label">عنوان</label>
                                 <input class="form-control" type="text" name="label" id="label" required>
                             </div>
                             <div class="col-md-3 mt-1">
@@ -43,7 +43,7 @@
                                        required>
                             </div>
                             <div class="col-md-3 mt-1">
-                                <label for="">گروه محصول</label>
+                                <label for="group_id">گروه محصول</label>
                                 <select class="form-control select2" name="group_id" id="group_id" REQUIRED >
                                     <option disabled selected>لطفا یک مورد را انتخاب کنید</option>
                                     {foreach $productGroups as $productGroup}
@@ -52,7 +52,7 @@
                                 </select>
                             </div>
                             <div class="col-md-3 mt-1">
-                                <label for="">برند</label>
+                                <label for="brand_id">برند</label>
                                 <select class="form-control select2" name="brand_id" id="brand_id">
                                     <option disabled selected>لطفا یک مورد را انتخاب کنید</option>
                                     {foreach $brands as $brand}
@@ -61,7 +61,7 @@
                                 </select>
                             </div>
                             <div class="col-md-3 mt-1">
-                                <label for="">سطح کیفی</label>
+                                <label for="quality_level_id">سطح کیفی</label>
                                 <select class="form-control select2" name="quality_level_id" id="quality_level_id">
                                     <option disabled selected>لطفا یک مورد را انتخاب کنید</option>
                                     {foreach $productQualities as $productQualitiy}
@@ -70,7 +70,7 @@
                                 </select>
                             </div>
                             <div class="col-md-3 mt-1">
-                                <label for="">واحد</label>
+                                <label for="measurement_unit_id">واحد</label>
                                 <select class="form-control select2" name="measurement_unit_id" id="measurement_unit_id">
                                     <option disabled selected>لطفا یک مورد را انتخاب کنید</option>
                                     {foreach $measurement_unit as $unit}
@@ -81,7 +81,7 @@
                         </div>
                         <div class="row">
                             <div class="col-md-3 mt-1">
-                                <label for="">بهای تمام شده</label>
+                                <label for="cost_price">بهای تمام شده</label>
                                 <div class="input-group">
                                     <input class="form-control" type="text" name="cost_price" id="cost_price">
                                     <div class="input-group-append">
@@ -90,7 +90,7 @@
                                 </div>
                             </div>
                             <div class="col-md-3 mt-1">
-                                <label for="">قیمت فروش</label>
+                                <label for="sale_price">قیمت فروش</label>
                                 <div class="input-group">
                                     <input class="form-control" type="text" name="sale_price" id="sale_price">
                                     <div class="input-group-append">
@@ -99,7 +99,7 @@
                                 </div>
                             </div>
                             <div class="col-md-3 mt-1">
-                                <label for="">قیمت مصرف کننده</label>
+                                <label for="customer_price">قیمت مصرف کننده</label>
                                 <div class="input-group">
                                     <input class="form-control" type="text" name="customer_price" id="customer_price">
                                     <div class="input-group-append">
@@ -110,11 +110,11 @@
                         </div>
                         <div class="row">
                             <div class="col-md-6 mt-1">
-                                <label for="">توضیحات</label>
+                                <label for="description">توضیحات</label>
                                 <textarea class="form-control" name="description" id="description" rows="8" style="resize: none"></textarea>
                             </div>
                             <div class="col-md-6 mt-1">
-                                <label for="">توضیحات تکمیلی</label>
+                                <label for="complete_description">توضیحات تکمیلی</label>
                                 <textarea class="form-control" name="complete_description" id="complete_description" rows="8" style="resize: none"></textarea>
                             </div>
                         </div>
