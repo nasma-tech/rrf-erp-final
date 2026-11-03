@@ -72,6 +72,7 @@ class CustomerContactInformation extends ControllerScheme
             [
                 'IndustryType' => IndustryTypeModel::query()->get(),
                 'FollowUpActionsTitle' => FollowUpActionsTitleModel::query()->get(),
+
             ]
         )->display('CustomerContactInformation/add-CustomerContactInformation.tpl');
     }
@@ -270,24 +271,29 @@ class CustomerContactInformation extends ControllerScheme
             'user_id' => userObject()->userId,
         ];
         $addProject = ContactProjectsModel::query()->create($makeData);
+        var_print($data['projectRequest']);
+        die();
         if (isset($data['projectRequest'])) {
             if ($addProject) {
                 foreach ($data['projectRequest'] as $item) {
                     ContactProjectRequestsModel::query()->create([
                         'contact_project_id' => $addProject->id,
-                        'car_group_id' => $item['car_group_id'],
-                        'car_brand_id' => $item['car_brand_id'],
-                        'car_model_id' => $item['car_model_id'],
-                        'car_tip_id' => $item['car_tip_id'],
+                        'product_id' => $item['product_id'],
                         'request_amount' => $item['request_amount'],
                         'user_id' => userObject()->userId,
                     ]);
                 }
+                var_print('doen');
+                die();
                 return $addProject->id;
             } else {
+                var_print('doen');
+                die();
                 return false;
             }
         } else {
+            var_print('doen');
+            die();
             return $addProject->id;
         }
     }

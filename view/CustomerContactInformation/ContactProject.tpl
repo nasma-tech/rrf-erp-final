@@ -37,20 +37,14 @@
                     <table class="table text-center">
                         <thead class="thead-dark">
                         <tr>
-                            <th class="border">گروه</th>
-                            <th class="border">برند</th>
-                            <th class="border">مدل</th>
-                            <th class="border">تیپ</th>
-                            <th class="border">تعداد</th>
+                            <th class="border">عنوان محصول</th>
+                            <th class="border">مقدار</th>
                             <th class="border">عملیات</th>
                         </tr>
                         </thead>
                         <tbody id="productRequestTableBody">
                         {foreach $getData.projectRequests|default:[] as $item}
                             <tr>
-                                <td class="border">{$item.carGroupData.title}</td>
-                                <td class="border">{$item.carBrandData.title}</td>
-                                <td class="border">{$item.carModelData.title}</td>
                                 <td class="border">{$item.carTipData.title}</td>
                                 <td class="border">{$item.request_amount}</td>
                                 <td class="border">-</td>

@@ -14,6 +14,7 @@ use App\Controllers\Units\Units;
 use App\Controllers\users\users;
 use Packages\View\handleHttpErrorView;
 
+
 $router = new \Bramus\Router\Router();
 
 
@@ -126,6 +127,11 @@ $router->mount('/Units', function () use ($router) {
     dynamicRoute($router, Units::class, [
         [
             'method' => 'GET',
+            'path' => "/findOneFilterUnit",
+            'action' => 'findOneFilterUnit'
+        ],
+        [
+            'method' => 'GET',
             'path' => "/getUnits",
             'action' => 'getUnits'
         ]
@@ -159,7 +165,13 @@ $router->mount('/UserContactTypes', function () use ($router) {
     dynamicRoute($router, App\Controllers\UserContactTypes\UserContactTypes::class);
 });
 $router->mount('/Products', function () use ($router) {
-    dynamicRoute($router, App\Controllers\Products\Products::class);
+    dynamicRoute($router, App\Controllers\Products\Products::class,[
+        [
+        'method' => 'GET',
+        'path' => '/getProductData',
+        'action' => 'getProductData'
+    ]
+    ]);
 });
 $router->mount('/ProductGroup', function () use ($router) {
     dynamicRoute($router, App\Controllers\ProductGroup\ProductGroup::class);
@@ -176,7 +188,6 @@ $router->mount('/ProductGrad', function () use ($router) {
 $router->mount('/brands', function () use ($router) {
     dynamicRoute($router, App\Controllers\brands\brands::class);
 });
-
 $router->mount('/ProductQualities', function () use ($router) {
     dynamicRoute($router, App\Controllers\ProductQualities\ProductQualities::class);
 });
@@ -286,6 +297,25 @@ $router->mount('/SocialNetworksList', function () use ($router) {
             'method' => 'GET',
             'path' => "/getSocialNetworkList",
             'action' => 'getSocialNetworkList'
+        ]
+    ]);
+});
+$router->mount('/ContactsGroup', function () use ($router) {
+    dynamicRoute($router, App\Controllers\ContactsGroup\ContactsGroup::class, [
+        [
+            'method' => 'GET',
+            'path' => "/getContactsGroup",
+            'action' => 'getContactsGroup'
+        ]
+    ]);
+});
+
+$router->mount('/ContactAcquisitionSources', function () use ($router) {
+    dynamicRoute($router, App\Controllers\ContactAcquisitionSources\ContactAcquisitionSources::class, [
+        [
+            'method' => 'GET',
+            'path' => "/getContactAcquisitionSources",
+            'action' => 'getContactAcquisitionSources'
         ]
     ]);
 });

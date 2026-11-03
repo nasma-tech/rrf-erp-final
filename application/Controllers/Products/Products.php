@@ -10,7 +10,6 @@ use App\Models\ProductGroupModel\ProductGroupModel;
 use App\Models\ProductModel\ProductModel;
 use App\Models\ProductQualitiesModel\ProductQualitiesModel;
 
-
 class Products extends ControllerScheme
 {
     const string singleName = 'محصول';
@@ -22,7 +21,6 @@ class Products extends ControllerScheme
         view->setPageTitle(self::pluralName);
         view->setSingleName(self::singleName);
         view->setPluralName(self::pluralName);
-        view->setModel($this->defaultModel::all());
         view->ui([
             'vendors/js/tables/datatable/datatables.min',
             'vendors/js/tables/datatable/dataTables.bootstrap4.min',
@@ -125,6 +123,3 @@ class Products extends ControllerScheme
             }
 //            var_print($files);
         }
-
-    }
-}
