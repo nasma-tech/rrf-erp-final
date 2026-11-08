@@ -3,15 +3,15 @@ $(function () {
         $(`#product_id_${counter}`).getOptionsValue({
             urlAddress: '/Products/getProductData', callback: result => {
                 $.each(result, function (key, item) {
-                    $(`#product_id_${counter}`).append(`<option value="${item.id}">${<item className="title"></item>}</option>`)
+                    $(`#product_id_${counter}`).append(`<option value="${item.id}"><item className="title">${item.title}</item></option>`)
                 })
             }
         })
         return `
             <tr>
                 <td class="border">
-                    <select class="form-control projectOptionsSelect carTipId select2" data-count="${counter}" id="product_id_${counter}" name="projectRequest[${counter}][product_id_]">
-                            <option selected disabled>محصول</option>
+                    <select class="form-control projectOptionsSelect carTipId select2" data-count="${counter}" id="product_id_${counter}" name="projectRequest[${counter}][product_id]">
+                            <option selected disabled>یک مورد را انتخاب کنید</option>
                     </select>
                 </td>
                 <td class="border" width="150">
@@ -36,14 +36,14 @@ $(function () {
             </tr>
         `
     }
-    let productCounter = 1;
+    let productCounter = $("#productRequestTableBody tr").length ;
 
     $("#productAppend").on('click',function () {
         $("#productRequestTableBody").append(makeProductRow(productCounter))
         $(".projectOptionsSelect").select2({
             width: '100%'
         })
-        $(".requestAmount").numberInput(2)
+        $(".requestAmount").numberInput()
         productCounter++
     })
 

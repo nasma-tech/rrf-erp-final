@@ -22,7 +22,9 @@
 
         <div class="row mb-5" style="margin-top: 3px">
             <div class="col-md-6">
-                {include 'CustomerContactInformation/ContactProject.tpl'}
+                <form action="/ContactProjects/edit/{$getData.id}" method="post">
+                    {include 'CustomerContactInformation/ContactProject.tpl'}
+                </form>
             </div>
             <div class="col-md-6 pl-0">
                 <form action="/ContactProjectsFollowUp/add" method="post">
@@ -153,7 +155,8 @@
                         <div class="col-md-6 text-center" id="showUser"></div>
                         <div class="col-md-12">
                             <label for="followUp_action_description"></label>
-                            <textarea class="form-control" id="followUp_action_description" name="followUp_description" rows="10"
+                            <textarea class="form-control" id="followUp_action_description" name="followUp_description"
+                                      rows="10"
                                       style="resize: none"></textarea>
                         </div>
                     </div>
