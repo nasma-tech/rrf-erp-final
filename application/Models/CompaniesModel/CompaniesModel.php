@@ -12,7 +12,7 @@ class CompaniesModel extends Model
     protected $table = 'Companies';
     protected $primaryKey = 'id';
     public $timestamps = false;
-    
+
     use SoftDeletes;
 
     protected $fillable = [

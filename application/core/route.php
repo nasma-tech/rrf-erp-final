@@ -180,10 +180,18 @@ $router->mount('/brands', function () use ($router) {
 $router->mount('/ProductQualities', function () use ($router) {
     dynamicRoute($router, App\Controllers\ProductQualities\ProductQualities::class);
 });
-
 $router->mount('/ProductsPriceList', function () use ($router) {
     dynamicRoute($router, App\Controllers\ProductsPriceList\ProductsPriceList::class);
 });
+$router->mount('/ProformaInvoice', function () use ($router) {
+    dynamicRoute($router, \App\Controllers\ProformaInvoice\ProformaInvoice::class);
+});
+$router->mount('/Companies', function () use ($router) {
+    dynamicRoute($router, App\Controllers\Companies\Companies::class, [
+        [
+            'method' => 'POST',
+            'path' => '/addCompanies',
+            'action' => 'addCompanies'
 $router->mount('/ProductCategories', function () use ($router) {
     dynamicRoute($router, App\Controllers\ProductCategories\ProductCategories::class);
 });
