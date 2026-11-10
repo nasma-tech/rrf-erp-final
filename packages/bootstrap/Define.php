@@ -17,3 +17,7 @@ const csrf = new \Packages\Security\Csrf();
 const permissionHelper = new \Packages\Helpers\PermissionHelper();
 const fileHelper = new \Packages\Helpers\FileHelper();
 const userHelper = new \Packages\Helpers\UserHelper();
+
+const dateTimeHelper = new \Packages\Helpers\DateTimeHelper();
+
+const numberHelper = new \Packages\Support\Text\PersianTextNormalizer();
