@@ -6,12 +6,14 @@ use App\Controllers\colors\colors;
 use App\Controllers\countries\countries;
 use App\Controllers\CustomerContactInformation\CustomerContactInformation;
 use App\Controllers\dashboard\dashboard;
+use App\Controllers\ImplementationTeam\ImplementationTeam;
 use App\Controllers\login\login;
 use App\Controllers\login\MenuList\MenuList;
 use App\Controllers\roles\roles;
 use App\Controllers\states\states;
 use App\Controllers\Units\Units;
 use App\Controllers\users\users;
+use App\Controllers\WorkGroups\WorkGroups;
 use Packages\View\handleHttpErrorView;
 
 
@@ -324,6 +326,22 @@ $router->mount('/ContactAcquisitionSources', function () use ($router) {
             'action' => 'getContactAcquisitionSources'
         ]
     ]);
-});$router->mount('/SalesTeam', function () use ($router) {
-    dynamicRoute($router, App\Controllers\SalesTeam\SalesTeam::class);
+});
+$router->mount('/ImplementationTeam', function () use ($router) {
+    dynamicRoute($router, ImplementationTeam::class, [
+        [
+            'method' => 'POST',
+            'path' => "/getTreeData",
+            'action' => 'getTreeData'
+        ]
+    ]);
+});
+$router->mount('/WorkGroups', function () use ($router) {
+    dynamicRoute($router, WorkGroups::class, [
+        [
+            'method' => 'GET',
+            'path' => '/getWorkGroupsIndex',
+            'action' => 'getWorkGroupsIndex'
+        ]
+    ]);
 });

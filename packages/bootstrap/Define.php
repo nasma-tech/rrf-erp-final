@@ -1,6 +1,8 @@
 <?php
 //bootstrap required
 
+use Packages\View\Helpers\FlashMessageHelper;
+
 require 'Errors.php';
 
 
@@ -18,3 +20,6 @@ const fileHelper = new \Packages\Helpers\FileHelper();
 const userHelper = new \Packages\Helpers\UserHelper();
 const numberNormalizer = new \Packages\Support\Number\NumberNormalizer();
 const dateTimeHelper = new \Packages\Helpers\DateTimeHelper();
+
+const flashMessageHelper = new \Packages\View\Helpers\FlashMessageHelper();
+
