@@ -126,6 +126,11 @@ $router->mount('/Units', function () use ($router) {
     dynamicRoute($router, Units::class, [
         [
             'method' => 'GET',
+            'path' => "/findOneFilterUnit",
+            'action' => 'findOneFilterUnit'
+        ],
+        [
+            'method' => 'GET',
             'path' => "/getUnits",
             'action' => 'getUnits'
         ]
@@ -180,6 +185,7 @@ $router->mount('/brands', function () use ($router) {
 $router->mount('/ProductQualities', function () use ($router) {
     dynamicRoute($router, App\Controllers\ProductQualities\ProductQualities::class);
 });
+
 $router->mount('/ProductsPriceList', function () use ($router) {
     dynamicRoute($router, App\Controllers\ProductsPriceList\ProductsPriceList::class);
 });
