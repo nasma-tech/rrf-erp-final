@@ -29,7 +29,8 @@
     "ext-curl": "*",
     "ext-openssl": "*",
     "ext-imagick": "*",
-    "ext-mongodb": "*"
+    "ext-mongodb": "*",
+    "symfony/var-dumper": "^8.1"
   },
   "autoload": {
     "files": [

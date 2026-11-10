@@ -268,7 +268,13 @@ $router->mount('/FollowUpActionsTitle', function () use ($router) {
     dynamicRoute($router, App\Controllers\FollowUpActionsTitle\FollowUpActionsTitle::class);
 });
 $router->mount('/ContactPhones', function () use ($router) {
-    dynamicRoute($router, App\Controllers\ContactPhones\ContactPhones::class);
+    dynamicRoute($router, App\Controllers\ContactPhones\ContactPhones::class,[
+        [
+            'method' => 'POST',
+            'path' => "/checkNumberInput",
+            'action' => 'checkNumberInput'
+        ]
+    ]);
 });
 $router->mount('/Companies', function () use ($router) {
     dynamicRoute($router, App\Controllers\Companies\Companies::class);
@@ -318,4 +324,6 @@ $router->mount('/ContactAcquisitionSources', function () use ($router) {
             'action' => 'getContactAcquisitionSources'
         ]
     ]);
+});$router->mount('/SalesTeam', function () use ($router) {
+    dynamicRoute($router, App\Controllers\SalesTeam\SalesTeam::class);
 });
