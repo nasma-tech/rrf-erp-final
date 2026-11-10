@@ -1,7 +1,5 @@
 <?php
-
 namespace App\Controllers\Companies;
-
 use App\Controllers\scheme\ControllerScheme;
 use App\Models\CompaniesModel\CompaniesModel;
 
@@ -31,8 +29,8 @@ class Companies extends ControllerScheme
         ],
             ['vendors/css/tables/datatable/datatables.min'],
             [
-                //vars
-            ])->display('Companies/Companies.tpl');
+            //vars
+                ])->display('Companies/Companies.tpl');
     }
 
     public function addIndex()
