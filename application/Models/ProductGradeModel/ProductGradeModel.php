@@ -1,13 +1,13 @@
 <?php
 
-namespace App\Models\ProductGradModel;
+namespace App\Models\ProductGradeModel;
 
 use App\Models\UserModel\UserModel;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use UsersModel;
 
-class ProductGradModel extends Model
+class ProductGradeModel extends Model
 {
     protected $table = 'product_grades';
     protected $primaryKey = 'id';

@@ -15,7 +15,7 @@
                     <hr>
                     <div class="card-content">
                         <div class="card-body">
-                            <form action="/ProductGroup/add" method="post" enctype="multipart/form-data">
+                            <form action="/ProductGroup/edit/{$getData['id']}" method="post" enctype="multipart/form-data">
                                 {$csrf->csrfTokenInput()}
                                 <div class="row">
                                     <div class="col-md-3">

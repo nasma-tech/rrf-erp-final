@@ -1,23 +1,22 @@
 <?php
 
-namespace App\Models\UnitModel;
+namespace App\Models\ContactPhoneLabelModel;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
-class UnitModel extends Model
+class ContactPhoneLabelModel extends Model
 {
-    protected $table = 'measurement_units';
+    protected $table = 'ContactPhoneLabel';
     protected $primaryKey = 'id';
     public $timestamps = false;
-
+    
     use SoftDeletes;
 
     protected $fillable = [
-        'unit_name',
-        'unit_symbol',
+        'type',
         'user_id',
-        'update_at',
+        'updated_at',
         'deleted_at'
     ];
 
