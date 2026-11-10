@@ -14,6 +14,11 @@ $(function () {
                 .closest('div').hide()
         }
     })
+    $("#cost_price").numberInput()
+    $("#sale_price").numberInput()
+    $("#customer_price").numberInput()
+    tinyEditor("#description")
+    tinyEditor("#complete_description")
 
     //gallery
 

@@ -1,21 +1,18 @@
 <?php
+
 namespace App\Controllers\brands;
-use App\Controllers\ProductGrad\ProductGrad;
+
 use App\Controllers\scheme\ControllerScheme;
 use App\Models\brandsModel\brandsModel;
-use App\Models\ProductCategoriesModel\ProductCategoriesModel;
-use App\Models\ProductGradModel\ProductGradModel;
-use App\Models\ProductGroupModel\ProductGroupModel;
-use App\Models\ProductQualitiesModel\ProductQualitiesModel;
-use App\Models\UnitModel\UnitModel;
-use UnitsModel;
 
-class brands extends ControllerScheme{
-        const string singleName = 'برند';
-        const string pluralName = 'برندها';
-        protected string $defaultModel = brandsModel::class;
-        
-        public function main(){
+class brands extends ControllerScheme
+{
+    const string singleName = 'برند';
+    const string pluralName = 'برندها';
+    protected string $defaultModel = brandsModel::class;
+
+    public function main()
+    {
         view->setPageTitle(self::pluralName);
         view->setSingleName(self::singleName);
         view->setPluralName(self::pluralName);
@@ -35,39 +32,70 @@ class brands extends ControllerScheme{
         ],
             ['vendors/css/tables/datatable/datatables.min'],
             [
-            //vars
-                ])->display('brands/brands.tpl');
+                //vars
+            ])->display('brands/brands.tpl');
     }
-    
-        public function addIndex(){
-                view->setPageTitle(self::pluralName);
-                view->setSingleName(self::singleName);
-                view->setPluralName(self::pluralName);
-                view->ui([
-                    //'js/brands/add-brands'
-                ], [],
-                    [//vars
-                        'brands'=> brandsModel::all(),
-                        'groups' => productGroupModel::all(),
-                        'categories' => ProductCategoriesModel::all(),
-                        'grades' => ProductGradModel::all(),
-                        'qualities' => ProductQualitiesModel::all(),
-                        'units' => UnitModel::all()
-                    ]
-                )->display('brands/add-brands.tpl');
-            }
-            
-        public function editIndex($id){
+
+    public function addIndex()
+    {
+        view->setPageTitle(self::pluralName);
+        view->setSingleName(self::singleName);
+        view->setPluralName(self::pluralName);
+        view->ui([
+            'js/brands/add-brands'
+        ], [],
+            [//vars
+            ]
+        )->display('brands/add-brands.tpl');
+    }
+
+    public function editIndex($id)
+    {
         view->setPageTitle(self::pluralName);
         view->setSingleName(self::singleName);
         view->setPluralName(self::pluralName);
         //name this model
         view->setModel(brandsModel::query()->find($id));
         view->ui([
-            //'js/brands/edit-brands'
-        ],[], [
-        //var
-            'brands'
+            'js/brands/edit-brands'
+        ], [], [
+            //var
         ])->display('brands/edit-brands.tpl');
+    }
+
+    public function add()
+    {
+        $data = $this->requestArray();
+        $makeData = [
+            'label' => $data['label'],
+            'user_id' => userObject()->userId
+        ];
+        $add = brandsModel::query()->create($makeData);
+            $fileInfo = fileHelper->fileUpload('brands','logo_address');
+        if ($add->save()) {
+            $add->update([
+                'logo_address' => $fileInfo,
+            ]);
+            $this->successCallBack("/brands/main");
+        }
+    }
+
+    public function edit($id)
+    {
+        $data = $this->requestArray();
+        $findData = brandsModel::query()->find($id);
+        if ($_FILES['logo_address']) {
+            $fileInfo = fileHelper->fileUpload('brands','logo_address');
+            $findData = $findData->update([
+                'logo_address' => $fileInfo,
+                'label' => $data['label'] ?? $findData['label'],
+            ]);
+            $this->successCallBack("/brands/main",'ویرایش با موفقیت انجام شد');
+        }else{
+            $findData = $findData->update([
+                'label' => $data['label'],
+            ]);
+            $this->successCallBack("/brands/main",'ویرایش با موفقیت انجام شد');
+        }
     }
 }

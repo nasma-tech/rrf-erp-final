@@ -22,8 +22,8 @@
                                     <thead class="thead-dark">
                                     <tr>
                                         <th class="border">#</th>
-                                        <th class="border"></th>
-                                        <th class="border"></th>
+                                        <th class="border">کد محصول</th>
+                                        <th class="border">عنوان محصول</th>
                                         <th class="border"></th>
                                         <th class="border"></th>
                                         <th class="border"></th>

@@ -2,18 +2,18 @@
 namespace App\Controllers\ProductGrad;
 use App\Controllers\scheme\ControllerScheme;
 use App\Controllers\users\users;
-use App\Models\ProductGradModel\ProductGradModel;
+use App\Models\ProductGradeModel\ProductGradeModel;
 
 class ProductGrad extends ControllerScheme{
-        const string singleName = '';
-        const string pluralName = '';
-        protected string $defaultModel = ProductGradModel::class;
+        const string singleName = 'گرید محصولات';
+        const string pluralName = 'گرید محصولات';
+        protected string $defaultModel = ProductGradeModel::class;
         
         public function main(){
         view->setPageTitle(self::pluralName);
         view->setSingleName(self::singleName);
         view->setPluralName(self::pluralName);
-        view->setModel(ProductGradModel::all());
+        view->setModel(ProductGradeModel::all());
         view->ui([
             'vendors/js/tables/datatable/datatables.min',
             'vendors/js/tables/datatable/dataTables.bootstrap4.min',
@@ -50,7 +50,7 @@ class ProductGrad extends ControllerScheme{
         view->setSingleName(self::singleName);
         view->setPluralName(self::pluralName);
         //name this model
-        view->setModel(ProductGradModel::query()->find($id));
+        view->setModel(ProductGradeModel::query()->find($id));
         view->ui([
             //'js/ProductGrad/edit-ProductGrad'
         ],[], [
@@ -61,7 +61,7 @@ class ProductGrad extends ControllerScheme{
     public function add()
     {
         $data = $this->requestArray();
-        $add = ProductGradModel::query()->insert([
+        $add = ProductGradeModel::query()->insert([
             'label' => $data['label'],
             'user_id' => userObject()->userId,
         ]);
@@ -73,7 +73,7 @@ class ProductGrad extends ControllerScheme{
     public function edit($id)
     {
         $data = $this->requestArray();
-        $editData = ProductGradModel::query()->find($id)->update([
+        $editData = ProductGradeModel::query()->find($id)->update([
             'label' => $data['label'],
             'updated_at' => date("Y-m-d H:i:s")
         ]);
