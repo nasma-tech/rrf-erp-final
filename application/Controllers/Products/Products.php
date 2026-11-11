@@ -5,6 +5,7 @@ namespace App\Controllers\Products;
 use App\Controllers\scheme\ControllerScheme;
 use App\Models\brandsModel\brandsModel;
 use App\Models\MeasurementUnitModel\MeasurementUnitModel;
+use App\Models\ProductGradeModel\ProductGradeModel;
 use App\Models\ProductGroupModel\ProductGroupModel;
 use App\Models\ProductModel\ProductModel;
 use App\Models\ProductQualitiesModel\ProductQualitiesModel;
@@ -20,6 +21,7 @@ class Products extends ControllerScheme
         view->setPageTitle(self::pluralName);
         view->setSingleName(self::singleName);
         view->setPluralName(self::pluralName);
+        view->setModel($this->defaultModel::all());
         view->ui([
             'vendors/js/tables/datatable/datatables.min',
             'vendors/js/tables/datatable/dataTables.bootstrap4.min',
@@ -56,7 +58,8 @@ class Products extends ControllerScheme
                 "productGroups" => ProductGroupModel::all(),
                 'measurement_unit' => measurementUnitModel::all(),
                 'brands' => brandsModel::all(),
-                'productQualities' => ProductQualitiesModel::all()
+                'productQualities' => ProductQualitiesModel::all(),
+                'productGrades' => ProductGradeModel::all()
             ]
         )->display('Products/add-Products.tpl');
     }

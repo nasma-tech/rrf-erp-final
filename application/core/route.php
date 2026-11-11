@@ -16,7 +16,6 @@ use App\Controllers\users\users;
 use App\Controllers\WorkGroups\WorkGroups;
 use Packages\View\handleHttpErrorView;
 
-
 $router = new \Bramus\Router\Router();
 
 
@@ -190,12 +189,25 @@ $router->mount('/ProductGrad', function () use ($router) {
 $router->mount('/brands', function () use ($router) {
     dynamicRoute($router, App\Controllers\brands\brands::class);
 });
+
 $router->mount('/ProductQualities', function () use ($router) {
     dynamicRoute($router, App\Controllers\ProductQualities\ProductQualities::class);
 });
 
 $router->mount('/ProductsPriceList', function () use ($router) {
     dynamicRoute($router, App\Controllers\ProductsPriceList\ProductsPriceList::class);
+});
+$router->mount('/ProformaInvoice', function () use ($router) {
+    dynamicRoute($router, \App\Controllers\ProformaInvoice\ProformaInvoice::class);
+});
+$router->mount('/Companies', function () use ($router) {
+    dynamicRoute($router, App\Controllers\Companies\Companies::class, [
+        [
+            'method' => 'POST',
+            'path' => '/addCompanies',
+            'action' => 'addCompanies'
+        ]
+    ]);
 });
 $router->mount('/ProductCategories', function () use ($router) {
     dynamicRoute($router, App\Controllers\ProductCategories\ProductCategories::class);
@@ -217,7 +229,7 @@ $router->mount('/IndustryType', function () use ($router) {
     dynamicRoute($router, App\Controllers\IndustryType\IndustryType::class);
 });
 $router->mount('/CustomerContactInformation', function () use ($router) {
-    dynamicRoute($router, CustomerContactInformation::class,[
+    dynamicRoute($router, CustomerContactInformation::class, [
         [
             'method' => 'GET',
             'path' => '/contactDetail(/\d+)?',
@@ -269,6 +281,9 @@ $router->mount('/CarsTip', function () use ($router) {
 $router->mount('/FollowUpActionsTitle', function () use ($router) {
     dynamicRoute($router, App\Controllers\FollowUpActionsTitle\FollowUpActionsTitle::class);
 });
+$router->mount('/FollowUpActionsTitle', function () use ($router) {
+    dynamicRoute($router, App\Controllers\FollowUpActionsTitle\FollowUpActionsTitle::class);
+});
 $router->mount('/ContactPhones', function () use ($router) {
     dynamicRoute($router, App\Controllers\ContactPhones\ContactPhones::class,[
         [
@@ -279,7 +294,13 @@ $router->mount('/ContactPhones', function () use ($router) {
     ]);
 });
 $router->mount('/Companies', function () use ($router) {
-    dynamicRoute($router, App\Controllers\Companies\Companies::class);
+    dynamicRoute($router, App\Controllers\Companies\Companies::class,[
+        [
+            'method' => 'POST',
+            'path' => "/addCompanies",
+            'action' => 'addCompanies'
+        ]
+    ]);
 });
 $router->mount('/ContactProjects', function () use ($router) {
     dynamicRoute($router, App\Controllers\ContactProjects\ContactProjects::class, [

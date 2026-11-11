@@ -2,9 +2,7 @@
 
 namespace App\Models\CompaniesModel;
 
-use App\Models\CustomerContactInformationModel\CustomerContactInformationModel;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
 class CompaniesModel extends Model
@@ -12,7 +10,7 @@ class CompaniesModel extends Model
     protected $table = 'Companies';
     protected $primaryKey = 'id';
     public $timestamps = false;
-    
+
     use SoftDeletes;
 
     protected $fillable = [
@@ -29,15 +27,5 @@ class CompaniesModel extends Model
         'updated_at',
         'deleted_at'
     ];
-
-    public function contacts(): BelongsToMany
-    {
-        return $this->belongsToMany(
-            CustomerContactInformationModel::class,
-            'ContactCompanyLinks',
-            'company_id',
-            'contact_id'
-        );
-    }
 
 }
