@@ -1,5 +1,7 @@
 <?php
+
 namespace App\Controllers\Companies;
+
 use App\Controllers\scheme\ControllerScheme;
 use App\Models\CompaniesModel\CompaniesModel;
 
@@ -29,8 +31,8 @@ class Companies extends ControllerScheme
         ],
             ['vendors/css/tables/datatable/datatables.min'],
             [
-            //vars
-                ])->display('Companies/Companies.tpl');
+                //vars
+            ])->display('Companies/Companies.tpl');
     }
 
     public function addIndex()
@@ -62,20 +64,19 @@ class Companies extends ControllerScheme
 
     public function addCompanies()
     {
-        $_ENV['APP_DEBUG'] = 1;
         csrf->csrfValidate();
         $data = $this->requestArray();
         $makeRequest = [
             'national_ID' => numberHelper->persianNumberToEnglish($data['national_ID']),
             'company_name' => $data['company_name'],
-            'establishment_date' => $data['establishment_date']??date("Y-m-d", dateTimeHelper->convertDateToTimestamp($data['establishment_date'])),
+            'establishment_date' => $data['establishment_date'] ?? date("Y-m-d", dateTimeHelper->convertDateToTimestamp($data['establishment_date'])),
             'company_status' => $data['company_status'],
             'registration_number' => numberHelper->persianNumberToEnglish($data['registration_number']),
             'economic_code' => numberHelper->persianNumberToEnglish($data['economic_code']),
             'address' => $data['address'],
             'postal_code' => numberHelper->persianNumberToEnglish($data['postal_code']),
-            'lat' => $data['lat']??null,
-            'lang' => $data['lang']??null,
+            'lat' => $data['lat'] ?? null,
+            'lang' => $data['lang'] ?? null,
         ];
         $companiesAdd = CompaniesModel::query()->create($makeRequest);
         if ($companiesAdd) {
