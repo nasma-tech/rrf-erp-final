@@ -6,6 +6,7 @@ use Carbon\Carbon;
 use Exception;
 use Illuminate\Database\Eloquent\Model;
 use JetBrains\PhpStorm\NoReturn;
+use Packages\View\handleHttpErrorView;
 
 class ControllerScheme
 {
@@ -402,5 +403,15 @@ class ControllerScheme
         }
 
         echo json_encode($output, JSON_UNESCAPED_UNICODE);
+    }
+    public function checkRequired(array $required, array $request): void
+    {
+        $diff = array_diff(array_keys($required), array_keys($request));
+        $errors = array_filter($required, function ($label, $key) use ($diff, $request) {
+            return in_array($key, $diff, true) || !isset($request[$key]) || trim((string)$request[$key]) === '';
+        }, ARRAY_FILTER_USE_BOTH);
+        if (!empty($errors)) {
+            handleHttpErrorView::handle(422, array_values($errors));
+        }
     }
 }

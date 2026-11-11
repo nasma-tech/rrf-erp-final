@@ -29,6 +29,16 @@
                                         <th class="border"></th>
                                     </tr>
                                     </thead>
+                                    <tbody>
+                                    {foreach $getData as $data}
+
+                                        <tr>
+                                            <td>
+                                                {$data['title']}
+                                            </td>
+                                        </tr>
+                                    {/foreach}
+                                    </tbody>
                                 </table>
                             </div>
                         </div>

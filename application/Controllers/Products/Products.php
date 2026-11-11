@@ -10,7 +10,6 @@ use App\Models\ProductGroupModel\ProductGroupModel;
 use App\Models\ProductModel\ProductModel;
 use App\Models\ProductQualitiesModel\ProductQualitiesModel;
 
-
 class Products extends ControllerScheme
 {
     const string singleName = 'محصول';
@@ -123,8 +122,16 @@ class Products extends ControllerScheme
             if ($add) {
                 var_print('hi');
             }
-//            var_print($files);
         }
+    }
 
+    public function getProductData()
+    {
+        echo json_encode(array_map(function ($item) {
+            return [
+                'id' => $item['id'],
+                'title' => $item['title']
+            ];
+        }, ProductModel::query()->get()->toArray()));
     }
 }

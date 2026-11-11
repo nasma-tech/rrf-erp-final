@@ -6,12 +6,14 @@ use App\Controllers\colors\colors;
 use App\Controllers\countries\countries;
 use App\Controllers\CustomerContactInformation\CustomerContactInformation;
 use App\Controllers\dashboard\dashboard;
+use App\Controllers\ImplementationTeam\ImplementationTeam;
 use App\Controllers\login\login;
 use App\Controllers\login\MenuList\MenuList;
 use App\Controllers\roles\roles;
 use App\Controllers\states\states;
 use App\Controllers\Units\Units;
 use App\Controllers\users\users;
+use App\Controllers\WorkGroups\WorkGroups;
 use Packages\View\handleHttpErrorView;
 
 $router = new \Bramus\Router\Router();
@@ -164,7 +166,13 @@ $router->mount('/UserContactTypes', function () use ($router) {
     dynamicRoute($router, App\Controllers\UserContactTypes\UserContactTypes::class);
 });
 $router->mount('/Products', function () use ($router) {
-    dynamicRoute($router, App\Controllers\Products\Products::class);
+    dynamicRoute($router, App\Controllers\Products\Products::class,[
+        [
+        'method' => 'GET',
+        'path' => '/getProductData',
+        'action' => 'getProductData'
+    ]
+    ]);
 });
 $router->mount('/ProductGroup', function () use ($router) {
     dynamicRoute($router, App\Controllers\ProductGroup\ProductGroup::class);
@@ -277,7 +285,13 @@ $router->mount('/FollowUpActionsTitle', function () use ($router) {
     dynamicRoute($router, App\Controllers\FollowUpActionsTitle\FollowUpActionsTitle::class);
 });
 $router->mount('/ContactPhones', function () use ($router) {
-    dynamicRoute($router, App\Controllers\ContactPhones\ContactPhones::class);
+    dynamicRoute($router, App\Controllers\ContactPhones\ContactPhones::class,[
+        [
+            'method' => 'POST',
+            'path' => "/checkNumberInput",
+            'action' => 'checkNumberInput'
+        ]
+    ]);
 });
 $router->mount('/Companies', function () use ($router) {
     dynamicRoute($router, App\Controllers\Companies\Companies::class,[
@@ -312,6 +326,43 @@ $router->mount('/SocialNetworksList', function () use ($router) {
             'method' => 'GET',
             'path' => "/getSocialNetworkList",
             'action' => 'getSocialNetworkList'
+        ]
+    ]);
+});
+$router->mount('/ContactsGroup', function () use ($router) {
+    dynamicRoute($router, App\Controllers\ContactsGroup\ContactsGroup::class, [
+        [
+            'method' => 'GET',
+            'path' => "/getContactsGroup",
+            'action' => 'getContactsGroup'
+        ]
+    ]);
+});
+
+$router->mount('/ContactAcquisitionSources', function () use ($router) {
+    dynamicRoute($router, App\Controllers\ContactAcquisitionSources\ContactAcquisitionSources::class, [
+        [
+            'method' => 'GET',
+            'path' => "/getContactAcquisitionSources",
+            'action' => 'getContactAcquisitionSources'
+        ]
+    ]);
+});
+$router->mount('/ImplementationTeam', function () use ($router) {
+    dynamicRoute($router, ImplementationTeam::class, [
+        [
+            'method' => 'POST',
+            'path' => "/getTreeData",
+            'action' => 'getTreeData'
+        ]
+    ]);
+});
+$router->mount('/WorkGroups', function () use ($router) {
+    dynamicRoute($router, WorkGroups::class, [
+        [
+            'method' => 'GET',
+            'path' => '/getWorkGroupsIndex',
+            'action' => 'getWorkGroupsIndex'
         ]
     ]);
 });
