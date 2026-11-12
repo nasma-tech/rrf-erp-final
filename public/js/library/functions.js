@@ -1256,6 +1256,8 @@ $.fn.formValidate = function (showErrorMessage = true, exceptionValue = 'excepti
         } else {
             customAlert('error', `حجم فایل انتخابی بیشتر از ${maximumFileSize} مگابایت است.`);
         }
+    }else {
+        swalValidate('موارد مشخص شده را پر کنید')
     }
 
     return submitAccept;

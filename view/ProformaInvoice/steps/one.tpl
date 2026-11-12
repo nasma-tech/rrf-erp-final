@@ -19,7 +19,7 @@
                         <div class="input-group-prepend">
                             <button class="btn btn-sm btn-primary" id="quickAddCustomerCompanyButton" type="button" data-toggle="tooltip" data-placement="top" title="" data-original-title="افزودن شرکت"><i class="bx bx-plus"></i></button>
                         </div>
-                        <input type="text" class="form-control" readonly placeholder="انتخاب نشده است">
+                        <input type="text" class="form-control" id="customer_company_title" readonly placeholder="انتخاب نشده است">
                         <div class="input-group-append">
                             <button class="btn btn-sm btn-primary" id="searchCustomerCompanyButton" type="button" data-toggle="tooltip" data-placement="top" title="" data-original-title="جستجو"><i class="bx bx-search"></i></button>
                         </div>

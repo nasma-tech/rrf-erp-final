@@ -206,6 +206,11 @@ $router->mount('/Companies', function () use ($router) {
             'method' => 'POST',
             'path' => '/addCompanies',
             'action' => 'addCompanies'
+        ],
+        [
+            'method' => 'GET',
+            'path' => '/findCompanies',
+            'action' => 'findCompanies'
         ]
     ]);
 });
@@ -363,6 +368,15 @@ $router->mount('/WorkGroups', function () use ($router) {
             'method' => 'GET',
             'path' => '/getWorkGroupsIndex',
             'action' => 'getWorkGroupsIndex'
+        ]
+    ]);
+});
+$router->mount('/PriceSuggestion', function () use ($router) {
+    dynamicRoute($router, App\Controllers\PriceSuggestion\PriceSuggestion::class,[
+        [
+            'method' => 'GET',
+            'path' => "/createPriceSuggestion/(\d+)/(\d+)",
+            'action' => 'createPriceSuggestion'
         ]
     ]);
 });

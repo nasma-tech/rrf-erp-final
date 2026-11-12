@@ -120,8 +120,10 @@
                                                             {/if}
                                                         </div>
                                                     </div>
-                                                {else}
-                                                    -
+                                                {elseif $item.FollowUp_action_id == 8}
+                                                    <a class="btn btn-sm btn-icon btn-primary" href="/PriceSuggestion/createPriceSuggestion/{$getData.id}/{$item.id}">
+                                                        <i class="bx bx-file"></i>
+                                                    </a>
                                                 {/if}
                                             </td>
                                         </tr>

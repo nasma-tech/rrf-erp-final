@@ -69,7 +69,7 @@ class ContactProjects extends ControllerScheme
         ])->display('ContactProjects/edit-ContactProjects.tpl');
     }
 
-    public function ContactProjectDetail($id)
+    public function ContactProjectDetail($id): void
     {
         view->setPageTitle(self::pluralName);
         view->setSingleName(self::singleName);
@@ -88,7 +88,7 @@ class ContactProjects extends ControllerScheme
         ])->display('CustomerContactInformation/ContactProjectDetail.tpl');
     }
 
-    public function add()
+    public function add(): void
     {
         $data = $this->requestArray();
         $customerContact = new CustomerContactInformation();
