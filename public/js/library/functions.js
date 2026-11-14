@@ -575,6 +575,7 @@ const updateClock = () => {
 //     Swal.showValidationMessage(text);
 // };
 
+//expierd
 const formValidator = (formId) => {
     let checkOut;
     $("#" + formId).find(':input').each(function () {
