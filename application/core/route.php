@@ -105,7 +105,7 @@ $router->mount('/states', function () use ($router) {
         ],
         [
             'method' => 'GET',
-            'path' => '/getStates',
+            'path' => '/getStates(/\d+)',
             'action' => 'getStates'
         ]
     ]);
@@ -113,7 +113,7 @@ $router->mount('/states', function () use ($router) {
 $router->mount('/cities', function () use ($router) {
     dynamicRoute($router, cities::class, [
         [
-            'method' => 'GET',
+            'method' => 'POST',
             'path' => '/getFilterCities',
             'action' => 'getFilterCities'
         ],
@@ -365,4 +365,6 @@ $router->mount('/WorkGroups', function () use ($router) {
             'action' => 'getWorkGroupsIndex'
         ]
     ]);
+});$router->mount('/Warehouses', function () use ($router) {
+    dynamicRoute($router, App\Controllers\Warehouses\Warehouses::class);
 });
