@@ -271,17 +271,18 @@ class ControllerScheme
     /**
      * متدهای کمکی
      */
-    public function  requestArray(?string $key = null,mixed $default = null,?callable $callback = null
-    ): mixed {
+    public function requestArray(?string $key = null, mixed $default = null, ?callable $callback = null
+    ): mixed
+    {
         $method = strtoupper($_SERVER['REQUEST_METHOD'] ?? 'GET');
         $request = match ($method) {
-            'GET'  => $_GET,
+            'GET' => $_GET,
             'POST' => $_POST,
             'PUT', 'PATCH', 'DELETE' => $this->getRequestBody(),
             default => [],
         };
         if ($key === null) {
-            return $callback !== null ? $callback($request): $request;
+            return $callback !== null ? $callback($request) : $request;
         }
         $value = $request[$key] ?? $default;
         if ($value === null || (is_string($value) && trim($value) === '')) {
@@ -454,7 +455,7 @@ class ControllerScheme
     {
         $diff = array_diff(array_keys($required), array_keys($request));
         $errors = array_filter($required, function ($label, $key) use ($diff, $request) {
-            return in_array($key, $diff, true) || !isset($request[$key]) || trim((string)$request[$key]) === '';
+            return in_array($key, $diff, true) || !isset($request[$key]);
         }, ARRAY_FILTER_USE_BOTH);
         if (!empty($errors)) {
             handleHttpErrorView::handle(422, array_values($errors));

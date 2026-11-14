@@ -107,6 +107,11 @@ $router->mount('/states', function () use ($router) {
             'method' => 'GET',
             'path' => '/getStates',
             'action' => 'getStates'
+        ],
+        [
+            'method' => 'GET',
+            'path' => '/getStatesFilterByCountry',
+            'action' => 'getStatesFilterByCountry'
         ]
     ]);
 });
@@ -166,12 +171,17 @@ $router->mount('/UserContactTypes', function () use ($router) {
     dynamicRoute($router, App\Controllers\UserContactTypes\UserContactTypes::class);
 });
 $router->mount('/Products', function () use ($router) {
-    dynamicRoute($router, App\Controllers\Products\Products::class,[
+    dynamicRoute($router, App\Controllers\Products\Products::class, [
         [
-        'method' => 'GET',
-        'path' => '/getProductData',
-        'action' => 'getProductData'
-    ]
+            'method' => 'GET',
+            'path' => '/getProductDataFilterByBrand',
+            'action' => 'getProductDataFilterByBrand'
+        ],
+        [
+            'method' => 'GET',
+            'path' => '/getProductData',
+            'action' => 'getProductData'
+        ]
     ]);
 });
 $router->mount('/ProductGroup', function () use ($router) {
@@ -290,7 +300,7 @@ $router->mount('/FollowUpActionsTitle', function () use ($router) {
     dynamicRoute($router, App\Controllers\FollowUpActionsTitle\FollowUpActionsTitle::class);
 });
 $router->mount('/ContactPhones', function () use ($router) {
-    dynamicRoute($router, App\Controllers\ContactPhones\ContactPhones::class,[
+    dynamicRoute($router, App\Controllers\ContactPhones\ContactPhones::class, [
         [
             'method' => 'POST',
             'path' => "/checkNumberInput",
@@ -299,7 +309,7 @@ $router->mount('/ContactPhones', function () use ($router) {
     ]);
 });
 $router->mount('/Companies', function () use ($router) {
-    dynamicRoute($router, App\Controllers\Companies\Companies::class,[
+    dynamicRoute($router, App\Controllers\Companies\Companies::class, [
         [
             'method' => 'POST',
             'path' => "/addCompanies",
@@ -372,7 +382,7 @@ $router->mount('/WorkGroups', function () use ($router) {
     ]);
 });
 $router->mount('/PriceSuggestion', function () use ($router) {
-    dynamicRoute($router, App\Controllers\PriceSuggestion\PriceSuggestion::class,[
+    dynamicRoute($router, App\Controllers\PriceSuggestion\PriceSuggestion::class, [
         [
             'method' => 'GET',
             'path' => "/createPriceSuggestion/(\d+)/(\d+)",

@@ -2,7 +2,9 @@
 
 namespace App\Models\ProductModel;
 
+use App\Models\MeasurementUnitModel\MeasurementUnitModel;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
 class ProductModel extends Model
@@ -32,5 +34,10 @@ class ProductModel extends Model
         "complete_description",
         "user_id",
     ];
+
+    public function measurementUnitData(): HasOne
+    {
+        return $this->hasOne(MeasurementUnitModel::class,'id','measurement_unit_id');
+    }
 
 }

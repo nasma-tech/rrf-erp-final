@@ -1256,7 +1256,7 @@ $.fn.formValidate = function (showErrorMessage = true, exceptionValue = 'excepti
         } else {
             customAlert('error', `حجم فایل انتخابی بیشتر از ${maximumFileSize} مگابایت است.`);
         }
-    }else {
+    } else {
         swalValidate('موارد مشخص شده را پر کنید')
     }
 
@@ -1505,10 +1505,11 @@ $.fn.getOptions = function ({urlAddress, method = "GET", callback}) {
     });
 };
 
-$.fn.getOptionsValue = function ({urlAddress, method = "GET", callback}) {
+$.fn.getOptionsValue = function ({urlAddress, method = "GET", callback, dataSend = {}}) {
     $.ajax({
         url: urlAddress,
         type: method,
+        data: dataSend,
         dataType: 'json',
         success: result => {
             if (callback) {
