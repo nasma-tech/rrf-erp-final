@@ -74,12 +74,17 @@ class ContactProjectsFollowUp extends ControllerScheme
             'contact_project_id' => $data['contact_project_id'],
             'FollowUp_action_id' => $data['FollowUp_action_id'],
             'next_followUp_date' => dateTimeHelper->convertDateToTimestamp($data['next_followUp_date']),
-            'followUp_description' => $data['followUp_description'],
+            'followUp_description' => $data['followUp_description'] ?? "",
             'user_id' => userObject()->userId
         ];
         $add = ContactProjectsFollowUpModel::query()->create($makeData);
         if ($add) {
+            if ($data['FollowUp_action_id'] == 8){
+                $this->successCallBack("/PriceSuggestion/createPriceSuggestion/{$data['contact_project_id']}/{$add->id}", 'پیگیری با موفقیت اضافه شد');
+            }else{
+
             $this->successCallBack("/ContactProjects/ContactProjectDetail/{$data['contact_project_id']}", 'پیگیری با موفقیت اضافه شد');
+            }
         } else {
             $this->failedCallBack("/ContactProjects/ContactProjectDetail/{$data['contact_project_id']}", 'افزودن پیگیری با خطا مواجه شد');
         }
@@ -94,15 +99,15 @@ class ContactProjectsFollowUp extends ControllerScheme
                 'followUp_description' => 'توضیحات اجباری است'
             ], $data);
             $makeData = [
-                'contact_project_followUp_id'=>$data['contact_project_followUp_id'],
-                'followUp_description'=>$data['followUp_description'],
-                'action_time'=>time(),
-                'user_id'=>userObject()->userId,
+                'contact_project_followUp_id' => $data['contact_project_followUp_id'],
+                'followUp_description' => $data['followUp_description'],
+                'action_time' => time(),
+                'user_id' => userObject()->userId,
             ];
             ContactProjectsFollowUpActionsModel::query()->create($makeData);
-            $this->successCallBack("/ContactProjects/ContactProjectDetail/{$data['contact_project_id']}",'نتیجه پیگیری با موفقیت ثبت شد');
-        }catch (\Exception $exception){
-            $this->failedCallBack("/ContactProjects/ContactProjectDetail/{$data['contact_project_id']}",'برای این پیگیری قبلا نتیجه ثبت شده است');
+            $this->successCallBack("/ContactProjects/ContactProjectDetail/{$data['contact_project_id']}", 'نتیجه پیگیری با موفقیت ثبت شد');
+        } catch (\Exception $exception) {
+            $this->failedCallBack("/ContactProjects/ContactProjectDetail/{$data['contact_project_id']}", 'برای این پیگیری قبلا نتیجه ثبت شده است');
         }
 
     }

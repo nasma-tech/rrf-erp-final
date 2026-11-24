@@ -14,6 +14,7 @@ use App\Models\ProductPartModel\ProductPartModel;
 use App\Models\ProformaInvoiceDetailsModel\ProformaInvoiceDetailsModel;
 use App\Models\ProformaInvoiceLogModel\ProformaInvoiceLogModel;
 use App\Models\ProformaInvoiceProductsModel\ProformaInvoiceProductsModel;
+use App\Models\ProformaInvoiceSettingsModel\ProformaInvoiceSettingsModel;
 use App\Models\SaleContractsModel\SaleContractsModel;
 use App\Models\SalesTeamModel\SalesTeamModel;
 use App\Models\StateModel\StateModel;
@@ -123,8 +124,13 @@ class ProformaInvoiceModel extends Model
         return $this->hasMany(ProductPartModel::class, 'proforma_invoice_id', 'id');
     }
 
-    public function exitProductData()
+    public function exitProductData(): HasMany
     {
-        return $this->hasMany(ProductExitPartsModel::class,'id','proforma_invoice_id');
+        return $this->hasMany(ProductExitPartsModel::class,'proforma_invoice_id','id');
+    }
+
+    public function settings(): HasOne
+    {
+        return $this->hasOne(ProformaInvoiceSettingsModel::class ,'brand_id' , 'brand_id');
     }
 }
