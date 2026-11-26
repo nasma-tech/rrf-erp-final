@@ -779,7 +779,7 @@
 
                         <td>
                             <span class="pd-payment-date">
-                                {(($data.payment.date_deposit) ? jdate("Y/m/d",$data.payment.date_deposit) : '-')}
+                                {($data.payment.date_deposit)?jdate("Y/m/d",$data.payment.date_deposit):' - '}
                             </span>
                         </td>
 
