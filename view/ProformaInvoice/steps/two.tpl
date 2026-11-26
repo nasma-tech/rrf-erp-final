@@ -48,7 +48,7 @@
                                                 <option value="{$product.id}"
                                                         data-price="{$item.sale_price}"
                                                         data-unit="{$item.product.measurementUnit.label}"
-                                                        {if $product.id|default:'' == $item.id}selected{/if}>{$product.label}</option>
+                                                        {if $product.id|default:'' == $item.id}selected{/if}>{$product.serial_number} - {$product.label}</option>
                                             {/foreach}
                                         </select>
                                         <input class="form-control" dir="ltr"

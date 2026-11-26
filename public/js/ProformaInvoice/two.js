@@ -125,7 +125,7 @@ $(function () {
                     $(`#product_id_${rowCounter}`).append(`<option value="${item.id}" 
                         data-price="${item.unitPrice}"
                         data-unit="${item.unitName}"
-                        >${item.title}</option>`).select2({
+                        >${item.serialNumber} - ${item.title}</option>`).select2({
                         width: '100%'
                     })
                 })

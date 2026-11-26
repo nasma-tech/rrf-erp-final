@@ -139,6 +139,7 @@ class Products extends ControllerScheme
                 return [
                     'id' => $item['id'],
                     'title' => $item['label'],
+                    'serialNumber' => $item['serial_number'],
                     'unitPrice' => $item['sale_price'],
                     'unitName' => $item['measurement_unit']['label'],
                 ];
@@ -241,7 +242,7 @@ class Products extends ControllerScheme
 
     public function getRelatedProducts(int $productId)
     {
-        $get = ProductModel::getProductHierarchy($productId,true)->select([
+        $get = ProductModel::getProductHierarchy($productId, true)->select([
             'id'
         ]);
 
