@@ -1,4 +1,3 @@
-
 $(function () {
 
     const warehouseInquiryElement = (data) => {
@@ -86,27 +85,26 @@ $(function () {
         `;
     };
 
-    // حذف جداکننده اعداد
     $.fn.removeSeparator = function () {
         return Number(String(this.val() || 0).replaceAll(',', '')) || 0;
     };
 
-    // فرمت اعداد
     const numberFormat = (number) => {
         return Number(number).toLocaleString('en-US');
     };
 
-    // رویداد تغییر مقدار تخصیص
     $(document).on('input', '.allocationEnteredAmountInput', function () {
-        updateAllocation();
+
+        updateAllocation($(this));
+
     });
 
-    // دریافت موجودی انبار
     $("#allocationWarehouseId").on('change', async function () {
 
         let warehouseId = $(this).val();
 
         if (!warehouseId) {
+
             $("#allocationInquiryElement").hide().empty();
 
             $(".allocationEnteredAmountInput")
@@ -136,10 +134,15 @@ $(function () {
                     .html(warehouseInquiryElement(result));
 
                 $(".allocationEnteredAmountInput")
-                    .val("")
-                    .prop('disabled', false);
+                    .val("");
 
+                $(".allocationSelectInvoiceProduct")
+                    .prop({
+                        'disabled': false,
+                        'checked': false
+                    });
                 updateAllocation();
+
             }
 
         } catch (error) {
@@ -150,53 +153,55 @@ $(function () {
 
     });
 
-    // ماشین حساب تخصیص
-    function updateAllocation() {
+    function updateAllocation($changedInput = null) {
 
         let allocationData = {};
         let hasError = false;
+        let alertMessage = null;
 
         $.each($(".allocationEnteredAmountInput"), function () {
 
-            let id = $(this).data('id');
-            let productId = $(this).data('product_id');
+            let $input = $(this);
 
-            let enteredAmount = $(this).removeSeparator();
+            let id = $input.data('id');
+            let productId = $input.data('product_id');
+
+            let enteredAmount = $input.removeSeparator();
 
             let maxAmount = Number(
-                String($(this).data('max') || 0).replaceAll(',', '')
+                String($input.data('max') || 0).replaceAll(',', '')
             ) || 0;
 
-            let reservedAmount = $(`#allocationReservedAmountInput_${id}`)
-                .removeSeparator();
-
             // کنترل سقف تخصیص ردیف فاکتور
-            if (enteredAmount > maxAmount) {
-                $(this).addClass('is-invalid');
-                hasError = true;
-            } else {
-                $(this).removeClass('is-invalid');
+            if ($changedInput && $input.is($changedInput) && enteredAmount > maxAmount) {
+
+                enteredAmount = maxAmount;
+
+                $input.val(numberFormat(maxAmount));
+
+                alertMessage = 'مقدار تخصیص از سقف مجاز این محصول بیشتر است';
+
             }
 
-            // تجمیع مقدار تخصیص بر اساس محصول
             if (!allocationData[productId]) {
+
                 allocationData[productId] = {
                     total: 0,
                     inputs: []
                 };
+
             }
 
             allocationData[productId].total += enteredAmount;
 
             allocationData[productId].inputs.push({
                 id,
-                element: $(this),
+                element: $input,
                 amount: enteredAmount
             });
 
         });
 
-        // محاسبه مانده موجودی هر محصول
         $.each(allocationData, function (productId, value) {
 
             let availableAmount = $(`#warehouseInquiryItem_${productId}`)
@@ -204,19 +209,88 @@ $(function () {
 
             let remainingAmount = availableAmount - value.total;
 
-            // نمایش مانده
+            // جلوگیری از منفی شدن موجودی
+            if (remainingAmount < 0 && $changedInput) {
+
+                let changedProductId = $changedInput.data('product_id');
+
+                if (String(changedProductId) === String(productId)) {
+
+                    let currentAmount = $changedInput.removeSeparator();
+
+                    let otherAllocations = value.total - currentAmount;
+
+                    let maxAllowedAmount = Math.max(
+                        0,
+                        availableAmount - otherAllocations
+                    );
+
+                    $changedInput.val(numberFormat(maxAllowedAmount));
+
+                    alertMessage = 'مقدار تخصیص بیشتر از موجودی قابل تخصیص انبار است';
+
+                    return false;
+
+                }
+
+            }
+
+        });
+
+        if (alertMessage) {
+
+            customAlert('warning', alertMessage);
+
+        }
+
+        allocationData = {};
+
+        $.each($(".allocationEnteredAmountInput"), function () {
+
+            let productId = $(this).data('product_id');
+            let amount = $(this).removeSeparator();
+
+            if (!allocationData[productId]) {
+                allocationData[productId] = 0;
+            }
+
+            allocationData[productId] += amount;
+
+        });
+
+        $.each(allocationData, function (productId, totalAmount) {
+
+            let availableAmount = $(`#warehouseInquiryItem_${productId}`)
+                .removeSeparator();
+
+            let remainingAmount = availableAmount - totalAmount;
+
+            if (remainingAmount < 0) {
+                remainingAmount = 0;
+                hasError = true;
+            }
+
             $(`#warehouseInquiryRemaining_${productId}`)
                 .val(numberFormat(remainingAmount));
 
-            // کنترل موجودی انبار
-            $.each(value.inputs, function (key, input) {
+        });
 
-                if (remainingAmount < 0) {
-                    input.element.addClass('is-invalid');
-                    hasError = true;
-                }
+        $.each($(".allocationEnteredAmountInput"), function () {
 
-            });
+            let $input = $(this);
+
+            let maxAmount = Number(
+                String($input.data('max') || 0).replaceAll(',', '')
+            ) || 0;
+
+            let enteredAmount = $input.removeSeparator();
+
+            if (enteredAmount > maxAmount) {
+                $input.addClass('is-invalid');
+                hasError = true;
+            } else {
+                $input.removeClass('is-invalid');
+            }
 
         });
 
@@ -250,6 +324,48 @@ $(function () {
             return false;
         }
 
+
+        if ($(".allocationSelectInvoiceProduct:checked").length === 0) {
+            customAlert(
+                'warning',
+                'حداقل یک ردیف برای تخصیص انتخاب کنید'
+            );
+            return false;
+        }
+
     });
 
+    $(".allocationSelectInvoiceProduct").on('input', function () {
+        let id = $(this).data('id')
+        if ($(this).prop('checked')) {
+            $(`#allocationEnteredAmountInput_${id}`).prop('disabled', false).val('').trigger('input')
+        } else {
+            $(`#allocationEnteredAmountInput_${id}`).prop('disabled', true).val('').trigger('input')
+        }
+    })
+
+    $(".deleteAllocationPart").on('click', function () {
+        let id = $(this).data('id')
+
+        Swal.fire({
+            title: 'حذف پارت',
+            icon: "warning",
+            text: "از حذف پارت اطمینان دارید؟",
+            showDenyButton: true,
+            confirmButtonText: 'تایید',
+            denyButtonText: 'انصراف',
+            preConfirm: () => {
+                $.ajax({
+                    url: `/ProductPart/removeProductPartForm/${id}`,
+                    method: 'POST',
+                    data: {
+                        csrfToken: csrfToken()
+                    },
+                    success: result => {
+                        handeOfAjaxJsonResponse(result)
+                    }
+                })
+            }
+        })
+    })
 });

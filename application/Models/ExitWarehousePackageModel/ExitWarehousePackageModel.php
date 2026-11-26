@@ -2,8 +2,12 @@
 
 namespace App\Models\ExitWarehousePackageModel;
 
+use App\Controllers\ExitWarehouse\ExitWarehouse;
+use App\Models\ExitWarehouseModel\ExitWarehouseModel;
+use App\Models\ProductPartModel\ProductPartModel;
 use App\Models\WarehousesModel\WarehousesModel;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
@@ -17,7 +21,7 @@ class ExitWarehousePackageModel extends Model
 
     protected $fillable = [
         "warehouse_id",
-        "allocation_id",
+        "product_part_id",
         "title",
         "user_id",
         "updated_at",
@@ -27,6 +31,16 @@ class ExitWarehousePackageModel extends Model
     public function warehouse(): HasOne
     {
         return $this->hasOne(WarehousesModel::class, 'id', 'warehouse_id');
+    }
+
+    public function productPart(): HasOne
+    {
+        return $this->hasOne(ProductPartModel::class, 'id', 'product_part_id');
+    }
+
+    public function exitWarehouseItems(): HasMany
+    {
+        return $this->hasMany(ExitWarehouseModel::class, 'exit_package_id', 'id');
     }
 
 }
