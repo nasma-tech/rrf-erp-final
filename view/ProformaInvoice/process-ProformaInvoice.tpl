@@ -1,150 +1,141 @@
 {include 'sections/header.tpl'}
 {include 'sections/top-bar.tpl'}
 {include 'sections/side-menu.tpl'}
-
-{*<style>*}
-
-{*    /* =========================================*}
-{*       CANCELLED CONTRACT NOTICE*}
-{*    ========================================= */*}
-
-{*    .cc-contract-cancelled {*}
-{*        position: relative;*}
-{*        display: flex;*}
-{*        align-items: center;*}
-{*        gap: 16px;*}
-{*        width: 100%;*}
-{*        padding: 17px 20px;*}
-{*        margin-bottom: 18px;*}
-{*        overflow: hidden;*}
-{*        background: linear-gradient(110deg, #fffafa 0%, #fff3f2 100%);*}
-{*        border: 1px solid #f3d6d4;*}
-{*        border-right: 4px solid #d9534f;*}
-{*        border-radius: 10px;*}
-{*        box-shadow: 0 3px 12px rgba(180, 55, 55, .045);*}
-{*        direction: rtl;*}
-{*        box-sizing: border-box;*}
-{*    }*}
-
-{*    .cc-contract-cancelled-icon {*}
-{*        position: relative;*}
-{*        display: flex;*}
-{*        align-items: center;*}
-{*        justify-content: center;*}
-{*        width: 48px;*}
-{*        height: 48px;*}
-{*        flex-shrink: 0;*}
-{*        color: #c64b47;*}
-{*        background: #ffe8e6;*}
-{*        border: 1px solid #f7d1ce;*}
-{*        border-radius: 11px;*}
-{*        font-size: 27px;*}
-{*    }*}
-
-{*    .cc-contract-cancelled-mark {*}
-{*        position: absolute;*}
-{*        left: -5px;*}
-{*        top: -5px;*}
-{*        display: flex;*}
-{*        align-items: center;*}
-{*        justify-content: center;*}
-{*        width: 21px;*}
-{*        height: 21px;*}
-{*        color: #fff;*}
-{*        background: #d9534f;*}
-{*        border: 2px solid #fff;*}
-{*        border-radius: 50%;*}
-{*        font-size: 13px;*}
-{*    }*}
-
-{*    .cc-contract-cancelled-content {*}
-{*        flex: 1;*}
-{*        min-width: 0;*}
-{*    }*}
-
-{*    .cc-contract-cancelled-title {*}
-{*        display: flex;*}
-{*        align-items: center;*}
-{*        flex-wrap: wrap;*}
-{*        gap: 10px;*}
-{*    }*}
-
-{*    .cc-contract-cancelled-title strong {*}
-{*        color: #923b38;*}
-{*        font-size: 14px;*}
-{*        font-weight: 700;*}
-{*    }*}
-
-{*    .cc-contract-cancelled-badge {*}
-{*        display: inline-flex;*}
-{*        align-items: center;*}
-{*        gap: 5px;*}
-{*        padding: 4px 9px;*}
-{*        color: #c04440;*}
-{*        background: #ffe7e5;*}
-{*        border: 1px solid #f7d1ce;*}
-{*        border-radius: 20px;*}
-{*        font-size: 10px;*}
-{*        font-weight: 600;*}
-{*    }*}
-
-{*    .cc-contract-cancelled-content p {*}
-{*        margin: 8px 0 0;*}
-{*        color: #8b6664;*}
-{*        font-size: 12px;*}
-{*        line-height: 1.9;*}
-{*    }*}
-
-{*    .cc-contract-cancelled-content p strong {*}
-{*        color: #a9433f;*}
-{*        font-weight: 700;*}
-{*    }*}
-
-{*    .cc-contract-cancelled-lock {*}
-{*        display: flex;*}
-{*        align-items: center;*}
-{*        gap: 7px;*}
-{*        flex-shrink: 0;*}
-{*        padding: 9px 12px;*}
-{*        color: #a64b47;*}
-{*        background: rgba(217, 83, 79, .07);*}
-{*        border: 1px solid rgba(217, 83, 79, .13);*}
-{*        border-radius: 7px;*}
-{*        font-size: 11px;*}
-{*        font-weight: 600;*}
-{*    }*}
-
-{*    .cc-contract-cancelled-lock i {*}
-{*        font-size: 17px;*}
-{*    }*}
-
-{*    /* Responsive */*}
-
-{*    @media (max-width: 600px) {*}
-{*        .cc-contract-cancelled {*}
-{*            align-items: flex-start;*}
-{*            flex-wrap: wrap;*}
-{*            padding: 14px;*}
-{*            gap: 12px;*}
-{*        }*}
-
-{*        .cc-contract-cancelled-icon {*}
-{*            width: 42px;*}
-{*            height: 42px;*}
-{*            font-size: 23px;*}
-{*        }*}
-
-{*        .cc-contract-cancelled-content {*}
-{*            flex-basis: calc(100% - 58px);*}
-{*        }*}
-
-{*        .cc-contract-cancelled-lock {*}
-{*            margin-right: 54px;*}
-{*        }*}
-{*    }*}
-{*</style>*}
-
 <style>
+        .cc-contract-cancelled {
+            position: relative;
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            width: 100%;
+            padding: 17px 20px;
+            margin-bottom: 18px;
+            overflow: hidden;
+            background: linear-gradient(110deg, #fffafa 0%, #fff3f2 100%);
+            border: 1px solid #f3d6d4;
+            border-right: 4px solid #d9534f;
+            border-radius: 10px;
+            box-shadow: 0 3px 12px rgba(180, 55, 55, .045);
+            direction: rtl;
+            box-sizing: border-box;
+        }
+
+        .cc-contract-cancelled-icon {
+            position: relative;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 48px;
+            height: 48px;
+            flex-shrink: 0;
+            color: #c64b47;
+            background: #ffe8e6;
+            border: 1px solid #f7d1ce;
+            border-radius: 11px;
+            font-size: 27px;
+        }
+
+        .cc-contract-cancelled-mark {
+            position: absolute;
+            left: -5px;
+            top: -5px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 21px;
+            height: 21px;
+            color: #fff;
+            background: #d9534f;
+            border: 2px solid #fff;
+            border-radius: 50%;
+            font-size: 13px;
+        }
+
+        .cc-contract-cancelled-content {
+            flex: 1;
+            min-width: 0;
+        }
+
+        .cc-contract-cancelled-title {
+            display: flex;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+
+        .cc-contract-cancelled-title strong {
+            color: #923b38;
+            font-size: 14px;
+            font-weight: 700;
+        }
+
+        .cc-contract-cancelled-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+            padding: 4px 9px;
+            color: #c04440;
+            background: #ffe7e5;
+            border: 1px solid #f7d1ce;
+            border-radius: 20px;
+            font-size: 10px;
+            font-weight: 600;
+        }
+
+        .cc-contract-cancelled-content p {
+            margin: 8px 0 0;
+            color: #8b6664;
+            font-size: 12px;
+            line-height: 1.9;
+        }
+
+        .cc-contract-cancelled-content p strong {
+            color: #a9433f;
+            font-weight: 700;
+        }
+
+        .cc-contract-cancelled-lock {
+            display: flex;
+            align-items: center;
+            gap: 7px;
+            flex-shrink: 0;
+            padding: 9px 12px;
+            color: #a64b47;
+            background: rgba(217, 83, 79, .07);
+            border: 1px solid rgba(217, 83, 79, .13);
+            border-radius: 7px;
+            font-size: 11px;
+            font-weight: 600;
+        }
+
+        .cc-contract-cancelled-lock i {
+            font-size: 17px;
+        }
+
+        /* Responsive */
+
+        @media (max-width: 600px) {
+            .cc-contract-cancelled {
+                align-items: flex-start;
+                flex-wrap: wrap;
+                padding: 14px;
+                gap: 12px;
+            }
+
+            .cc-contract-cancelled-icon {
+                width: 42px;
+                height: 42px;
+                font-size: 23px;
+            }
+
+            .cc-contract-cancelled-content {
+                flex-basis: calc(100% - 58px);
+            }
+
+            .cc-contract-cancelled-lock {
+                margin-right: 54px;
+            }
+        }
 
     /* =========================================
        PREMIUM INFORMATION CARDS
