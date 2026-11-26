@@ -753,7 +753,13 @@ $router->mount('/AddendumSaleContracts', function () use ($router) {
 //
 //});
 $router->mount('/ProductPart', function () use ($router) {
-    dynamicRoute($router, App\Controllers\ProductPart\ProductPart::class);
+    dynamicRoute($router, App\Controllers\ProductPart\ProductPart::class, [
+        [
+            'method' => 'POST',
+            'path' => '/removeProductPartForm/(\d+)',
+            'action' => 'removeProductPartForm'
+        ]
+    ]);
 });
 $router->mount('/ProductExitParts', function () use ($router) {
     dynamicRoute($router, App\Controllers\ProductExitParts\ProductExitParts::class);
@@ -768,11 +774,11 @@ $router->mount('/CancelledSaleContracts', function () use ($router) {
     ]);
 });
 $router->mount('/CargoExit', function () use ($router) {
-    dynamicRoute($router, App\Controllers\CargoExit\CargoExit::class,[
+    dynamicRoute($router, App\Controllers\CargoExit\CargoExit::class, [
         [
-        'method' => 'POST',
-        'path' => '/removeCargoExitInfo',
-        'action' => 'removeCargoExitInfo'
-    ]
+            'method' => 'POST',
+            'path' => '/removeCargoExitInfo',
+            'action' => 'removeCargoExitInfo'
+        ]
     ]);
 });

@@ -44,7 +44,7 @@
                                                            readonly>
                                                 {/foreach}
                                             </td>
-                                            <td class="border">{$partItem.id}</td>
+                                            <td class="border">{$partItem.invoiceProduct.product.serial_number} - {$partItem.invoiceProduct.product.label}</td>
                                             <td class="border">{$partItem.amount}</td>
                                             <td class="border">{$partItem.invoiceProduct.product.measurementUnit.label}</td>
                                             <td class="border">

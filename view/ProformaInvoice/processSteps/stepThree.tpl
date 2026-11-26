@@ -28,8 +28,17 @@
                     <tbody>
                     {foreach $getData.invoiceProduct as $item}
                         {$allocationData = $getAllocationData[$item.id]|default:[]}
+                        {if $allocationData.remaining_amount > 0}
+                            {$showAddPartButton = true}
+                        {/if}
                         <tr>
-                            <td class="border">{counter}</td>
+                            <td class="border">
+                                <div class="checkbox checkbox-primary">
+                                    <input class="allocationSelectInvoiceProduct" data-id="{$item.id}" type="checkbox"
+                                           id="allocationSelectInvoiceProduct_{$item.id}" disabled>
+                                    <label for="allocationSelectInvoiceProduct_{$item.id}"></label>
+                                </div>
+                            </td>
                             <td class="border">{$item.product.serial_number} - {$item.product.label}</td>
                             <td class="border">
                                 <div class="input-group">
@@ -61,6 +70,7 @@
                                            data-product_id="{$item.product_id}"
                                            placeholder="{$numberNormalizer->floatNumberFormat($allocationData.remaining_amount)}"
                                            data-max="{$allocationData.remaining_amount}"
+                                           required
                                            disabled
                                            value="">
                                     <div class="input-group-append">
@@ -76,45 +86,80 @@
                     {/foreach}
                     </tbody>
                 </table>
-                <button type="submit" class="btn btn-sm btn-success" id="submitProductPart">ثبت پارت</button>
+                <button type="submit" {((!$showAddPartButton)?'disabled' :'' )}
+                        class="btn btn-sm btn-success float-right" id="submitProductPart">ثبت پارت
+                </button>
             </div>
         </div>
-        <div class="col-12">
-            <div class="divider">
-                <div class="divider-text">لیست پارت ها</div>
-            </div>
-        </div>
-        <div class="col-12">
-            {foreach $productPart as $productPartDatum}
-                <div class="table-responsive">
-                    <table class="table table-hover table-striped">
-                        <thead class="thead-dark">
-                        <tr>
-                            <th class="border">#</th>
-                            <th class="border">نام محصول</th>
-                            <th class="border">مقدار مقدار تخصیص داده شده</th>
-                        </tr>
-                        </thead>
-                        <tbody>
-                        {foreach $productPartDatum.productPartItems|default:[] as $key => $productPartItem}
-                            <tr>
-                                <td class="border">{$key + 1}</td>
-                                <td class="border">{$productPartItem.invoiceProduct.product.serial_number}
-                                    - {$productPartItem.invoiceProduct.product.label}</td>
-                                <td class="border">
-                                    <div class="input-group">
-                                        <input class="form-control" type="text" name="" id=""
-                                               readonly
-                                               value="{$numberNormalizer->floatNumberFormat($productPartItem.amount)}">
-                                        <span class="input-group-text">{$productPartItem.invoiceProduct.product.measurementUnit.label}</span>
-                                    </div>
-                                </td>
-                            </tr>
-                        {/foreach}
-                        </tbody>
-                    </table>
+        {if count($productPart) > 0}
+            <div class="col-12">
+                <div class="divider">
+                    <div class="divider-text">لیست پارت ها</div>
                 </div>
-            {/foreach}
-        </div>
+            </div>
+            <div class="col-12">
+                {foreach $productPart as $productPartDatum}
+                    <div class="table-responsive">
+                        <table class="table table-hover table-striped text-center">
+                            <thead class="thead-dark">
+                            <tr>
+                                <th class="border" colspan="4">
+                                    انبار: {$productPartDatum->warehouse->ware_house_name}
+                                </th>
+                            </tr>
+                            <tr>
+                                <th class="border">#</th>
+                                <th class="border">نام محصول</th>
+                                <th class="border">مقدار تخصیص داده شده</th>
+                                <th class="border">عملیات</th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            {foreach $productPartDatum.productPartItems|default:[] as $key => $productPartItem}
+                                <tr>
+                                    <td class="border">{$key + 1}</td>
+                                    <td class="border">{$productPartItem.invoiceProduct.product.serial_number}
+                                        - {$productPartItem.invoiceProduct.product.label}</td>
+                                    <td class="border">
+                                        <div class="input-group">
+                                            <input class="form-control" type="text" name="" id=""
+                                                   readonly
+                                                   value="{$numberNormalizer->floatNumberFormat($productPartItem.amount)}">
+                                            <span class="input-group-text">{$productPartItem.invoiceProduct.product.measurementUnit.label}</span>
+                                        </div>
+                                    </td>
+                                    <td class="border">
+                                        <button class="btn btn-icon rounded-circle btn-light-danger deleteAllocationPart"
+                                                data-id="{$productPartDatum.id}"
+                                                type="button"
+                                                data-toggle="tooltip" data-original-title="حذف پارت">
+                                            <i class="bx bx-trash"></i>
+                                        </button>
+                                    </td>
+                                </tr>
+                            {/foreach}
+                            </tbody>
+                        </table>
+                    </div>
+                {/foreach}
+            </div>
+        {else}
+            <div class="col-12">
+                <div class="card cc-convert-card">
+                    <div class="card-content">
+                        <div class="card-body">
+                            <div class="cc-convert-info">
+                                <div class="cc-convert-icon">
+                                    <i class="bx bx-package"></i>
+                                </div>
+                                <div class="cc-convert-text">
+                                    <h6>هنوز پارت ثبت شده ای وجود نداره!</h6>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        {/if}
     </div>
 </form>
