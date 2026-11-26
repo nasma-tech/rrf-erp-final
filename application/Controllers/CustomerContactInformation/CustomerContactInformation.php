@@ -201,6 +201,7 @@ class CustomerContactInformation extends ControllerScheme
                 'national_code' => $data['national_code'],
                 'state_id' => $data['state_id'],
                 'city_id' => $data['city_id'],
+                'address' => $data['realAddress'],
                 'user_id' => userObject()->userId,
             ];
             $mergeData = array_merge($subscriberData, $dataForm);
@@ -310,7 +311,6 @@ class CustomerContactInformation extends ControllerScheme
 
     public function add(): void
     {
-        $_ENV['APP_DEBUG'] = 1;
         $addContact = $this->addContactInfo();
         $this->addContactPhonesAndSocialNetWorks($addContact);
         $addContactProject = $this->addContactProject($addContact);

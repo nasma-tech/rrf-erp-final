@@ -148,7 +148,7 @@ class ProformaInvoice extends ControllerScheme
         $makeProformaInvoiceData = [
             'price_suggestion_id' => $data['price_suggestion_id'],
             'contact_id' => $data['contact_id'],
-            'company_id' => !empty($data['customer_company_id'])? $data['customer_company_id']: null,
+            'company_id' => !empty($data['customer_company_id']) ? $data['customer_company_id'] : null,
             'contact_project_followup_id' => $data['contact_project_followup_id'],
             'delivery_date' => $data['delivery_date'],
             'brand_id' => $data['brand_id'],
@@ -753,7 +753,6 @@ class ProformaInvoice extends ControllerScheme
                 'invoiceProduct',
                 'invoiceLog',
                 'contract',
-                'contract',
                 'exitProductData',
             ])
             ->withCount('invoiceProduct')
@@ -787,7 +786,7 @@ class ProformaInvoice extends ControllerScheme
                     'scriptFile' => 'js/ProformaInvoice/processSteps/stepOne',
                 ],
                 [
-                    'title' => 'قرارداد',
+                    'title' => 'قرارداد فروش',
                     'description' => 'مشاهده واریزی ها و تایید ها جهت تبدیل به قرارداد',
                     'icon' => 'bx-file-blank',
                     'stepFile' => 'view/ProformaInvoice/processSteps/stepTwo.tpl',
@@ -799,6 +798,13 @@ class ProformaInvoice extends ControllerScheme
                     'icon' => 'bx-package',
                     'stepFile' => 'view/ProformaInvoice/processSteps/stepThree.tpl',
                     'scriptFile' => 'js/ProformaInvoice/processSteps/stepThree',
+                    'conditions' => [
+                        [
+                            'condition' => $getData->contract,
+                            'errorLabel' => 'warning',
+                            'errorMessage' => "در انتظار تبدیل به قرارداد"
+                        ]
+                    ]
                 ],
                 [
                     'title' => 'اعلام خروج',
@@ -806,6 +812,13 @@ class ProformaInvoice extends ControllerScheme
                     'icon' => 'bx-log-out',
                     'stepFile' => 'view/ProformaInvoice/processSteps/stepFour.tpl',
                     'scriptFile' => 'js/ProformaInvoice/processSteps/stepFour',
+                    'conditions' => [
+                        [
+                            'condition' => $getData->contract,
+                            'errorLabel' => 'warning',
+                            'errorMessage' => "در انتظار تبدیل به قرارداد"
+                        ]
+                    ]
                 ],
                 [
                     'title' => 'اعلام آدرس',
@@ -813,6 +826,13 @@ class ProformaInvoice extends ControllerScheme
                     'icon' => 'bx-map',
                     'stepFile' => 'view/ProformaInvoice/processSteps/stepFive.tpl',
                     'scriptFile' => 'js/ProformaInvoice/processSteps/stepFive',
+                    'conditions' => [
+                        [
+                            'condition' => $getData->contract,
+                            'errorLabel' => 'warning',
+                            'errorMessage' => "در انتظار تبدیل به قرارداد"
+                        ]
+                    ]
                 ],
                 [
                     'title' => 'خروج بار',
@@ -820,6 +840,13 @@ class ProformaInvoice extends ControllerScheme
                     'icon' => 'bx-truck',
                     'stepFile' => 'view/ProformaInvoice/processSteps/stepSix.tpl',
                     'scriptFile' => 'js/ProformaInvoice/processSteps/stepSix',
+                    'conditions' => [
+                        [
+                            'condition' => $getData->contract,
+                            'errorLabel' => 'warning',
+                            'errorMessage' => "در انتظار تبدیل به قرارداد"
+                        ]
+                    ]
                 ],
             ];
 
@@ -856,6 +883,7 @@ class ProformaInvoice extends ControllerScheme
                             "state" => $getData->state ?? [],
                             'countries' => countryModel::query()->get() ?? [],
                             "city" => $getData->city ?? [],
+                            "showAddPartButton" => false,
                             "getAllocationData" => $this->getAllocationData($getData->id),
                             "productPart" => $getData->productPart ?? [],
                             "warehouses" => WarehousesModel::query()->whereJsonContains('warehouse_brand_ids', $getData->brand_id)->get(),
@@ -1168,7 +1196,9 @@ class ProformaInvoice extends ControllerScheme
             if ($this->addProductPart($invoiceId, $data['allocation_warehouse_id'], $data['allocation_data'])) {
                 $this->successCallBack("/ProformaInvoice/process/{$invoiceId}", 'پارت با موفقیت ثبت شد');
             }
-            $this->failedCallBack("/ProformaInvoice/process/{$invoiceId}", 'خطا در ثبت پارت');
+            $this->failedCallBack("/ProformaInvoice/process/{$invoiceId}", 'خطا در ثبت پارت، تخصیص محصولات بررسی شود');
+        } else {
+            $this->failedCallBack("/ProformaInvoice/process/{$invoiceId}", 'خطا در ثبت پارت، تخصیص محصولات بررسی شود');
         }
     }
 
@@ -1186,61 +1216,67 @@ class ProformaInvoice extends ControllerScheme
         $totalAllocation = [];
 
         foreach ($allocationData as $key => $item) {
-            $allocation = $getAllocationData[$key] ?? [];
-            $remaining = $allocation['remaining_amount'] - $item['amount'];
-            $getItem = ProformaInvoiceProductsModel::query()->find($key);
+            if (isset($item['amount']) && $item['amount'] && $item['amount'] > 0) {
+                $allocation = $getAllocationData[$key] ?? [];
+                $remaining = $allocation['remaining_amount'] - $item['amount'];
+                $getItem = ProformaInvoiceProductsModel::query()->find($key);
 
-            if ($remaining < 0 || !$getItem) {
-                throw new \Exception('allocation validation failed');
-            }
-
-            isset($totalAllocation[$getItem->product_id])
-                ? $totalAllocation[$getItem->product_id] += $item['amount']
-                : $totalAllocation[$getItem->product_id] = $item['amount'];
-        }
-
-        foreach ($totalAllocation as $key => $item) {
-            $warehouseData = $getInventoryInquiryByInvoice[$key] ?? [];
-
-            if ($warehouseData) {
-                $remaining = $warehouseData['summary']['total_remaining'];
-                $remainingWarehouse = $remaining - $item;
-
-                if ($remainingWarehouse < 0) {
+                if ($remaining < 0 || !$getItem) {
                     throw new \Exception('allocation validation failed');
                 }
+
+                isset($totalAllocation[$getItem->product_id])
+                    ? $totalAllocation[$getItem->product_id] += $item['amount']
+                    : $totalAllocation[$getItem->product_id] = $item['amount'];
             }
         }
 
-        $addPart = $productPart->addProductPart($invoiceId, $warehouseId);
+        if ($totalAllocation) {
+            foreach ($totalAllocation as $key => $item) {
+                $warehouseData = $getInventoryInquiryByInvoice[$key] ?? [];
 
+                if ($warehouseData) {
+                    $remaining = $warehouseData['summary']['total_remaining'];
+                    $remainingWarehouse = $remaining - $item;
 
-        if (!$addPart) {
-            return false;
-        }
-
-        $addExit = $exitWarehouse->addExitPackage($warehouseId, "تخصیص پیش فاکتور $invoice->invoice_number");
-
-        if (!$addExit) {
-            return false;
-        }
-
-        foreach ($allocationData as $proformaInvoiceProductId => $allocationDatum) {
-            $getProductItem = ProformaInvoiceProductsModel::query()->find($proformaInvoiceProductId);
-            if ($getProductItem) {
-                if (
-                    !$productPart->addProductPartItem(
-                        $addPart->id,
-                        $proformaInvoiceProductId,
-                        $allocationDatum['amount']
-                    ) || !$exitWarehouse->addExitProduct(
-                        $addExit->id,
-                        $getProductItem->product_id,
-                        $allocationDatum['amount'],
-                    )) {
-                    throw new \Exception('failed to add product part item');
+                    if ($remainingWarehouse < 0) {
+                        throw new \Exception('allocation validation failed');
+                    }
                 }
             }
+
+            $addPart = $productPart->addProductPart($invoiceId, $warehouseId);
+
+
+            if (!$addPart) {
+                return false;
+            }
+
+            $addExit = $exitWarehouse->addExitPackage($warehouseId, "تخصیص پیش فاکتور $invoice->invoice_number", $addPart->id);
+
+            if (!$addExit) {
+                return false;
+            }
+
+            foreach ($allocationData as $proformaInvoiceProductId => $allocationDatum) {
+                $getProductItem = ProformaInvoiceProductsModel::query()->find($proformaInvoiceProductId);
+                if ($getProductItem) {
+                    if (
+                        !$productPart->addProductPartItem(
+                            $addPart->id,
+                            $proformaInvoiceProductId,
+                            $allocationDatum['amount']
+                        ) || !$exitWarehouse->addExitProduct(
+                            $addExit->id,
+                            $getProductItem->product_id,
+                            $allocationDatum['amount'],
+                        )) {
+                        throw new \Exception('failed to add product part item');
+                    }
+                }
+            }
+        } else {
+            return false;
         }
 
         return true;

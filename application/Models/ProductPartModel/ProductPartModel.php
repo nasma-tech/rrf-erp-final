@@ -2,10 +2,12 @@
 
 namespace App\Models\ProductPartModel;
 
+use App\Models\ExitWarehousePackageModel\ExitWarehousePackageModel;
 use App\Models\ProductExitPartsModel\ProductExitPartsModel;
 use App\Models\ProductPartItemModel\ProductPartItemModel;
 use App\Models\ProformaInvoiceModel\ProformaInvoiceModel;
 use App\Models\UserModel\UserModel;
+use App\Models\WarehousesModel\WarehousesModel;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\HasOne;
@@ -34,17 +36,26 @@ class ProductPartModel extends Model
 
     public function proformaInvoice(): HasOne
     {
-        return $this->hasOne(ProformaInvoiceModel::class,'id','proforma_invoice_id');
+        return $this->hasOne(ProformaInvoiceModel::class, 'id', 'proforma_invoice_id');
     }
 
     public function productExitPart(): HasOne
     {
-        return $this->hasOne(ProductExitPartsModel::class,'product_part_id','id');
+        return $this->hasOne(ProductExitPartsModel::class, 'product_part_id', 'id');
     }
 
     public function expert(): HasOne
     {
-        return $this->hasOne(UserModel::class,'id','user_id');
+        return $this->hasOne(UserModel::class, 'id', 'user_id');
     }
 
+    public function warehouse(): HasOne
+    {
+        return $this->hasOne(WarehousesModel::class, 'id', 'warehouse_id');
+    }
+
+    public function exitWarehousePackage(): HasOne
+    {
+        return $this->hasOne(ExitWarehousePackageModel::class, 'product_part_id', 'id');
+    }
 }
