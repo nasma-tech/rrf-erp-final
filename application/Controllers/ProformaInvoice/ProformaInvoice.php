@@ -31,6 +31,7 @@ use App\Models\StateModel\StateModel;
 use App\Models\WarehousesModel\WarehousesModel;
 use JetBrains\PhpStorm\NoReturn;
 use Mpdf\MpdfException;
+use Packages\Http\Response;
 use const Dom\VALIDATION_ERR;
 
 class ProformaInvoice extends ControllerScheme
@@ -1387,6 +1388,17 @@ class ProformaInvoice extends ControllerScheme
             $mpdf->Output('quotation.pdf', 'I');
 
         }
+    }
+
+    public function getInvoiceList(): void
+    {
+        Response::success(
+            ProformaInvoiceModel::query()
+                ->select([
+                    'id',
+                    'invoice_number as invoiceNumber'
+                ])->get()->toArray()
+        );
     }
 
 }

@@ -150,6 +150,110 @@ $(function () {
         }
     }
 
+    const allocationForm = () => {
+        return `
+            <div class="card w-100 border">
+                <div class="card-header border-bottom">
+                    <h6 class="card-title">مانده واریزی : <span>100,000,00</span></h6>
+                </div>
+                <div class="card-content" style="height: 400px;overflow-y: auto">
+                    <div class="card-body">
+                        <div class="row w-100">
+                            <div class="col-md-12">
+                                <div class="table-responsive mt-3">
+                                    <table class="table table-striped table-hover">
+                                        <thead class="thead-dark">
+                                            <tr>
+                                                <th class="border" width="50">#</th>
+                                                <th class="border" width="200">پیشفاکتور</th>
+                                                <th class="border" width="200">نوع واریزی</th>
+                                                <th class="border" width="200">مقدار تخصیص واریزی</th>
+                                                <th class="border" width="100">حذف</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody id="allocationTableBody"></tbody>
+                                        <tfoot class="thead-dark">
+                                            <tr>
+                                                <th class="border" colspan="2">مجموع</th>
+                                                <th class="border" id="sumTableFooter" colspan="2">0</th>
+                                                <th class="border">ریال</th>
+                                            </tr>
+                                        </tfoot>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="card-footer d-flex justify-content-end border-top">
+                    <button class="btn btn-sm btn-primary" type="button" id="addedAllocationToListButton">افزودن به لیست تخصیص</button>
+                </div>
+            </div>
+        `
+    }
+
+    const countTr = () => {
+        let countRow = 1;
+        $("#allocationTableBody tr").each(function () {
+            $(this).find('td').eq(0).text(countRow)
+            countRow++;
+        })
+    }
+
+    const allocationTrBodyForm = (counter) => {
+
+        $.ajax({
+            url:'/ProformaInvoice/getInvoiceList',
+            success:result=>{
+                console.log(result)
+                // $(`#invoice_id_${counter}`).append()
+            }
+        })
+        return `
+            <tr>
+                <td class="border"></td>
+                <td class="border">
+                    <select class="form-control invoiceSelectId" id="invoice_id_${counter}" name=""></select>
+                </td>
+                <td class="border">
+                    <select class="form-control" id="payment_allocation_type_id_${counter}"></select>
+                </td>
+                <td class="border">
+                    <div class="input-group">
+                        <input class="form-control">
+                        <div class="input-group-append">
+                            <span class="input-group-text">ریال</span>
+                        </div>
+                    </div>
+                </td>
+                <td class="border">
+                    <button class="btn btn-sm btn-light-danger btn-icon w-100 removeAllocationRowButton" type="button">
+                        <i class="bx bx-trash"></i>
+                    </button>
+                </td>
+            </tr>
+        `
+    }
+    swal.fire({
+        title: '<h6>تخصیص به پیشفاکتور</h6>',
+        html: allocationForm(),
+        width: '70%',
+        confirmButtonText: 'تایید',
+        didOpen: () => {
+            let count = 1;
+            $("#addedAllocationToListButton").on('click', function () {
+                $("#allocationTableBody").append(allocationTrBodyForm(count))
+                $('#allocationTableBody > tr:last').find('select').first().focus();
+                countTr()
+                count++;
+            })
+
+            $("#allocationTableBody").on('click', '.removeAllocationRowButton', function () {
+                $(this).closest('tr').remove()
+                countTr()
+            })
+        }
+    })
     let counterCard = $(".mainPaid").length;
     $("#addPaymentRow").on('click', function () {
         const buttonsList = () => {
@@ -248,14 +352,20 @@ $(function () {
                                     setTimeout(function () {
                                         $("#mainPaid_" + thisFormCounter).remove()
                                     }, 1000)
+                                    swal.fire({
+                                        title: '<h6>تخصیص به پیشفاکتور</h6>',
+                                        html: allocationForm(),
+                                        width: '70%',
+                                        confirmButtonText: 'تایید',
+                                    })
                                 } else {
-                                    customAlert('error','خطا در ثبت')
+                                    customAlert('error', 'خطا در ثبت')
                                 }
                             }
                         })
                     })
-                    $("#cheque_number_"+counterCard).numberInput(16)
-                    $("#cheque_amount_"+counterCard).priceInput()
+                    $("#cheque_number_" + counterCard).numberInput(16)
+                    $("#cheque_amount_" + counterCard).priceInput()
                     counterCard++
                 }
             }

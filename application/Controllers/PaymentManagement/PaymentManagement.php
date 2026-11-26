@@ -124,7 +124,6 @@ class PaymentManagement extends ControllerScheme
      */
     public function add()
     {
-        $_ENV['APP_DEBUG'] = 1;
         $this->validateCSRF();
         $request = $this->requestArray();
         $output = [

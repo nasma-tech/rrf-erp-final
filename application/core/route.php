@@ -259,6 +259,11 @@ $router->mount('/ProformaInvoice', function () use ($router) {
             'path' => '/ExportInvoice(/\d+)',
             'action' => 'ExportInvoice'
         ],
+        [
+            'method' => 'GET',
+            'path' => '/getInvoiceList',
+            'action' => 'getInvoiceList'
+        ],
     ]);
 });
 $router->mount('/Companies', function () use ($router) {
@@ -768,11 +773,11 @@ $router->mount('/CancelledSaleContracts', function () use ($router) {
     ]);
 });
 $router->mount('/CargoExit', function () use ($router) {
-    dynamicRoute($router, App\Controllers\CargoExit\CargoExit::class,[
+    dynamicRoute($router, App\Controllers\CargoExit\CargoExit::class, [
         [
-        'method' => 'POST',
-        'path' => '/removeCargoExitInfo',
-        'action' => 'removeCargoExitInfo'
-    ]
+            'method' => 'POST',
+            'path' => '/removeCargoExitInfo',
+            'action' => 'removeCargoExitInfo'
+        ]
     ]);
 });
