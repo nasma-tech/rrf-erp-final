@@ -54,4 +54,41 @@ class ProductPart extends ControllerScheme
             "user_id" => userObject()->userId,
         ]);
     }
+
+    public function removeProductPartForm(int $partId)
+    {
+        csrf->csrfValidate();
+        echo json_encode($this->removeProductPart($partId), JSON_UNESCAPED_UNICODE);
+    }
+
+    public function removeProductPart(int $partId)
+    {
+        $get = $this->defaultModel::query()->find($partId);
+        $output = $this->defaultOutput();
+
+        if ($get) {
+            $exitPart = $get->productExitPart;
+
+            if (!$exitPart) {
+                $exitWarehousePackage = $get->exitWarehousePackage;
+                //productPart
+                $get->delete();
+                $get->productPartItems()->delete();
+                
+                //exitWarehouse
+                if ($exitWarehousePackage) {
+                    $exitWarehousePackage->delete();
+                    $exitWarehousePackage->exitWarehouseItems()->delete();
+                }
+
+                $output = $this->successOutput('حذف پارت انجام شد');
+            } else {
+                $output['message'] = 'پارت دارای خروج می باشد';
+            }
+        } else {
+            $output['message'] = 'پارت یافت نشد';
+        }
+
+        return $output;
+    }
 }

@@ -37,11 +37,11 @@ class ExitWarehouse extends ControllerScheme
             ])->display('ExitWarehouse/ExitWarehouse.tpl');
     }
 
-    public function addExitPackage(int $warehouseId, string $title, int|null $allocationId = null)
+    public function addExitPackage(int $warehouseId, string $title, int|null $partId = null)
     {
         return ExitWarehousePackageModel::query()->create([
             'warehouse_id' => $warehouseId,
-            'allocation_id' => $allocationId,
+            'product_part_id' => $partId,
             'title' => $title,
             'user_id' => userObject()->userId
         ]);
