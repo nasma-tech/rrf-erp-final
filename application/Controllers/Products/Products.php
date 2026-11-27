@@ -390,6 +390,7 @@ class Products extends ControllerScheme
             ])
             ->with([
                 'measurementUnit:id,label',
+                'productChildren:id,product_id,label,unit_id,convert_ratio',
             ])
             ->when(!empty($selectedBrands), function ($query) use ($selectedBrands) {
                 $query->whereIn(
@@ -399,11 +400,20 @@ class Products extends ControllerScheme
             })
             ->get()
             ->map(function ($product) {
+
                 return [
                     'id' => $product->id,
                     'title' => $product->label,
                     'serial_number' => $product->serial_number,
                     'unit_title' => $product->measurementUnit?->label,
+                    'children' => $product->productChildren->map(function ($child) {
+                        return [
+                            'id' => $child->id,
+                            'label' => $child->label,
+                            'unit_id' => $child->unit_id,
+                            'convert_ratio' => $child->convert_ratio,
+                        ];
+                    })->values(),
                 ];
             });
 

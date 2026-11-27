@@ -19,6 +19,7 @@ class EntryWarehouseModel extends Model
     protected $fillable = [
         "entry_package_id",
         "product_id",
+        "product_child_id",
         "amount",
         "unit_id",
         "user_id",

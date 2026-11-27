@@ -88,4 +88,13 @@ class ProductModel extends Model
         return $this->hasMany(ProductModel::class, 'parent_id');
     }
 
+    public function productChildren(): HasMany
+    {
+        return $this->hasMany(
+            ProductChildModel::class,
+            'product_id',
+            'id'
+        );
+    }
+
 }
