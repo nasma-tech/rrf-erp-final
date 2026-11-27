@@ -1580,7 +1580,7 @@ class ProformaInvoice extends ControllerScheme
                     return [
                         'description' => $item->product->label,
                         'quantity' => $item->amount,
-                        'unit' => $item->product->measurementUnit->label,
+                        'unit' => $item->unit()->label,
                         'unit_price' => $item->total_unit_price,
                         'total' => $item->total_product_price,
                     ];

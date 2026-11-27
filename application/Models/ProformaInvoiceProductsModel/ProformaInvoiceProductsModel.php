@@ -2,6 +2,8 @@
 
 namespace App\Models\ProformaInvoiceProductsModel;
 
+use App\Models\MeasurementUnitModel\MeasurementUnitModel;
+use App\Models\ProductChildModel\ProductChildModel;
 use App\Models\ProductModel\ProductModel;
 use App\Models\ProductPartItemModel\ProductPartItemModel;
 use Illuminate\Database\Eloquent\Model;
@@ -44,5 +46,19 @@ class ProformaInvoiceProductsModel extends Model
     public function allocation(): HasMany
     {
         return $this->hasMany(ProductPartItemModel::class, 'invoice_product_id', 'id');
+    }
+
+    public function productChild(): HasOne
+    {
+        return $this->hasOne(ProductChildModel::class, 'id', 'product_child_id');
+    }
+
+    public function unit(): ?MeasurementUnitModel
+    {
+        if ($this->product_child_id) {
+            return $this->productChild?->measurementUnit;
+        }
+
+        return $this->product?->measurementUnit;
     }
 }
