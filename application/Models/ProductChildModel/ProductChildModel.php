@@ -2,7 +2,9 @@
 
 namespace App\Models\ProductChildModel;
 
+use App\Models\MeasurementUnitModel\MeasurementUnitModel;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
 class ProductChildModel extends Model
@@ -27,5 +29,10 @@ class ProductChildModel extends Model
         "updated_at",
         "deleted_at",
     ];
+
+    public function measurementUnit(): BelongsTo
+    {
+        return $this->belongsTo(MeasurementUnitModel::class, 'unit_id');
+    }
 
 }

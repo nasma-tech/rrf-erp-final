@@ -64,8 +64,8 @@ class PriceSuggestion extends ControllerScheme
                 'brands' => brandsModel::query()->get(),
                 'countries' => CountryModel::query()->get(),
                 'states' => StateModel::query()->where('country_id', 102)->get(),
-                'saleTeams'=>SalesTeamModel::query()->get(),
-                'marketers'=>marketersModel::query()->get()
+                'saleTeams' => SalesTeamModel::query()->get(),
+                'marketers' => marketersModel::query()->get()
             ]
         )->display('PriceSuggestion/add|edit-PriceSuggestion.tpl');
     }
@@ -96,8 +96,8 @@ class PriceSuggestion extends ControllerScheme
             'states' => StateModel::query()->where('country_id', 102)->get(),
             'cities' => CityModel::query()->where('state_id', $getData->state_id)->get(),
             'products' => ProductModel::query()->where('brand_id', $getData->brand_id)->get(),
-            'saleTeams'=>SalesTeamModel::query()->get(),
-            'marketers'=>marketersModel::query()->get()
+            'saleTeams' => SalesTeamModel::query()->get(),
+            'marketers' => marketersModel::query()->get()
         ])->display('PriceSuggestion/add|edit-PriceSuggestion.tpl');
     }
 
@@ -149,6 +149,8 @@ class PriceSuggestion extends ControllerScheme
                 $makeProduct = [
                     'price_suggestion_id' => $addPriceSuggestion->id,
                     'product_id' => $item['product_id'],
+                    'product_child_id' => $item['product_child_id'] ?: null,
+                    'unit_id' => $item['unit_id'],
                     'amount' => numberNormalizer->removePriceSeparator($item['product_amount']),
                     'unit_price' => numberNormalizer->removePriceSeparator($item['product_unit_price']),
                     'discount_type' => (($item['discount_type']) ?: 'noDiscount'),
@@ -167,15 +169,20 @@ class PriceSuggestion extends ControllerScheme
 
     }
 
+
     public function updatePriceSuggestion($id): void
     {
         csrf->csrfValidate();
+
         $find = PriceSuggestionModel::query()->find($id);
+
         if ($find) {
             $data = $this->requestArray();
+
             $this->checkRequired([
                 'productList' => 'محصولات انتخاب نشده است',
             ], $data);
+
             $makeData = [
                 'brand_id' => $data['brand_id'] ?? null,
                 'sale_team_id' => $data['sale_team_id'] ?? null,
@@ -187,35 +194,50 @@ class PriceSuggestion extends ControllerScheme
                 'day_validity' => $data['day_validity'],
                 'day_validity_timestamp' => time() + $data['day_validity'] * 86400,
             ];
-            $update = PriceSuggestionModel::query()->find($id)->update($makeData);
+
+            $update = $find->update($makeData);
+
             if ($update) {
                 $makeProducts = [];
+
                 foreach ($data['productList'] as $item) {
                     $unitDiscount = 0;
+
                     if ($item['discount_type'] == 'percentage') {
-                        $unitDiscount = (numberNormalizer->removePriceSeparator($item['discount_unit_amount']) * numberNormalizer->removePriceSeparator($item['product_unit_price']) / 100);
+                        $unitDiscount = (
+                            numberNormalizer->removePriceSeparator($item['discount_unit_amount']) *
+                            numberNormalizer->removePriceSeparator($item['product_unit_price']) / 100
+                        );
                     } else if ($item['discount_type'] == 'cash') {
-                        $unitDiscount = numberNormalizer->removePriceSeparator($item['discount_unit_amount']);
+                        $unitDiscount = numberNormalizer->removePriceSeparator(
+                            $item['discount_unit_amount']
+                        );
                     }
+
                     $makeProducts[] = [
-                        'id' => $item['productId'] ?? null,
+                        'id' => !empty($item['productId']) ? $item['productId'] : null,
                         'price_suggestion_id' => $id,
                         'product_id' => $item['product_id'],
+                        'product_child_id' => !empty($item['product_child_id']) ? $item['product_child_id'] : null,
+                        'unit_id' => $item['unit_id'],
                         'amount' => numberNormalizer->removePriceSeparator($item['product_amount']),
                         'unit_price' => numberNormalizer->removePriceSeparator($item['product_unit_price']),
-                        'discount_type' => (($item['discount_type']) ?: 'noDiscount'),
+                        'discount_type' => $item['discount_type'] ?: 'noDiscount',
                         'discount_unit_amount' => numberNormalizer->removePriceSeparator($item['discount_unit_amount']),
                         'discount_unit_amount_cash' => $unitDiscount,
                         'discount_amount' => numberNormalizer->removePriceSeparator($item['discount_amount']),
                         'total_unit_price' => numberNormalizer->removePriceSeparator($item['unit_price_after_discount']),
-                        'total_product_price' => numberNormalizer->removePriceSeparator($item['product_amount']) * (numberNormalizer->removePriceSeparator($item['unit_price_after_discount'])),
+                        'total_product_price' => numberNormalizer->removePriceSeparator($item['product_amount']) * numberNormalizer->removePriceSeparator($item['unit_price_after_discount']),
                     ];
                 }
+
                 PriceSuggestionProductModel::query()->upsert(
                     $makeProducts,
                     ['id'],
                     [
                         'product_id',
+                        'product_child_id',
+                        'unit_id',
                         'amount',
                         'unit_price',
                         'discount_type',
@@ -226,13 +248,20 @@ class PriceSuggestion extends ControllerScheme
                         'total_product_price',
                     ]
                 );
-                $this->successCallBack("/ContactProjects/ContactProjectDetail/{$find->contact_project_id}", 'پیشنهاد قیمت با موفقیت ویرایش شد');
+
+                $this->successCallBack(
+                    "/ContactProjects/ContactProjectDetail/{$find->contact_project_id}",
+                    'پیشنهاد قیمت با موفقیت ویرایش شد'
+                );
             } else {
-                $this->failedCallBack("/PriceSuggestion/createPriceSuggestion/{$find->contact_project_id}/{$find->contact_project_followup_id}", 'خطا در ویرایش پیشنهاد قیمت');
+                $this->failedCallBack(
+                    "/PriceSuggestion/createPriceSuggestion/{$find->contact_project_id}/{$find->contact_project_followup_id}",
+                    'خطا در ویرایش پیشنهاد قیمت'
+                );
             }
         }
-
     }
+
 
     public function removeProductRow(): void
     {

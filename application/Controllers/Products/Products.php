@@ -344,21 +344,44 @@ class Products extends ControllerScheme
 
     public function getProductDataFilterByBrand(): void
     {
-        $brandId = $this->requestArray()['brandId'];
-        if ($brandId) {
-            echo json_encode(array_map(function ($item) {
-                return [
-                    'id' => $item['id'],
-                    'title' => $item['label'],
-                    'serialNumber' => $item['serial_number'],
-                    'unitPrice' => $item['sale_price'],
-                    'unitName' => $item['measurement_unit']['label'],
-                ];
-            }, ProductModel::query()
-                ->with([
-                    'measurementUnit'
-                ])->where('brand_id', $brandId)->get()->toArray()));
+        $brandId = $this->requestArray()['brandId'] ?? null;
+
+        if (!$brandId) {
+            echo json_encode([]);
+            return;
         }
+
+        $products = ProductModel::query()
+            ->with([
+                'measurementUnit',
+                'productChildren.measurementUnit',
+            ])
+            ->where('brand_id', $brandId)
+            ->get();
+
+        $result = $products->map(function ($item) {
+            return [
+                'id' => $item->id,
+                'title' => $item->label,
+                'serialNumber' => $item->serial_number,
+                'unitPrice' => $item->sale_price,
+                'unitId' => $item->measurement_unit_id,
+                'unitName' => $item->measurementUnit?->label,
+                'productChildId' => null,
+                'children' => $item->productChildren->map(function ($child) {
+                    return [
+                        'id' => $child->id,
+                        'label' => $child->label,
+                        'unitId' => $child->unit_id,
+                        'unitName' => $child->measurementUnit?->label,
+                        'unitPrice' => $child->sale_price,
+                        'convertRatio' => $child->convert_ratio,
+                    ];
+                })->values(),
+            ];
+        })->values();
+
+        echo json_encode($result);
     }
 
     public function getProductData(): void
