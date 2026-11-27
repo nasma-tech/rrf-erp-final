@@ -142,6 +142,126 @@
                     </div>
                 </div>
 
+                <div class="card shadow mt-1">
+                    <div class="card-header">
+                        <h4 class="card-title">بسته‌بندی‌های محصول</h4>
+                    </div>
+
+                    <div class="card-body">
+                        <div class="alert alert-info">
+                            <i class="bx bx-info-circle"></i>
+                            قیمت بسته‌بندی‌ها بر اساس نرخ تبدیل و قیمت‌های محصول اصلی محاسبه می‌شوند.
+                        </div>
+
+                        <div id="productChildrenContainer"></div>
+
+                        <div class="d-flex justify-content-end mt-2">
+                            <button type="button" id="addProductChildButton"
+                                    class="btn btn-sm btn-secondary">
+                                افزودن بسته‌بندی
+                                <i class="bx bx-plus"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <template id="productChildTemplate">
+                    <div class="product-child-item border rounded p-2 mb-2">
+                        <div class="d-flex justify-content-between align-items-center mb-2">
+                            <strong class="product-child-title">بسته‌بندی جدید</strong>
+
+                            <button type="button"
+                                    class="btn btn-sm btn-danger remove-product-child">
+                                حذف بسته‌بندی
+                                <i class="bx bx-trash"></i>
+                            </button>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-3 mt-1">
+                                <label>عنوان بسته ‌بندی</label>
+                                <input type="text"
+                                       class="form-control"
+                                       data-child-field="label"
+                                       required>
+                            </div>
+
+                            <div class="col-md-3 mt-1">
+                                <label>واحد بسته‌بندی</label>
+                                <select class="form-control select2"
+                                        data-child-field="unit_id"
+                                        required>
+                                    <option selected disabled>لطفا یک مورد را انتخاب کنید</option>
+                                    {foreach $measurement_unit as $unit}
+                                        <option value="{$unit->id}">{$unit->label}</option>
+                                    {/foreach}
+                                </select>
+                            </div>
+
+                            <div class="col-md-3 mt-1">
+                                <label>نرخ تبدیل</label>
+                                <div class="input-group">
+                                    <input type="text"
+                                           class="form-control product-child-ratio"
+                                           data-child-field="convert_ratio"
+                                           required>
+                                    <div class="input-group-append">
+                                        <span class="input-group-text parent-unit-label">واحد محصول</span>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="col-md-3 mt-1 d-flex align-items-end">
+                                <div class="custom-control checkbox checkbox-primary mb-2">
+                                    <input type="checkbox"
+                                           class="custom-control-input"
+                                           data-child-field="saleable"
+                                           checked>
+
+                                    <label class="custom-control-label">
+                                        قابل فروش
+                                    </label>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="row mt-2">
+                            <div class="col-md-4 mt-1">
+                                <label>بهای تمام‌شده</label>
+                                <div class="input-group">
+                                    <input type="text"
+                                           class="form-control child-cost-price">
+                                    <div class="input-group-append">
+                                        <span class="input-group-text">ریال</span>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="col-md-4 mt-1">
+                                <label>قیمت فروش</label>
+                                <div class="input-group">
+                                    <input type="text"
+                                           class="form-control child-sale-price">
+                                    <div class="input-group-append">
+                                        <span class="input-group-text">ریال</span>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="col-md-4 mt-1">
+                                <label>قیمت مصرف‌کننده</label>
+                                <div class="input-group">
+                                    <input type="text"
+                                           class="form-control child-customer-price">
+                                    <div class="input-group-append">
+                                        <span class="input-group-text">ریال</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </template>
+
                 <div class="card mt-1">
                     <div class="card-body">
                         <label class="form-label">گالری تصاویر محصول</label>

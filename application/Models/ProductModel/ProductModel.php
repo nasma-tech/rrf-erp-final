@@ -4,6 +4,7 @@ namespace App\Models\ProductModel;
 
 use App\Models\brandsModel\brandsModel;
 use App\Models\MeasurementUnitModel\MeasurementUnitModel;
+use App\Models\ProductChildModel\ProductChildModel;
 use App\Models\ProductGradeModel\ProductGradeModel;
 use App\Models\ProductGroupModel\ProductGroupModel;
 use App\Models\ProductQualitiesModel\ProductQualitiesModel;
@@ -45,13 +46,13 @@ class ProductModel extends Model
 
     public function scopeSaleable($query)
     {
-        if (userObject()->userId <= 0){
-        return $query->where('saleable', 1);
-        }
-        else{
-            return  $query;
+        if (userObject()->userId <= 0) {
+            return $query->where('saleable', 1);
+        } else {
+            return $query;
         }
     }
+
     public function measurementUnit(): BelongsTo
     {
         return $this->belongsTo(MeasurementUnitModel::class, 'measurement_unit_id');
@@ -85,6 +86,15 @@ class ProductModel extends Model
     public function children(): HasMany
     {
         return $this->hasMany(ProductModel::class, 'parent_id');
+    }
+
+    public function productChildren(): HasMany
+    {
+        return $this->hasMany(
+            ProductChildModel::class,
+            'product_id',
+            'id'
+        );
     }
 
     public static function getProductHierarchy(

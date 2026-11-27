@@ -6,10 +6,12 @@ use App\Controllers\scheme\ControllerScheme;
 use App\Models\brandsModel\brandsModel;
 use App\Models\MeasurementUnitModel\MeasurementUnitModel;
 use App\Models\priceChangeLogsModel\priceChangeLogsModel;
+use App\Models\ProductChildModel\ProductChildModel;
 use App\Models\ProductGradeModel\ProductGradeModel;
 use App\Models\ProductGroupModel\ProductGroupModel;
 use App\Models\ProductModel\ProductModel;
 use App\Models\ProductQualitiesModel\ProductQualitiesModel;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Validation\Rule;
 
 class Products extends ControllerScheme
@@ -72,7 +74,7 @@ class Products extends ControllerScheme
         view->setSingleName(self::singleName);
         view->setPluralName(self::pluralName);
         //name this model
-        view->setModel();
+        view->setModel($this->defaultModel::query()->find($id));
         view->ui([
             //'js/Products/edit-Products'
         ], [], [
@@ -80,9 +82,65 @@ class Products extends ControllerScheme
         ])->display('Products/edit-Products.tpl');
     }
 
+//    public function add()
+//    {
+//        csrf->csrfValidate();
+//        $data = $this->requestArray();
+//
+//        $needle = [
+//            "parent_id",
+//            "parent_unit_ratio",
+//            "label",
+//            "serial_number",
+//            "group_id",
+//            "brand_id",
+//            "quality_level_id",
+//            "measurement_unit_id",
+//            "cost_price",
+//            "sale_price",
+//            "customer_price",
+//            "description",
+//            "complete_description",
+//        ];
+//
+//        if (validator->validateRequestsData($needle)) {
+//            $files = fileHelper->normalizeUploadedFiles('images');
+//
+//            $add = $this->defaultModel::query()->create([
+//                "parent_id" => ($data['parent_id'] ?: null),
+//                "parent_unit_ratio" => numberNormalizer->removePriceSeparator(($data['parent_unit_ratio'] ?: 0)),
+//                "label" => trim($data['label']),
+//                "serial_number" => trim($data['serial_number']),
+//                "group_id" => $data['group_id'],
+//                "brand_id" => $data['brand_id'],
+//                "quality_level_id" => $data['quality_level_id'],
+//                "measurement_unit_id" => $data['measurement_unit_id'],
+//                "cost_price" => numberNormalizer->removePriceSeparator($data['cost_price']),
+//                "sale_price" => numberNormalizer->removePriceSeparator($data['sale_price']),
+//                "customer_price" => numberNormalizer->removePriceSeparator($data['customer_price']),
+//                "description" => trim($data['description']),
+//                "complete_description" => trim($data['complete_description']),
+//                "user_id" => userObject()->userId
+//            ]);
+//
+//            if ($add) {
+//                $add->update([
+//                    'file_address' => fileHelper->uploadMultipleFiles("Products", $files, $add->id)
+//                ]);
+//                $this->priceChangeLog($add->id);
+//                $this->successCallBack("/Products/main");
+//            }
+//        }
+//    }
+
+
+    /**
+     * @throws \Throwable
+     */
     public function add()
     {
         csrf->csrfValidate();
+
         $data = $this->requestArray();
 
         $needle = [
@@ -93,6 +151,7 @@ class Products extends ControllerScheme
             "group_id",
             "brand_id",
             "quality_level_id",
+            "grade_id",
             "measurement_unit_id",
             "cost_price",
             "sale_price",
@@ -102,33 +161,87 @@ class Products extends ControllerScheme
         ];
 
         if (validator->validateRequestsData($needle)) {
-            $files = fileHelper->normalizeUploadedFiles('images');
 
-            $add = $this->defaultModel::query()->create([
-                "parent_id" => ($data['parent_id'] ?: null),
-                "parent_unit_ratio" => numberNormalizer->removePriceSeparator(($data['parent_unit_ratio'] ?: 0)),
-                "label" => trim($data['label']),
-                "serial_number" => trim($data['serial_number']),
-                "group_id" => $data['group_id'],
-                "brand_id" => $data['brand_id'],
-                "quality_level_id" => $data['quality_level_id'],
-                "measurement_unit_id" => $data['measurement_unit_id'],
-                "cost_price" => numberNormalizer->removePriceSeparator($data['cost_price']),
-                "sale_price" => numberNormalizer->removePriceSeparator($data['sale_price']),
-                "customer_price" => numberNormalizer->removePriceSeparator($data['customer_price']),
-                "description" => trim($data['description']),
-                "complete_description" => trim($data['complete_description']),
-                "user_id" => userObject()->userId
-            ]);
+            $files = fileHelper->normalizeUploadedFiles('images');
+            $add = $this->defaultModel::query()->getConnection()->transaction(function () use ($data) {
+
+                $add = $this->defaultModel::query()->create([
+                    "parent_id" => ($data['parent_id'] ?: null),
+                    "parent_unit_ratio" => numberNormalizer->removePriceSeparator($data['parent_unit_ratio'] ?: 0),
+                    "label" => trim($data['label']),
+                    "serial_number" => trim($data['serial_number']),
+                    "group_id" => $data['group_id'],
+                    "brand_id" => $data['brand_id'],
+                    "quality_level_id" => $data['quality_level_id'],
+                    "grade_id" => $data['grade_id'],
+                    "measurement_unit_id" => $data['measurement_unit_id'],
+                    "cost_price" => numberNormalizer->removePriceSeparator($data['cost_price']),
+                    "sale_price" => numberNormalizer->removePriceSeparator($data['sale_price']),
+                    "customer_price" => numberNormalizer->removePriceSeparator($data['customer_price']),
+                    "description" => trim($data['description']),
+                    "complete_description" => trim($data['complete_description']),
+                    "user_id" => userObject()->userId
+                ]);
+                if (!$add) {
+                    throw new \RuntimeException('ثبت محصول با شکست مواجه شد.');
+                }
+
+                $productChildren = $data['product_children'] ?? [];
+
+                foreach ($productChildren as $child) {
+
+                    $convertRatio = (float)numberNormalizer->removePriceSeparator(
+                        $child['convert_ratio']
+                    );
+
+                    if ($convertRatio <= 0) {
+                        throw new \InvalidArgumentException(
+                            'نرخ تبدیل بسته‌بندی باید بزرگ‌تر از صفر باشد.'
+                        );
+                    }
+
+                    ProductChildModel::query()->create([
+                        "product_id" => $add->id,
+                        "label" => trim($child['label']),
+                        "unit_id" => $child['unit_id'],
+                        "convert_ratio" => $convertRatio,
+                        "cost_price" => round(
+                            (float)$add->cost_price * $convertRatio,
+                            2
+                        ),
+                        "sale_price" => round(
+                            (float)$add->sale_price * $convertRatio,
+                            2
+                        ),
+                        "customer_price" => round(
+                            (float)$add->customer_price * $convertRatio,
+                            2
+                        ),
+                        "saleable" => !empty($child['saleable']),
+                        "user_id" => userObject()->userId,
+                    ]);
+                }
+
+                return $add;
+            });
 
             if ($add) {
                 $add->update([
-                    'file_address' => fileHelper->uploadMultipleFiles("Products", $files, $add->id)
+                    'file_address' => fileHelper->uploadMultipleFiles(
+                        "Products",
+                        $files,
+                        $add->id
+                    )
                 ]);
                 $this->priceChangeLog($add->id);
                 $this->successCallBack("/Products/main");
             }
         }
+    }
+
+    public function edit($id)
+    {
+
     }
 
     public function getProductDataFilterByBrand(): void
