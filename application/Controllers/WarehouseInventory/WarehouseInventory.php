@@ -6,6 +6,7 @@ use App\Controllers\scheme\ControllerScheme;
 use App\Models\EntryWarehouseModel\EntryWarehouseModel;
 use App\Models\ExitWarehouseModel\ExitWarehouseModel;
 use App\Models\ProductModel\ProductModel;
+use InvalidArgumentException;
 
 class WarehouseInventory extends ControllerScheme
 {
@@ -221,17 +222,17 @@ class WarehouseInventory extends ControllerScheme
             ->toArray();
 
         $summary = [
-            'total_entry' => 0,
-            'total_reserved' => 0,
-            'total_exit' => 0,
-            'total_remaining' => 0,
+            'base_total_entry' => 0,
+            'base_total_reserved' => 0,
+            'base_total_exit' => 0,
+            'base_total_remaining' => 0,
         ];
 
         foreach ($inventoryBuckets as $bucket) {
-            $summary['total_entry'] += $bucket['base_total_entry'];
-            $summary['total_reserved'] += $bucket['base_total_reserved'];
-            $summary['total_exit'] += $bucket['base_total_exit'];
-            $summary['total_remaining'] += $bucket['base_total_remaining'];
+            $summary['base_total_entry'] += $bucket['base_total_entry'];
+            $summary['base_total_reserved'] += $bucket['base_total_reserved'];
+            $summary['base_total_exit'] += $bucket['base_total_exit'];
+            $summary['base_total_remaining'] += $bucket['base_total_remaining'];
         }
 
         $entryPackages = $getEntry
@@ -281,4 +282,177 @@ class WarehouseInventory extends ControllerScheme
             'summary' => $summary
         ];
     }
+
+    public function checkProductAvailability(
+        int        $productId,
+        int|null   $productChildId,
+        float      $requestAmount,
+        array|null $warehouseIds = null
+    ): array
+    {
+        if ($requestAmount <= 0) {
+            throw new InvalidArgumentException('مقدار درخواست باید بیشتر از صفر باشد.');
+        }
+
+        $product = ProductModel::query()
+            ->with([
+                'measurementUnit:id,label',
+                'productChildren' => fn($query) => $query->select([
+                    'id',
+                    'product_id',
+                    'label',
+                    'unit_id',
+                    'convert_ratio',
+                ]),
+            ])
+            ->find($productId);
+
+        if (!$product) {
+            throw new InvalidArgumentException('محصول موردنظر یافت نشد.');
+        }
+
+        $selectedChild = null;
+
+        if ($productChildId !== null) {
+            $selectedChild = $product->productChildren
+                ->firstWhere('id', $productChildId);
+
+            if (!$selectedChild) {
+                throw new InvalidArgumentException(
+                    'بسته‌بندی انتخاب‌شده معتبر نیست.'
+                );
+            }
+        }
+
+        $convertRatio = (float)(
+            $selectedChild?->convert_ratio ?? 1
+        );
+
+        if ($convertRatio <= 0) {
+            throw new InvalidArgumentException(
+                'نسبت تبدیل بسته‌بندی معتبر نیست.'
+            );
+        }
+
+        // دریافت موجودی واحد انتخاب‌شده و سایر واحدها
+        $inventory = $this->inventoryInquiry(
+            $productId,
+            $warehouseIds,
+            $productChildId
+        );
+
+        $selectedInventory = $inventory['selected_inventory'];
+
+        $selectedAvailable = (float)(
+            $selectedInventory['total_remaining'] ?? 0
+        );
+
+        // مرحله اول: بررسی موجودی واحد انتخاب‌شده
+        $selectedSufficient = $selectedAvailable >= $requestAmount;
+
+        $requestedBaseAmount = $requestAmount * $convertRatio;
+
+        $result = [
+            'product' => [
+                'id' => $product->id,
+                'title' => $product->label,
+                'base_unit' => $product->measurementUnit?->label,
+            ],
+
+            'requested' => [
+                'product_child_id' => $productChildId,
+                'label' => $selectedChild?->label
+                    ?? $product->measurementUnit?->label,
+                'amount' => $requestAmount,
+                'convert_ratio' => $convertRatio,
+                'base_amount' => $requestedBaseAmount,
+            ],
+
+            'selected_inventory' => [
+                'available' => $selectedAvailable,
+                'sufficient' => $selectedSufficient,
+                'shortage' => max(0, $requestAmount - $selectedAvailable),
+            ],
+
+            'availability' => [
+                'status' => null,
+                'can_fulfill' => false,
+                'checked_by' => null,
+                'requested_base_amount' => $requestedBaseAmount,
+                'available_base_amount' => null,
+            ],
+
+            'other_packaging_inventory' => [],
+        ];
+
+        if ($selectedSufficient) {
+            $result['availability'] = [
+                'status' => 'available',
+                'can_fulfill' => true,
+                'checked_by' => 'selected_unit',
+                'requested_base_amount' => $requestedBaseAmount,
+                'available_base_amount' =>
+                    (float)($selectedInventory['base_total_remaining'] ?? 0),
+            ];
+
+            return $result;
+        }
+
+        $summary = $inventory['summary'];
+
+        $totalBaseAvailable = (float)(
+            $summary['base_total_remaining'] ?? 0
+        );
+
+        $canFulfill = $totalBaseAvailable >= $requestedBaseAmount;
+
+        $result['availability'] = [
+            'status' => $canFulfill ? 'alternative_available' : 'unavailable',
+            'can_fulfill' => $canFulfill,
+            'checked_by' => 'all_units',
+            'requested_base_amount' => $requestedBaseAmount,
+            'available_base_amount' => $totalBaseAvailable,
+            'shortage_base_amount' => max(
+                0,
+                $requestedBaseAmount - $totalBaseAvailable
+            ),
+        ];
+
+        $result['other_packaging_inventory'] = array_map(
+            static fn($item) => [
+                'product_child_id' => $item['product_child_id'],
+                'label' => $item['label'],
+                'available' => $item['total_remaining'],
+                'base_available' => $item['base_total_remaining'],
+            ],
+            $inventory['other_packaging_inventory']
+        );
+
+        return $result;
+    }
+
+
+    //************** ajax endpoints **************//
+
+    public function checkProductAvailabilityForm(): void
+    {
+        csrf->csrfValidate();
+        $data = $this->requestArray();
+        $output = $this->defaultOutput();
+
+        $needle = [
+            'product_id',
+            'product_child_id',
+            'request_amount'
+        ];
+
+        if (validator->validateRequestsData($needle)) {
+            $output = $this->checkProductAvailability($data['product_id'], ($data['product_child_id'] ?: null), $data['request_amount']);
+        }
+
+        echo json_encode($output, JSON_UNESCAPED_UNICODE);
+    }
+
+    //************** ajax endpoints **************//
+
 }

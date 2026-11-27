@@ -363,14 +363,35 @@ class Products extends ControllerScheme
 
     public function getProductData(): void
     {
-        echo json_encode(array_map(function ($item) {
-            return [
-                'id' => $item['id'],
-                'title' => $item['label'],
+        $products = ProductModel::query()
+            ->select([
+                'id',
+                'label',
+                'measurement_unit_id',
+            ])
+            ->with([
+                'measurementUnit:id,label',
+                'productChildren:id,product_id,label,unit_id,convert_ratio',
+            ])
+            ->get()
+            ->map(function ($product) {
+                return [
+                    'id' => $product->id,
+                    'title' => $product->label,
+                    'unit_title' => $product->measurementUnit?->label,
 
-            ];
-        }, ProductModel::query()
-            ->get()->toArray()));
+                    'children' => $product->productChildren->map(function ($child) {
+                        return [
+                            'id' => $child->id,
+                            'label' => $child->label,
+                            'unit_id' => $child->unit_id,
+                            'convert_ratio' => $child->convert_ratio,
+                        ];
+                    })->values(),
+                ];
+            });
+
+        echo json_encode($products, JSON_UNESCAPED_UNICODE);
     }
 
     //************** ajax endpoints **************//

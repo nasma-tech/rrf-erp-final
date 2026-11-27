@@ -631,7 +631,13 @@ $router->mount('/ExitWarehouse', function () use ($router) {
     dynamicRoute($router, App\Controllers\ExitWarehouse\ExitWarehouse::class);
 });
 $router->mount('/WarehouseInventory', function () use ($router) {
-    dynamicRoute($router, App\Controllers\WarehouseInventory\WarehouseInventory::class);
+    dynamicRoute($router, App\Controllers\WarehouseInventory\WarehouseInventory::class, [
+        [
+            'method' => 'POST',
+            'path' => "/checkProductAvailabilityForm",
+            'action' => 'checkProductAvailabilityForm'
+        ]
+    ]);
 });
 $router->mount('/marketers', function () use ($router) {
     dynamicRoute($router, App\Controllers\marketers\marketers::class, [
