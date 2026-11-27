@@ -12,6 +12,7 @@ use App\Controllers\roles\roles;
 use App\Controllers\states\states;
 use App\Controllers\Units\Units;
 use App\Controllers\users\users;
+use App\Controllers\WarehouseInventory\WarehouseInventory;
 use App\Controllers\WorkGroups\WorkGroups;
 use Packages\View\handleHttpErrorView;
 
@@ -781,4 +782,9 @@ $router->mount('/CargoExit', function () use ($router) {
             'action' => 'removeCargoExitInfo'
         ]
     ]);
+});
+$router->get('/valad', function () {
+    $instance = new WarehouseInventory();
+
+    echo json_encode($instance->inventoryInquiry(13), JSON_UNESCAPED_UNICODE);
 });
