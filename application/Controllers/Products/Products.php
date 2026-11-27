@@ -7,12 +7,11 @@ use App\Models\brandsModel\brandsModel;
 use App\Models\MeasurementUnitModel\MeasurementUnitModel;
 use App\Models\priceChangeLogsModel\priceChangeLogsModel;
 use App\Models\ProductChildModel\ProductChildModel;
+use App\Models\productChildPriceChangeLogModel\productChildPriceChangeLogModel;
 use App\Models\ProductGradeModel\ProductGradeModel;
 use App\Models\ProductGroupModel\ProductGroupModel;
 use App\Models\ProductModel\ProductModel;
 use App\Models\ProductQualitiesModel\ProductQualitiesModel;
-use Illuminate\Support\Facades\DB;
-use Illuminate\Validation\Rule;
 
 class Products extends ControllerScheme
 {
@@ -49,95 +48,56 @@ class Products extends ControllerScheme
         view->setPageTitle(self::pluralName);
         view->setSingleName(self::singleName);
         view->setPluralName(self::pluralName);
+
         view->ui([
             'vendors/js/charts/apextree.min',
             'vendors/js/splide/splide.min',
-            'js/Products/add-Products'
+            'js/Products/addOrEdit-Products'
         ], [
             'vendors/css/splide/splide.min',
             'css/Products/add-Products'
-        ],
-            [
-                "parentProducts" => ProductModel::all(),
-                "productGroups" => ProductGroupModel::all(),
-                'measurement_unit' => measurementUnitModel::all(),
-                'brands' => brandsModel::all(),
-                'productQualities' => ProductQualitiesModel::all(),
-                'productGrades' => ProductGradeModel::all()
-            ]
-        )->display('Products/add-Products.tpl');
+        ], [
+            "parentProducts" => ProductModel::all(),
+            "productGroups" => ProductGroupModel::all(),
+            'measurement_unit' => measurementUnitModel::all(),
+            'brands' => brandsModel::all(),
+            'productQualities' => ProductQualitiesModel::all(),
+            'productGrades' => ProductGradeModel::all()
+        ])->display('Products/addOrEdit-Products.tpl');
     }
 
     public function editIndex($id)
     {
+        $getData = $this->defaultModel::query()
+            ->with('productChildren')
+            ->findOrFail($id);
+
         view->setPageTitle(self::pluralName);
         view->setSingleName(self::singleName);
         view->setPluralName(self::pluralName);
-        //name this model
-        view->setModel($this->defaultModel::query()->find($id));
+        view->setModel($getData);
+
         view->ui([
-            //'js/Products/edit-Products'
-        ], [], [
-            //var
-        ])->display('Products/edit-Products.tpl');
+            'vendors/js/charts/apextree.min',
+            'vendors/js/splide/splide.min',
+            'js/Products/addOrEdit-Products'
+        ], [
+            'vendors/css/splide/splide.min',
+            'css/Products/add-Products'
+        ], [
+            "parentProducts" => ProductModel::where('id', '!=', $id)->get(),
+            "productGroups" => ProductGroupModel::all(),
+            'measurement_unit' => measurementUnitModel::all(),
+            'brands' => brandsModel::all(),
+            'productQualities' => ProductQualitiesModel::all(),
+            'productGrades' => ProductGradeModel::all()
+        ])->display('Products/addOrEdit-Products.tpl');
     }
-
-//    public function add()
-//    {
-//        csrf->csrfValidate();
-//        $data = $this->requestArray();
-//
-//        $needle = [
-//            "parent_id",
-//            "parent_unit_ratio",
-//            "label",
-//            "serial_number",
-//            "group_id",
-//            "brand_id",
-//            "quality_level_id",
-//            "measurement_unit_id",
-//            "cost_price",
-//            "sale_price",
-//            "customer_price",
-//            "description",
-//            "complete_description",
-//        ];
-//
-//        if (validator->validateRequestsData($needle)) {
-//            $files = fileHelper->normalizeUploadedFiles('images');
-//
-//            $add = $this->defaultModel::query()->create([
-//                "parent_id" => ($data['parent_id'] ?: null),
-//                "parent_unit_ratio" => numberNormalizer->removePriceSeparator(($data['parent_unit_ratio'] ?: 0)),
-//                "label" => trim($data['label']),
-//                "serial_number" => trim($data['serial_number']),
-//                "group_id" => $data['group_id'],
-//                "brand_id" => $data['brand_id'],
-//                "quality_level_id" => $data['quality_level_id'],
-//                "measurement_unit_id" => $data['measurement_unit_id'],
-//                "cost_price" => numberNormalizer->removePriceSeparator($data['cost_price']),
-//                "sale_price" => numberNormalizer->removePriceSeparator($data['sale_price']),
-//                "customer_price" => numberNormalizer->removePriceSeparator($data['customer_price']),
-//                "description" => trim($data['description']),
-//                "complete_description" => trim($data['complete_description']),
-//                "user_id" => userObject()->userId
-//            ]);
-//
-//            if ($add) {
-//                $add->update([
-//                    'file_address' => fileHelper->uploadMultipleFiles("Products", $files, $add->id)
-//                ]);
-//                $this->priceChangeLog($add->id);
-//                $this->successCallBack("/Products/main");
-//            }
-//        }
-//    }
-
 
     /**
      * @throws \Throwable
      */
-    public function add()
+    public function add(): void
     {
         csrf->csrfValidate();
 
@@ -239,9 +199,147 @@ class Products extends ControllerScheme
         }
     }
 
-    public function edit($id)
+    /**
+     * @throws \Throwable
+     */
+    public function edit($id): void
     {
+        csrf->csrfValidate();
 
+        $data = $this->requestArray();
+
+        $needle = [
+            "parent_id",
+            "parent_unit_ratio",
+            "label",
+            "serial_number",
+            "group_id",
+            "brand_id",
+            "quality_level_id",
+            "grade_id",
+            "measurement_unit_id",
+            "cost_price",
+            "sale_price",
+            "customer_price",
+            "description",
+            "complete_description",
+        ];
+
+        if (!validator->validateRequestsData($needle)) {
+            return;
+        }
+
+        $add = $this->defaultModel::query()->find($id);
+
+        if (!$add) {
+            throw new \RuntimeException('محصول موردنظر پیدا نشد.');
+        }
+
+        $add->getConnection()->transaction(function () use ($add, $data) {
+
+            $add->update([
+                "parent_id" => ($data['parent_id'] ?: null),
+                "parent_unit_ratio" => numberNormalizer->removePriceSeparator($data['parent_unit_ratio'] ?: 0),
+                "label" => trim($data['label']),
+                "serial_number" => trim($data['serial_number']),
+                "group_id" => $data['group_id'],
+                "brand_id" => $data['brand_id'],
+                "quality_level_id" => $data['quality_level_id'],
+                "grade_id" => $data['grade_id'],
+                "measurement_unit_id" => $data['measurement_unit_id'],
+                "cost_price" => numberNormalizer->removePriceSeparator($data['cost_price']),
+                "sale_price" => numberNormalizer->removePriceSeparator($data['sale_price']),
+                "customer_price" => numberNormalizer->removePriceSeparator($data['customer_price']),
+                "description" => trim($data['description']),
+                "complete_description" => trim($data['complete_description']),
+            ]);
+
+            $productChildren = $data['product_children'] ?? [];
+            $savedChildIds = [];
+
+            foreach ($productChildren as $child) {
+
+                $convertRatio = (float)numberNormalizer->removePriceSeparator(
+                    $child['convert_ratio'] ?? 0
+                );
+
+                if ($convertRatio <= 0) {
+                    throw new \InvalidArgumentException(
+                        'نرخ تبدیل بسته‌بندی باید بزرگ‌تر از صفر باشد.'
+                    );
+                }
+
+                $childData = [
+                    "label" => trim($child['label']),
+                    "unit_id" => $child['unit_id'],
+                    "convert_ratio" => $convertRatio,
+                    "cost_price" => numberNormalizer->removePriceSeparator($child['cost_price'] ?? 0),
+                    "sale_price" => numberNormalizer->removePriceSeparator($child['sale_price'] ?? 0),
+                    "customer_price" => numberNormalizer->removePriceSeparator($child['customer_price'] ?? 0),
+                    "saleable" => !empty($child['saleable']),
+                ];
+
+                $childId = (int)($child['id'] ?? 0);
+
+                if ($childId > 0) {
+
+                    $productChild = $add->productChildren()
+                        ->where('id', $childId)
+                        ->first();
+
+                    if (!$productChild) {
+                        throw new \InvalidArgumentException(
+                            'بسته‌بندی ارسالی متعلق به این محصول نیست.'
+                        );
+                    }
+
+                    $productChild->update($childData);
+
+                } else {
+
+                    $productChild = $add->productChildren()->create([
+                        ...$childData,
+                        "user_id" => userObject()->userId,
+                    ]);
+                }
+
+                $savedChildIds[] = $productChild->id;
+
+                $this->childPriceChangeLog($productChild->id);
+            }
+
+            $removedChildren = $add->productChildren();
+
+            if (!empty($savedChildIds)) {
+                $removedChildren->whereNotIn('id', $savedChildIds);
+            }
+
+            $removedChildren->delete();
+        });
+
+        $this->priceChangeLog($add->id);
+
+        $this->successCallBack("/Products/main", "رکورد با موفقیت ویرایش شد");
+    }
+
+
+    //************** ajax endpoints **************//
+
+    public function getProductsFilterForm(): void
+    {
+        csrf->csrfValidate();
+        $data = $this->requestArray();
+        $output = $this->defaultOutput();
+
+        $needle = [
+            'selectedBrands'
+        ];
+
+        if (validator->validateRequestsData($needle)) {
+            $output = $this->getProductsFilter($data['selectedBrands']);
+        }
+
+        echo json_encode($output, JSON_UNESCAPED_UNICODE);
     }
 
     public function getProductDataFilterByBrand(): void
@@ -275,42 +373,18 @@ class Products extends ControllerScheme
             ->get()->toArray()));
     }
 
-    public function priceChangeLog(int $productId, string|null $modifiedAt = null): bool
+    //************** ajax endpoints **************//
+
+
+    //************** methods **************//
+
+    public function getRelatedProducts(int $productId): void
     {
-        $get = $this->defaultModel::query()->find($productId);
+        $get = ProductModel::getProductHierarchy($productId, true)->select([
+            'id'
+        ]);
 
-        if (is_null($modifiedAt)) {
-            $modifiedAt = date("Y-m-d H:i:s");
-        }
-        if ($get) {
-            $output = priceChangeLogsModel::query()->create([
-                'product_id' => $get->id,
-                'cost_price' => $get->cost_price,
-                'sale_price' => $get->sale_price,
-                'customer_price' => $get->customer_price,
-                'user_id' => userObject()->userId,
-                'modified_at' => $modifiedAt
-            ]);
-        }
-
-        return boolval($output ?? false);
-    }
-
-    public function getProductsFilterForm(): void
-    {
-        csrf->csrfValidate();
-        $data = $this->requestArray();
-        $output = $this->defaultOutput();
-
-        $needle = [
-            'selectedBrands'
-        ];
-
-        if (validator->validateRequestsData($needle)) {
-            $output = $this->getProductsFilter($data['selectedBrands']);
-        }
-
-        echo json_encode($output, JSON_UNESCAPED_UNICODE);
+        var_print($get->toArray());
     }
 
     public function getProductsFilter($selectedBrands): array
@@ -351,15 +425,49 @@ class Products extends ControllerScheme
         ];
     }
 
-    //************** methods **************//
-
-    public function getRelatedProducts(int $productId)
+    public function priceChangeLog(int $productId, string|null $modifiedAt = null): bool
     {
-        $get = ProductModel::getProductHierarchy($productId, true)->select([
-            'id'
+        $get = $this->defaultModel::query()->find($productId);
+
+        if (is_null($modifiedAt)) {
+            $modifiedAt = date("Y-m-d H:i:s");
+        }
+        if ($get) {
+            $output = priceChangeLogsModel::query()->create([
+                'product_id' => $get->id,
+                'cost_price' => $get->cost_price,
+                'sale_price' => $get->sale_price,
+                'customer_price' => $get->customer_price,
+                'user_id' => userObject()->userId,
+                'modified_at' => $modifiedAt
+            ]);
+        }
+
+        return boolval($output ?? false);
+    }
+
+    public function childPriceChangeLog(int $productChildId, string|null $modifiedAt = null): bool
+    {
+        $get = ProductChildModel::query()->find($productChildId);
+
+        if (!$get) {
+            return false;
+        }
+
+        if (is_null($modifiedAt)) {
+            $modifiedAt = date("Y-m-d H:i:s");
+        }
+
+        $output = productChildPriceChangeLogModel::query()->create([
+            'product_child_id' => $get->id,
+            'cost_price' => $get->cost_price,
+            'sale_price' => $get->sale_price,
+            'customer_price' => $get->customer_price,
+            'user_id' => userObject()->userId,
+            'modified_at' => $modifiedAt
         ]);
 
-        var_print($get->toArray());
+        return boolval($output);
     }
 
     //************** methods **************//

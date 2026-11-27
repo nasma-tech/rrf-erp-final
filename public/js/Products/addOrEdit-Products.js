@@ -147,6 +147,29 @@ $(function () {
     const $template = $('#productChildTemplate');
     const $addButton = $('#addProductChildButton');
     const $form = $('#mainForm');
+    const initializeProductChildren = () => {
+        $container.find('.product-child-item').each(function () {
+            const $row = $(this);
+
+            const $unit = $row.find('[data-child-field="unit_id"]');
+
+            if ($.fn.select2 && !$unit.hasClass('select2-hidden-accessible')) {
+                $unit.select2();
+            }
+
+            $row.find('.product-child-ratio, .child-cost-price, .child-sale-price, .child-customer-price').each(function () {
+                if ($.fn.numberInputAndDecimal) {
+                    $(this).numberInputAndDecimal();
+                }
+            });
+
+            const checkboxId = `product_child_saleable_${Date.now()}_${Math.random().toString(36).slice(2, 8)}`;
+
+            $row.find('[data-child-field="saleable"]').attr('id', checkboxId);
+
+            $row.find('.custom-control-label').attr('for', checkboxId);
+        });
+    };
 
     if (!$container.length || !$template.length || !$addButton.length || !$form.length) {
         return;
@@ -390,5 +413,7 @@ $(function () {
     });
 
     updateParentUnitLabels();
+    initializeProductChildren();
+    updateChildNames();
 
 });

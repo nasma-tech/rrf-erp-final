@@ -26,6 +26,7 @@
                                         <th class="border">کد محصول</th>
                                         <th class="border">عنوان محصول</th>
                                         <th class="border">گروه محصول</th>
+                                        <th class="border">عملیات</th>
                                     </tr>
                                     </thead>
                                     <tbody>
@@ -45,6 +46,9 @@
                                             </td>
                                             <td class="border">
                                                 {$data->productGroup->label}
+                                            </td>
+                                            <td class="border">
+                                                {$buttonHelper->actionButtons($data->id)}
                                             </td>
                                         </tr>
                                     {/foreach}
