@@ -20,6 +20,8 @@ class ProformaInvoiceProductsModel extends Model
     protected $fillable = [
         'proforma_invoice_id',
         'product_id',
+        'product_child_id',
+        'unit_id',
         'amount',
         'unit_price',
         'unit_price_edit',

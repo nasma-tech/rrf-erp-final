@@ -250,6 +250,3 @@
 </div>
 
 {include 'sections/footer.tpl'}
-
-
-

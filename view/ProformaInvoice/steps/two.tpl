@@ -27,8 +27,8 @@
                             <tr>
                                 <th class="border">ردیف</th>
                                 <th class="border">محصول</th>
+                                <th class="border">بسته‌بندی</th>
                                 <th class="border">مقدار</th>
-                                <th class="border">واحد</th>
                                 <th class="border">قیمت واحد (ریال)</th>
                                 <th class="border">مجموع</th>
                                 <th class="border">عملیات</th>
@@ -42,28 +42,46 @@
                                     </td>
                                     <td class="border">
                                         <select class="form-control select2 product_id"
+                                                data-selected-child="{$item.product_child_id|default:''}"
                                                 id="product_id_{$key+1}"
                                                 name="productList[{$key+1}][product_id]">
                                             {foreach $products as $product}
                                                 <option value="{$product.id}"
                                                         data-price="{$item.sale_price}"
                                                         data-unit="{$item.product.measurementUnit.label}"
-                                                        {if $product.id|default:'' == $item.id}selected{/if}>{$product.serial_number} - {$product.label}</option>
+                                                        {if $product.id|default:'' == $item.product_id}selected{/if}>
+                                                    {$product.serial_number} - {$product.label}
+                                                </option>
                                             {/foreach}
                                         </select>
-                                        <input class="form-control" dir="ltr"
+
+                                        <input class="form-control"
                                                value="{$item.id}"
                                                type="hidden"
-                                               readonly name="productList[{$key+1}][productId]"/>
+                                               readonly
+                                               name="productList[{$key+1}][productId]"/>
+                                    </td>
+                                    <td class="border">
+                                        <select
+                                                class="form-control product_child_id"
+                                                name="productList[{$key+1}][product_child_id]"
+                                                disabled
+                                        >
+                                            <option value="">واحد اصلی</option>
+                                        </select>
+
+                                        <input
+                                                type="hidden"
+                                                class="product_unit_id"
+                                                name="productList[{$key+1}][unit_id]"
+                                                value="{$item.unit_id|default:''}"
+                                        >
                                     </td>
                                     <td class="border">
                                         <input class="form-control product_amount" dir="ltr"
                                                value="{$numberNormalizer->floatNumberFormat($item.amount)}"
                                                {if !$getData|default:null}readonly{/if} required
                                                id="" name="productList[{$key+1}][product_amount]"/>
-                                    </td>
-                                    <td class="border">
-                                        <span>{$item.product.measurementUnit.label}</span>
                                     </td>
                                     <td class="border">
                                         <input class="form-control product_unit_price"
