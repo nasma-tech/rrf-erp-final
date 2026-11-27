@@ -2,13 +2,12 @@
 
 namespace App\Models\ExitWarehousePackageModel;
 
-use App\Controllers\ExitWarehouse\ExitWarehouse;
 use App\Models\ExitWarehouseModel\ExitWarehouseModel;
 use App\Models\ProductPartModel\ProductPartModel;
 use App\Models\WarehousesModel\WarehousesModel;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
-use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
 class ExitWarehousePackageModel extends Model
@@ -28,19 +27,30 @@ class ExitWarehousePackageModel extends Model
         "deleted_at",
     ];
 
-    public function warehouse(): HasOne
+    public function warehouse(): BelongsTo
     {
-        return $this->hasOne(WarehousesModel::class, 'id', 'warehouse_id');
+        return $this->belongsTo(
+            WarehousesModel::class,
+            'warehouse_id',
+            'id'
+        );
     }
 
-    public function productPart(): HasOne
+    public function productPart(): BelongsTo
     {
-        return $this->hasOne(ProductPartModel::class, 'id', 'product_part_id');
+        return $this->belongsTo(
+            ProductPartModel::class,
+            'product_part_id',
+            'id'
+        );
     }
 
     public function exitWarehouseItems(): HasMany
     {
-        return $this->hasMany(ExitWarehouseModel::class, 'exit_package_id', 'id');
+        return $this->hasMany(
+            ExitWarehouseModel::class,
+            'exit_package_id',
+            'id'
+        );
     }
-
 }
