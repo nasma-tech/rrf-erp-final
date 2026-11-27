@@ -378,15 +378,6 @@ class Products extends ControllerScheme
 
     //************** methods **************//
 
-    public function getRelatedProducts(int $productId): void
-    {
-        $get = ProductModel::getProductHierarchy($productId, true)->select([
-            'id'
-        ]);
-
-        var_print($get->toArray());
-    }
-
     public function getProductsFilter($selectedBrands): array
     {
         $products = ProductModel::query()
