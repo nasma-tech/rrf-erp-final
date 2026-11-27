@@ -18,7 +18,8 @@
                     <div class="card-content">
                         <div class="card-body">
                             <div class="table-responsive">
-                                <table class="table text-center table-hover table-striped tableDataShow" style="background-color: #fff;border-radius: 5px;">
+                                <table class="table text-center table-hover table-striped tableDataShow"
+                                       style="background-color: #fff;border-radius: 5px;">
                                     <thead class="thead-dark">
                                     <tr>
                                         <th class="border">لوگو</th>
@@ -34,10 +35,12 @@
                                     {foreach $list as $item}
                                         {$chequeData = $item->chequeData}
                                         {if $item->payment_status == 0}
-                                            <tr class="bg-rgba-warning" data-toggle="tooltip" data-placement="left" title=""
+                                            <tr class="bg-rgba-warning" data-toggle="tooltip" data-placement="left"
+                                                title=""
                                                 data-original-title="در انتظار تایید">
                                                 {elseif $item->payment_status == 1}
-                                            <tr class="bg-rgba-success" data-toggle="tooltip" data-placement="left" title=""
+                                            <tr class="bg-rgba-success" data-toggle="tooltip" data-placement="left"
+                                                title=""
                                                 data-original-title="تایید شده">
                                                 {elseif $item->payment_status == 2}
                                             <tr class="bg-rgba-danger" data-toggle="tooltip" data-placement="left" title=""
