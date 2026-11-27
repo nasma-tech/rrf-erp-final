@@ -112,12 +112,15 @@ class ContactProjects extends ControllerScheme
             'user_id' => userObject()->userId,
         ];
         $addProject = ContactProjectsModel::query()->create($makeData);
-        if (isset($data['projectRequest'])) {
+        if (isset($data['projectRequest']) && is_array($data['projectRequest'])) {
             if ($addProject) {
                 foreach ($data['projectRequest'] as $item) {
                     ContactProjectRequestsModel::query()->create([
                         'contact_project_id' => $addProject->id,
                         'product_id' => $item['product_id'],
+                        'product_child_id' => !empty($item['product_child_id'])
+                            ? $item['product_child_id']
+                            : null,
                         'request_amount' => $item['request_amount'],
                         'user_id' => userObject()->userId,
                     ]);
@@ -135,17 +138,30 @@ class ContactProjects extends ControllerScheme
     public function edit($id)
     {
         $data = $this->requestArray();
-        $delete = ContactProjectRequestsModel::query()->where('contact_project_id', $id)->update(['deleted_at' => date('Y-m-d H:i:s')]);
-        if ($delete) {
+
+        ContactProjectRequestsModel::query()
+            ->where('contact_project_id', $id)
+            ->update([
+                'deleted_at' => date('Y-m-d H:i:s')
+            ]);
+
+        if (isset($data['projectRequest']) && is_array($data['projectRequest'])) {
             foreach ($data['projectRequest'] as $item) {
                 ContactProjectRequestsModel::query()->create([
                     'contact_project_id' => $id,
                     'product_id' => $item['product_id'],
+                    'product_child_id' => !empty($item['product_child_id'])
+                        ? $item['product_child_id']
+                        : null,
                     'request_amount' => $item['request_amount'],
                     'user_id' => userObject()->userId,
-                ])->save();
+                ]);
             }
         }
-        $this->successCallBack("/ContactProjects/ContactProjectDetail/{$id}", 'پروژه با موفقیت بروزرسانی شد ');
+
+        $this->successCallBack(
+            "/ContactProjects/ContactProjectDetail/{$id}",
+            'پروژه با موفقیت بروزرسانی شد'
+        );
     }
 }

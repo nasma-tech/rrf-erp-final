@@ -4,6 +4,7 @@ namespace App\Models\ProductModel;
 
 use App\Models\brandsModel\brandsModel;
 use App\Models\MeasurementUnitModel\MeasurementUnitModel;
+use App\Models\ProductChildModel\ProductChildModel;
 use App\Models\ProductGradeModel\ProductGradeModel;
 use App\Models\ProductGroupModel\ProductGroupModel;
 use App\Models\ProductQualitiesModel\ProductQualitiesModel;
@@ -45,13 +46,13 @@ class ProductModel extends Model
 
     public function scopeSaleable($query)
     {
-        if (userObject()->userId <= 0){
-        return $query->where('saleable', 1);
-        }
-        else{
-            return  $query;
+        if (userObject()->userId <= 0) {
+            return $query->where('saleable', 1);
+        } else {
+            return $query;
         }
     }
+
     public function measurementUnit(): BelongsTo
     {
         return $this->belongsTo(MeasurementUnitModel::class, 'measurement_unit_id');
@@ -87,46 +88,13 @@ class ProductModel extends Model
         return $this->hasMany(ProductModel::class, 'parent_id');
     }
 
-    public static function getProductHierarchy(
-        int  $productId,
-        bool $withChildren = false
-    ): Collection
+    public function productChildren(): HasMany
     {
-        $products = collect();
-
-        $product = self::query()->find($productId);
-
-        if (!$product) {
-            return $products;
-        }
-
-        while ($product) {
-            $products->prepend($product);
-            $product = $product->parent;
-        }
-
-        if (!$withChildren) {
-            return $products;
-        }
-
-        $getChildren = function ($product, $pathIds) use (&$getChildren, &$products) {
-            foreach ($product->children as $child) {
-                if ($pathIds->contains($child->id)) {
-                    continue;
-                }
-
-                $products->push($child);
-
-                $getChildren($child, $pathIds);
-            }
-        };
-
-        $pathIds = $products->pluck('id');
-
-        foreach ($products->reverse() as $product) {
-            $getChildren($product, $pathIds);
-        }
-
-        return $products->unique('id')->values();
+        return $this->hasMany(
+            ProductChildModel::class,
+            'product_id',
+            'id'
+        );
     }
+
 }

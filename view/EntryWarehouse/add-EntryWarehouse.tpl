@@ -9,7 +9,7 @@
                     <div class="card">
                         <div class="card-header">
                             <h4 class="card-title" style="float: right">افزودن {$singleName} جدید</h4>
-                             {$buttonHelper->refreshAndBackBtn()}
+                            {$buttonHelper->refreshAndBackBtn()}
                         </div>
                         <div class="card-content">
                             <div id="DirectEntryWarehouse">
@@ -60,6 +60,7 @@
                                                         <tr class="text-center">
                                                             <th class="border">#</th>
                                                             <th class="border">محصول</th>
+                                                            <th class="border">بسته‌بندی</th>
                                                             <th class="border">مقدار</th>
                                                             <th class="border">واحد</th>
                                                             <th class="border">عملیات</th>
@@ -68,7 +69,7 @@
                                                         <tbody></tbody>
                                                         <tfoot>
                                                         <tr>
-                                                            <td colspan="5" class="border text-center">
+                                                            <td colspan="6" class="border text-center">
                                                                 <button type="button" class="btn p-0 m-0"
                                                                         style="font-size: 0.75rem" id="newRowButton">
                                                                     افزودن ردیف جدید<i class="bx bx-down-arrow"
@@ -167,7 +168,6 @@
                                                         </div>
 
 
-
                                                     </div>
                                                 </div>
 
@@ -195,9 +195,11 @@
                                                     <table class="table table-bordered table-hover mb-0 exitData-files-table">
                                                         <thead class="thead-dark">
                                                         <tr class="text-center">
-                                                            <th class="border">نام فایل <span class="text-danger">*</span></th>
+                                                            <th class="border">نام فایل <span
+                                                                        class="text-danger">*</span></th>
                                                             <th class="border">توضیحات</th>
-                                                            <th class="border">فایل <span class="text-danger">*</span></th>
+                                                            <th class="border">فایل <span class="text-danger">*</span>
+                                                            </th>
                                                             <th class="border">عملیات</th>
                                                         </tr>
                                                         </thead>

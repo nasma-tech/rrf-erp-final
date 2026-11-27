@@ -3,6 +3,7 @@
 {include "sections/side-menu.tpl"}
 <div class="app-content content">
     <div class="content-wrapper">
+        {$flashMessageHelper->formCallBack()}
         <div class="row">
             <div class="col-md-12">
                 <div class="card">
@@ -10,7 +11,6 @@
                         <h4 class="card-title">لیست {$pluralName}</h4>
                         <div class="heading-elements">
                             {$buttonHelper->refreshAndAddButton($singleName)}
-                            {$csrf->csrfTokenInput()}
                         </div>
                     </div>
                     <div class="card-content">
@@ -19,19 +19,21 @@
                                    style="background-color: #fff;border-radius: 5px;">
                                 <thead class="thead-dark">
                                 <tr class="text-center">
-                                    <th>موضوع</th>
-                                    <th>انبار</th>
-                                    <th>تاریخ ورود</th>
-                                    <th>توضیحات</th>
-                                    <th>پلاک</th>
-                                    <th>مسندات</th>
-                                    <th>کاربر</th>
-                                    <th>عملیات</th>
+                                    <th class="border">#</th>
+                                    <th class="border">عنوان</th>
+                                    <th class="border">انبار</th>
+                                    <th class="border">تاریخ ورود</th>
+                                    <th class="border">توضیحات</th>
+                                    <th class="border">پلاک</th>
+                                    <th class="border">مسندات</th>
+                                    <th class="border">کاربر</th>
+                                    <th class="border">عملیات</th>
                                 </tr>
                                 </thead>
                                 <tbody>
                                 {foreach $getData as $data}
                                     <tr>
+                                        <td class="border">{counter}</td>
                                         <td class="border">{$data->title}</td>
                                         <td class="border">{$data->warehouseData->ware_house_name}</td>
                                         <td class="border">{date("Y/m/d",strtotime($data['entry_datetime']))}</td>

@@ -16,6 +16,7 @@ use App\Models\ContactsGroupModel\ContactsGroupModel;
 use App\Models\CustomerContactInformationModel\CustomerContactInformationModel;
 use App\Models\FollowUpActionsTitleModel\FollowUpActionsTitleModel;
 use App\Models\IndustryTypeModel\IndustryTypeModel;
+use App\Models\ProductModel\ProductModel;
 use App\Models\SocialNetworksListModel\SocialNetworksListModel;
 use App\Models\StateModel\StateModel;
 use InvalidArgumentException;
@@ -273,14 +274,56 @@ class CustomerContactInformation extends ControllerScheme
             'industry_type_id' => $data['industry_type_id'],
             'user_id' => userObject()->userId,
         ];
+
         $addProject = ContactProjectsModel::query()->create($makeData);
         if (isset($data['projectRequest'])) {
             if ($addProject) {
                 foreach ($data['projectRequest'] as $item) {
+
+                    $productId = (int)($item['product_id'] ?? 0);
+
+                    $productChildId = !empty($item['product_child_id']) ? (int)$item['product_child_id'] : null;
+
+                    $amount = numberNormalizer->removePriceSeparator($item['request_amount'] ?? 0);
+
+                    if ($productId <= 0) {
+                        throw new InvalidArgumentException(
+                            'انتخاب محصول برای درخواست الزامی است.'
+                        );
+                    }
+
+                    if (!is_numeric($amount) || (float)$amount <= 0) {
+                        throw new InvalidArgumentException(
+                            'مقدار درخواست محصول باید بزرگ‌تر از صفر باشد.'
+                        );
+                    }
+
+                    $product = ProductModel::query()->find($productId);
+
+                    if (!$product) {
+                        throw new InvalidArgumentException(
+                            'محصول انتخاب‌شده معتبر نیست.'
+                        );
+                    }
+
+                    if ($productChildId !== null) {
+
+                        $productChild = $product->productChildren()
+                            ->where('id', $productChildId)
+                            ->first();
+
+                        if (!$productChild) {
+                            throw new InvalidArgumentException(
+                                'بسته‌بندی انتخاب‌شده متعلق به محصول نیست.'
+                            );
+                        }
+                    }
+
                     ContactProjectRequestsModel::query()->create([
                         'contact_project_id' => $addProject->id,
-                        'product_id' => $item['product_id'],
-                        'request_amount' => $item['request_amount'],
+                        'product_id' => $product->id,
+                        'product_child_id' => $productChildId,
+                        'request_amount' => $amount,
                         'user_id' => userObject()->userId,
                     ]);
                 }

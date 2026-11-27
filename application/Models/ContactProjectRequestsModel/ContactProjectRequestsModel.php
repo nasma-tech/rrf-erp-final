@@ -2,13 +2,10 @@
 
 namespace App\Models\ContactProjectRequestsModel;
 
-use App\Models\CarsBrandModel\CarsBrandModel;
-use App\Models\CarsGroupModel\CarsGroupModel;
-use App\Models\CarsModelModel\CarsModelModel;
-use App\Models\CarsTipModel\CarsTipModel;
+use App\Models\ProductChildModel\ProductChildModel;
 use App\Models\ProductModel\ProductModel;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\Relations\HasOne;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
 class ContactProjectRequestsModel extends Model
@@ -22,6 +19,7 @@ class ContactProjectRequestsModel extends Model
     protected $fillable = [
         'contact_project_id',
         'product_id',
+        'product_child_id',
         'request_amount',
         'user_id',
         'created_at',
@@ -29,8 +27,22 @@ class ContactProjectRequestsModel extends Model
         'deleted_at',
     ];
 
-    public function productInfo()
+    public function productInfo(): BelongsTo
     {
-       return $this->hasOne(ProductModel::class ,'id','product_id');
+        return $this->belongsTo(
+            ProductModel::class,
+            'product_id',
+            'id'
+        );
+    }
+
+
+    public function productChild(): BelongsTo
+    {
+        return $this->belongsTo(
+            ProductChildModel::class,
+            'product_child_id',
+            'id'
+        );
     }
 }
