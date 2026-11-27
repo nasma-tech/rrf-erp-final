@@ -41,6 +41,7 @@
                         <thead class="thead-dark">
                         <tr>
                             <th class="border">عنوان محصول</th>
+                            <th class="border">بسته‌بندی / واحد</th>
                             <th class="border">مقدار</th>
                             <th class="border">عملیات</th>
                         </tr>
@@ -49,41 +50,54 @@
                         {foreach $getData.projectRequests|default:[] as $key => $item}
                             <tr>
                                 <td class="border">
-                                    <select class="form-control projectOptionsSelect carTipId select2"
-                                            data-product_id="{$item.productInfo.id|default:'-'}"
-                                            id="projectRequest[{$key}][product_id]"
+                                    <select
+                                            class="form-control projectOptionsSelect select2 product-select"
+                                            data-product-id="{$item.product_id|default:''}"
+                                            data-selected-child="{$item.product_child_id|default:''}"
                                             name="projectRequest[{$key}][product_id]">
-                                        <option selected disabled>یکی از موارد رو انتخاب کنید</option>
-                                        {foreach $Products|default:[] AS $data}
-                                            <option value="{$data.id}"
-                                                    {if $data.id == $item.productInfo.id|default:'-'}selected{/if} >{$data.label}</option>
-                                        {/foreach}
+                                        <option value="" disabled>یکی از موارد رو انتخاب کنید</option>
+                                    </select>
+                                </td>
+
+                                <td class="border">
+                                    <select
+                                            class="form-control select2 product-child-select"
+                                            name="projectRequest[{$key}][product_child_id]"
+                                            disabled>
+                                        <option value="">در حال بارگذاری...</option>
                                     </select>
                                 </td>
 
                                 <td class="border" width="150">
-                                    <input class="form-control requestAmount"
-                                           dir="ltr"
-                                           type="text"
-                                           value="{$item.request_amount|default:''}"
-                                           id="projectRequest[{$key}][request_amount]"
-                                           name="projectRequest[{$key}][request_amount]">
+                                    <input
+                                            class="form-control requestAmount"
+                                            dir="ltr"
+                                            type="text"
+                                            value="{$item.request_amount|default:''}"
+                                            name="projectRequest[{$key}][request_amount]"
+                                    >
                                 </td>
-
                                 <td class="border">
                                     <div class="dropup">
-                    <span class="bx bx-dots-vertical-rounded font-medium-3 dropdown-toggle nav-hide-arrow cursor-pointer"
-                          data-toggle="dropdown"
-                          aria-haspopup="true"
-                          aria-expanded="false"
-                          role="menu"></span>
+        <span
+                class="bx bx-dots-vertical-rounded font-medium-3 dropdown-toggle nav-hide-arrow cursor-pointer"
+                data-toggle="dropdown"
+                aria-haspopup="true"
+                aria-expanded="false"
+                role="menu">
+        </span>
 
                                         <div class="dropdown-menu">
-                                            <a class="dropdown-item text-danger removeRequestRow">
+                                            <a
+                                                    href="javascript:void(0)"
+                                                    class="dropdown-item text-danger removeRequestRow">
                                                 <i class="bx bx-trash text-danger mr-1"></i>
                                                 حذف
                                             </a>
-                                            <a class="dropdown-item text-primary inquiryRequestRow">
+
+                                            <a
+                                                    href="javascript:void(0)"
+                                                    class="dropdown-item text-primary inquiryRequestRow">
                                                 <i class="bx bx-search text-primary mr-1"></i>
                                                 استعلام
                                             </a>
@@ -95,7 +109,7 @@
                         </tbody>
                         <tfoot>
                         <tr>
-                            <th class="border" colspan="6">
+                            <th class="border" colspan="4">
                                 <button class="btn btn-xs btn-success w-100" id="productAppend" type="button">
                                     <i class="bx bx-plus" style="font-size: 14px"></i>
                                 </button>

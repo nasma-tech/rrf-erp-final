@@ -10,8 +10,8 @@ use App\Models\WarehousesModel\WarehousesModel;
 
 class EntryWarehouse extends ControllerScheme
 {
-    const string singleName = '';
-    const string pluralName = '';
+    const string singleName = 'ورود به انبار';
+    const string pluralName = 'ورود به انبار';
     protected string $defaultModel = EntryWarehouseModel::class;
 
     public function main()
@@ -68,7 +68,6 @@ class EntryWarehouse extends ControllerScheme
     }
 
 
-
     public function add()
     {
         csrf->csrfValidate();
@@ -113,7 +112,7 @@ class EntryWarehouse extends ControllerScheme
             $uploadedFile = fileHelper->uploadMultipleFiles(
                 "EntryWarehouse",
                 [$rawFiles[$key]],
-                (string) $add->id
+                (string)$add->id
             );
 
             if (!empty($uploadedFile)) {
@@ -135,22 +134,70 @@ class EntryWarehouse extends ControllerScheme
 
         foreach ($data['product_data'] as $key => $value) {
 
-            $productData = productModel::query()->find($value["product_id"]);
+//            $productData = productModel::query()->find($value["product_id"]);
+
+//            if (!$productData) {
+//                $this->failedCallBack("main");
+//                return;
+//            }
+//
+//            $detailData = [
+//                "entry_package_id" => $add->id,
+//                "product_id" => $value["product_id"],
+//                "amount" => numberNormalizer->removePriceSeparator($value["amount"]),
+//                "unit_id" => $productData->measurement_unit_id,
+//                "user_id" => userObject()->userId,
+//            ];
+//
+//            $addDetail = entrywarehouseModel::query()->create($detailData);
+
+            $productData = ProductModel::query()
+                ->with('productChildren')
+                ->find($value["product_id"]);
 
             if (!$productData) {
-                $this->failedCallBack("main");
-                return;
+                throw new \InvalidArgumentException('محصول موردنظر پیدا نشد.');
+            }
+
+            $productChildId = !empty($value['product_child_id'])
+                ? (int)$value['product_child_id']
+                : null;
+
+            $productChild = null;
+
+            if ($productChildId) {
+
+                $productChild = $productData->productChildren()
+                    ->where('id', $productChildId)
+                    ->first();
+
+                if (!$productChild) {
+                    throw new \InvalidArgumentException(
+                        'بسته‌بندی انتخاب‌شده متعلق به این محصول نیست.'
+                    );
+                }
+            }
+
+            $amount = numberNormalizer->removePriceSeparator(
+                $value["amount"] ?? 0
+            );
+
+            if ((float)$amount <= 0) {
+                throw new \InvalidArgumentException(
+                    'مقدار ورود به انبار باید بزرگ‌تر از صفر باشد.'
+                );
             }
 
             $detailData = [
                 "entry_package_id" => $add->id,
-                "product_id" => $value["product_id"],
-                "amount" => numberNormalizer->removePriceSeparator($value["amount"]),
+                "product_id" => $productData->id,
+                "product_child_id" => $productChild?->id,
+                "amount" => $amount,
                 "unit_id" => $productData->measurement_unit_id,
                 "user_id" => userObject()->userId,
             ];
 
-            $addDetail = entrywarehouseModel::query()->create($detailData);
+            $addDetail = EntryWarehouseModel::query()->create($detailData);
 
             if (!$addDetail) {
                 $this->failedCallBack("main");

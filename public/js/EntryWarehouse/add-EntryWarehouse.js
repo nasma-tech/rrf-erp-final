@@ -40,55 +40,66 @@ $(function () {
     // --------------------------------------------------
     // Product Rows
     // --------------------------------------------------
-
+    let productsById = {};
     const newRowHtml = (index, products) => {
+
         const options = products.map(product => `
-            <option value="${escapeHtml(product.id)}"
-                    data-unit-name="${escapeHtml(product.unit_title)}">
-                ${escapeHtml(product.serial_number)} - ${escapeHtml(product.title)}
-            </option>
-        `).join("");
+        <option value="${escapeHtml(product.id)}">
+            ${escapeHtml(product.serial_number)} - ${escapeHtml(product.title)}
+        </option>
+    `).join("");
 
         return `
-            <tr id="row_${index}">
-                <td class="border">${$mainTableBody.find("tr").length + 1}</td>
+        <tr id="row_${index}">
+            <td class="border">${$mainTableBody.find("tr").length + 1}</td>
 
-                <td class="border">
-                    <select name="product_data[${index}][product_id]"
-                            id="product_data_${index}_product_id"
-                            class="form-control product-select">
-                        <option value="" selected disabled>
-                            لطفا یک مورد را انتخاب کنید
-                        </option>
-                        ${options}
-                    </select>
-                </td>
+            <td class="border">
+                <select name="product_data[${index}][product_id]"
+                        id="product_data_${index}_product_id"
+                        class="form-control product-select">
+                    <option value="" selected disabled>
+                        لطفا محصول را انتخاب کنید
+                    </option>
+                    ${options}
+                </select>
+            </td>
 
-                <td class="border">
-                    <input type="text"
-                           name="product_data[${index}][amount]"
-                           id="product_data_${index}_amount"
-                           class="form-control"
-                           value="0"
-                           disabled>
-                </td>
+            <td class="border">
+                <select name="product_data[${index}][product_child_id]"
+                        id="product_data_${index}_product_child_id"
+                        class="form-control product-child-select"
+                        disabled>
+                    <option value="" selected disabled>
+                        ابتدا محصول را انتخاب کنید
+                    </option>
+                </select>
+            </td>
 
-                <td class="border">
-                    <input type="text"
-                           id="product_data_${index}_unit_name"
-                           class="form-control"
-                           disabled>
-                </td>
+            <td class="border">
+                <input type="text"
+                       name="product_data[${index}][amount]"
+                       id="product_data_${index}_amount"
+                       class="form-control"
+                       value="0"
+                       disabled>
+            </td>
 
-                <td class="border text-center">
-                    <button type="button"
-                            class="btn btn-sm btn-danger removeButton"
-                            data-id="${index}">
-                        <i class="bx bx-trash"></i>
-                    </button>
-                </td>
-            </tr>
-        `;
+            <td class="border">
+                <input type="text"
+                       id="product_data_${index}_unit_name"
+                       class="form-control"
+                       disabled>
+            </td>
+
+            <td class="border text-center">
+                <button type="button"
+                        class="btn btn-sm btn-danger removeButton"
+                        data-id="${index}">
+                    <i class="bx bx-trash"></i>
+                </button>
+            </td>
+        </tr>
+    `;
     };
 
     $("#newRowButton").on("click", function () {
@@ -116,6 +127,7 @@ $(function () {
             },
 
             success: function (result) {
+
                 if (!result.status) {
                     customAlert(
                         "warning",
@@ -124,19 +136,27 @@ $(function () {
                     return;
                 }
 
+                const products = result.data.products || [];
+
+                products.forEach(product => {
+                    productsById[product.id] = product;
+                });
+
                 const currentIndex = counter++;
 
                 $mainTableBody.append(
-                    newRowHtml(currentIndex, result.data.products || [])
+                    newRowHtml(currentIndex, products)
                 );
 
-                const $select = $(`#product_data_${currentIndex}_product_id`);
-
-                $select.select2({
+                $(`#product_data_${currentIndex}_product_id`).select2({
                     width: "100%"
                 });
 
-                $(`#product_data_${currentIndex}_amount`).numberInputAndDecimal()
+                $(`#product_data_${currentIndex}_product_child_id`).select2({
+                    width: "100%"
+                });
+
+                $(`#product_data_${currentIndex}_amount`).numberInputAndDecimal();
             },
 
             error: function (xhr) {
@@ -156,17 +176,88 @@ $(function () {
 
     // انتخاب محصول
     $(document).on("change", ".product-select", function () {
+
+        const $select = $(this);
+        const index = $select.attr("id").match(/\d+/)[0];
+
+        const productId = $select.val();
+        const product = productsById[productId];
+
+        const $childSelect = $(`#product_data_${index}_product_child_id`);
+        const $amount = $(`#product_data_${index}_amount`);
+        const $unitName = $(`#product_data_${index}_unit_name`);
+
+        $childSelect.empty();
+
+        $amount
+            .prop("disabled", true)
+            .val(0);
+
+        $unitName.val("");
+
+        if (!product) {
+            $childSelect
+                .prop("disabled", true)
+                .append('<option value="">محصول نامعتبر</option>');
+
+            return;
+        }
+
+        let options = `
+        <option value="" selected disabled>
+            لطفا بسته‌بندی را انتخاب کنید
+        </option>
+
+        <option value=""
+                data-unit-name="${escapeHtml(product.unit_title)}">
+            واحد اصلی محصول (${escapeHtml(product.unit_title)})
+        </option>
+    `;
+
+        (product.children || []).forEach(child => {
+
+            options += `
+            <option value="${escapeHtml(child.id)}"
+                    data-unit-name="${escapeHtml(child.label)}"
+                    data-ratio="${escapeHtml(child.convert_ratio)}">
+                ${escapeHtml(child.label)}
+            </option>
+        `;
+        });
+
+        $childSelect
+            .html(options)
+            .prop("disabled", false)
+            .val("")
+            .trigger("change.select2");
+    });
+
+    //package
+    $(document).on("change", ".product-child-select", function () {
+
         const $select = $(this);
         const index = $select.attr("id").match(/\d+/)[0];
 
         const $selected = $select.find(":selected");
 
-        $(`#product_data_${index}_amount`)
+        const $amount = $(`#product_data_${index}_amount`);
+        const $unitName = $(`#product_data_${index}_unit_name`);
+
+        if (!$select.val() && !$selected.data("unit-name")) {
+            $amount
+                .prop("disabled", true)
+                .val(0);
+
+            $unitName.val("");
+
+            return;
+        }
+
+        $amount
             .prop("disabled", false)
             .val(0);
 
-        $(`#product_data_${index}_unit_name`)
-            .val($selected.data("unit-name"));
+        $unitName.val($selected.data("unit-name"));
     });
 
     // حذف محصول

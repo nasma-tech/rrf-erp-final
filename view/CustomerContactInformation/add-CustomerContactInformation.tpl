@@ -22,6 +22,7 @@
         <div class="row" style="margin-top: 3px">
             <div class="col-md-12">
                 <form action="/CustomerContactInformation/add" method="post">
+                    {$csrf->csrfTokenInput()}
                     <div class="row">
                         <div class="col-md-6">
                             {include 'CustomerContactInformation/ContactInfo.tpl'}

@@ -2,8 +2,6 @@
 
 namespace App\Controllers\ProformaInvoice;
 
-use App\Controllers\CartableDefinition\cities\cities;
-use App\Controllers\countries\countries;
 use App\Controllers\ExitWarehouse\ExitWarehouse;
 use App\Controllers\ProductPart\ProductPart;
 use App\Controllers\scheme\ControllerScheme;
@@ -18,7 +16,7 @@ use App\Models\CountryModel\CountryModel;
 use App\Models\marketersModel\marketersModel;
 use App\Models\PaymentAllocationModel\PaymentAllocationModel;
 use App\Models\PriceSuggestionModel\PriceSuggestionModel;
-use App\Models\PriceSuggestionProductModel\PriceSuggestionProductModel;
+use App\Models\ProductChildModel\ProductChildModel;
 use App\Models\ProductExitPartsModel\ProductExitPartsModel;
 use App\Models\ProductModel\ProductModel;
 use App\Models\ProformaInvoiceDetailsModel\ProformaInvoiceDetailsModel;
@@ -29,9 +27,8 @@ use App\Models\ProformaInvoiceSettingsModel\ProformaInvoiceSettingsModel;
 use App\Models\SalesTeamModel\SalesTeamModel;
 use App\Models\StateModel\StateModel;
 use App\Models\WarehousesModel\WarehousesModel;
-use JetBrains\PhpStorm\NoReturn;
 use Mpdf\MpdfException;
-use const Dom\VALIDATION_ERR;
+
 
 class ProformaInvoice extends ControllerScheme
 {
@@ -143,8 +140,11 @@ class ProformaInvoice extends ControllerScheme
     public function add(): void
     {
         $_ENV['APP_DEBUG'] = 1;
+
         csrf->csrfValidate();
+
         $data = $this->requestArray();
+
         $makeProformaInvoiceData = [
             'price_suggestion_id' => $data['price_suggestion_id'],
             'contact_id' => $data['contact_id'],
@@ -162,109 +162,324 @@ class ProformaInvoice extends ControllerScheme
             'day_validity_timestamp' => time() + ($data['day_validity'] * 86400),
             'user_id' => userObject()->userId,
         ];
+
         $addProformaInvoice = ProformaInvoiceModel::query()->create($makeProformaInvoiceData);
+
         if (!$addProformaInvoice) {
-            $this->failedCallBack(`/ProformaInvoice/createProformaInvoice/{$data['price_suggestion_id']}`, 'خطا در ثبت پیشفاکتور');
+            $this->failedCallBack(
+                "/ProformaInvoice/createProformaInvoice/{$data['price_suggestion_id']}",
+                'خطا در ثبت پیشفاکتور'
+            );
+
+            return;
         }
-        if ($addProformaInvoice) {
-            $addProformaInvoice->update([
-                'invoice_number' => $this->generateInvoiceNumber($addProformaInvoice->id)
-            ]);
-            $brandId = $addProformaInvoice->brand_id;
-            $proformaInvoiceSettings = ProformaInvoiceSettingsModel::query()->where('brand_id', $brandId)->first();
-            $decodeChargesDeductions = json_decode($proformaInvoiceSettings->charges_deductions_order, true);
-            $makeChargesDeductions = [];
-            foreach ($decodeChargesDeductions as $item) {
-                $chargesDeductionsInfo = ChargesDeductionsModel::query()->find($item['charges_deduction_id']);
-                if (in_array($chargesDeductionsInfo->identifier, $data['chargesDeductionCheckBox'])) {
-                    $makeChargesDeductions[] = [
-                        'netSumMerge' => $item['netSumMerge'] ?? false,
-                        'charges_deduction_id' => $item['charges_deduction_id'],
-                        'title' => $chargesDeductionsInfo->title,
-                        'coefficient' => $chargesDeductionsInfo->coefficient,
-                        'identifier' => $chargesDeductionsInfo->identifier,
-                    ];
-                }
-            }
 
-            $invoice_sum = 0;
-            $invoice_sum_discount = 0;
-            $invoice_net_sum = 0;
+        $addProformaInvoice->update([
+            'invoice_number' => $this->generateInvoiceNumber($addProformaInvoice->id)
+        ]);
 
-            foreach ($data['productList'] as $item) {
-                $productInfo = ProductModel::query()->find($item['product_id']);
-                $unitDiscount = 0;
-                if ($item['discount_type'] == 'percentage') {
-                    $unitDiscount = (numberNormalizer->removePriceSeparator($item['discount_unit_amount']) * numberNormalizer->removePriceSeparator($item['product_unit_price']) / 100);
-                } else if ($item['discount_type'] == 'cash') {
-                    $unitDiscount = numberNormalizer->removePriceSeparator($item['discount_unit_amount']);
-                }
-                $invoiceProduct = [
-                    'proforma_invoice_id' => $addProformaInvoice->id,
-                    'product_id' => $item['product_id'],
-                    'amount' => persianTextNormalizer->persianNumberToEnglish(numberNormalizer->removePriceSeparator($item['product_amount'])),
-                    'unit_price' => persianTextNormalizer->persianNumberToEnglish($productInfo->sale_price),
-                    'unit_price_edit' => persianTextNormalizer->persianNumberToEnglish(numberNormalizer->removePriceSeparator($item['product_unit_price'])),
-                    'sum_unit_price' => persianTextNormalizer->persianNumberToEnglish(numberNormalizer->removePriceSeparator($item['product_unit_price'])) * persianTextNormalizer->persianNumberToEnglish(numberNormalizer->removePriceSeparator($item['product_amount'])),
-                    'discount_type' => (($item['discount_type']) ?: 'noDiscount'),
-                    'discount_unit_amount' => persianTextNormalizer->persianNumberToEnglish(numberNormalizer->removePriceSeparator($item['discount_unit_amount'])),
-                    'discount_unit_amount_cash' => $unitDiscount,
-                    'discount_amount' => numberNormalizer->removePriceSeparator($item['discount_amount']),
-                    'total_unit_price' => numberNormalizer->removePriceSeparator($item['unit_price_after_discount']),
-                    'total_product_price' => numberNormalizer->removePriceSeparator($item['product_amount']) * (numberNormalizer->removePriceSeparator($item['unit_price_after_discount'])),
+        $brandId = $addProformaInvoice->brand_id;
+
+        $proformaInvoiceSettings = ProformaInvoiceSettingsModel::query()
+            ->where('brand_id', $brandId)
+            ->first();
+
+        $decodeChargesDeductions = json_decode(
+            $proformaInvoiceSettings->charges_deductions_order,
+            true
+        );
+
+        $makeChargesDeductions = [];
+
+        foreach ($decodeChargesDeductions as $item) {
+
+            $chargesDeductionsInfo = ChargesDeductionsModel::query()
+                ->find($item['charges_deduction_id']);
+
+            if (
+                $chargesDeductionsInfo &&
+                in_array(
+                    $chargesDeductionsInfo->identifier,
+                    $data['chargesDeductionCheckBox'] ?? []
+                )
+            ) {
+                $makeChargesDeductions[] = [
+                    'netSumMerge' => $item['netSumMerge'] ?? false,
+                    'charges_deduction_id' => $item['charges_deduction_id'],
+                    'title' => $chargesDeductionsInfo->title,
+                    'coefficient' => $chargesDeductionsInfo->coefficient,
+                    'identifier' => $chargesDeductionsInfo->identifier,
                 ];
+            }
+        }
 
-                $invoice_sum += $invoiceProduct['amount'] * $invoiceProduct['unit_price'];
-                $invoice_sum_discount += $unitDiscount * $invoiceProduct['amount'];
-                $invoice_net_sum += $invoiceProduct['total_unit_price'] * $invoiceProduct['amount'];
-                ProformaInvoiceProductsModel::query()->create($invoiceProduct);
+        $invoice_sum = 0;
+        $invoice_sum_discount = 0;
+        $invoice_net_sum = 0;
+
+        foreach ($data['productList'] as $item) {
+
+            /*
+            |--------------------------------------------------------------------------
+            | Product
+            |--------------------------------------------------------------------------
+            */
+
+            $productInfo = ProductModel::query()
+                ->findOrFail($item['product_id']);
+
+            /*
+            |--------------------------------------------------------------------------
+            | Product packaging
+            |--------------------------------------------------------------------------
+            */
+
+            $productChild = null;
+
+            if (!empty($item['product_child_id'])) {
+
+                $productChild = ProductChildModel::query()
+                    ->where('id', $item['product_child_id'])
+                    ->where('product_id', $productInfo->id)
+                    ->firstOrFail();
             }
 
-            $invoice_sum_tax_details = [];
-            $mergeToNetSum = 0;
-            foreach ($makeChargesDeductions as $row) {
-                if ($row['netSumMerge']) {
-                    $mergeToNetSum += $invoice_net_sum * ($row['coefficient'] - 1);
-                    $invoice_sum_tax_details[] = [
-                        'charges_deduction_id' => $row['charges_deduction_id'],
-                        'calculate' => $invoice_net_sum * ($row['coefficient'] - 1),
-                        'coefficient' => round(($row['coefficient'] - 1), 2)
-                    ];
-                }
+            /*
+            |--------------------------------------------------------------------------
+            | Base unit price
+            |--------------------------------------------------------------------------
+            |
+            | اگر بسته‌بندی انتخاب شده باشد قیمت پایه از بسته‌بندی گرفته می‌شود.
+            | در غیر این صورت قیمت پایه محصول اصلی استفاده می‌شود.
+            |
+            */
+
+            $baseUnitPrice = $productChild
+                ? $productChild->sale_price
+                : $productInfo->sale_price;
+
+            /*
+            |--------------------------------------------------------------------------
+            | Main product unit
+            |--------------------------------------------------------------------------
+            |
+            | واحد ذخیره‌شده همیشه واحد اصلی محصول است؛
+            | حتی اگر بسته‌بندی انتخاب شده باشد.
+            |
+            */
+
+            $unitId = $productInfo->measurement_unit_id;
+
+            /*
+            |--------------------------------------------------------------------------
+            | Normalize values
+            |--------------------------------------------------------------------------
+            */
+
+            $amount = persianTextNormalizer->persianNumberToEnglish(
+                numberNormalizer->removePriceSeparator($item['product_amount'] ?? 0)
+            );
+
+            $unitPrice = persianTextNormalizer->persianNumberToEnglish(
+                numberNormalizer->removePriceSeparator($baseUnitPrice)
+            );
+
+            $unitPriceEdit = persianTextNormalizer->persianNumberToEnglish(
+                numberNormalizer->removePriceSeparator($item['product_unit_price'] ?? 0)
+            );
+
+            $discountUnitAmount = persianTextNormalizer->persianNumberToEnglish(
+                numberNormalizer->removePriceSeparator($item['discount_unit_amount'] ?? 0)
+            );
+
+            $discountAmount = numberNormalizer->removePriceSeparator(
+                $item['discount_amount'] ?? 0
+            );
+
+            $totalUnitPrice = numberNormalizer->removePriceSeparator(
+                $item['unit_price_after_discount'] ?? 0
+            );
+
+            /*
+            |--------------------------------------------------------------------------
+            | Discount calculation
+            |--------------------------------------------------------------------------
+            */
+
+            $unitDiscount = 0;
+
+            if (($item['discount_type'] ?? '') == 'percentage') {
+
+                $unitDiscount = (
+                    $discountUnitAmount * $unitPriceEdit / 100
+                );
+
+            } else if (($item['discount_type'] ?? '') == 'cash') {
+
+                $unitDiscount = $discountUnitAmount;
+
             }
-            $sumTaxMergeToNetSum = $invoice_net_sum + $mergeToNetSum;
-            $sumTaxAfterMerge = 0;
-            foreach ($makeChargesDeductions as $row) {
-                if (!$row['netSumMerge']) {
-                    $sumTaxAfterMerge += $sumTaxMergeToNetSum * ($row['coefficient'] - 1);
-                    $invoice_sum_tax_details[] = [
-                        'charges_deduction_id' => $row['charges_deduction_id'],
-                        'calculate' => $sumTaxMergeToNetSum * ($row['coefficient'] - 1),
-                        'coefficient' => round(($row['coefficient'] - 1), 2)
-                    ];
-                }
-            }
-            $invoice_sum_tax = $mergeToNetSum + $sumTaxAfterMerge;
-            $invoice_sum_total = $invoice_net_sum + $invoice_sum_tax;
-            $makeProformaInvoiceDetail = [
+
+            /*
+            |--------------------------------------------------------------------------
+            | Invoice product data
+            |--------------------------------------------------------------------------
+            */
+
+            $invoiceProduct = [
                 'proforma_invoice_id' => $addProformaInvoice->id,
-                'expert_alias_name',
-                'charges_deductions' => json_encode($makeChargesDeductions, JSON_UNESCAPED_UNICODE),
-                'invoice_sum' => $invoice_sum,
-                'invoice_sum_discount' => $invoice_sum_discount,
-                'invoice_net_sum' => $invoice_net_sum,
-                'invoice_sum_tax' => $invoice_sum_tax,
-                'invoice_sum_tax_details' => json_encode($invoice_sum_tax_details, JSON_UNESCAPED_UNICODE),
-                'invoice_sum_total' => $invoice_sum_total,
-                'payment_terms' => $data['payment_terms'],
-                'bottom_invoice_text' => $data['bottom_invoice_text'],
+
+                'product_id' => $productInfo->id,
+
+                'product_child_id' => $productChild?->id,
+
+                'unit_id' => $unitId,
+
+                'amount' => $amount,
+
+                // قیمت پایه محصول یا بسته‌بندی انتخاب‌شده
+                'unit_price' => $unitPrice,
+
+                // قیمت ویرایش‌شده توسط کاربر
+                'unit_price_edit' => $unitPriceEdit,
+
+                'sum_unit_price' => $unitPriceEdit * $amount,
+
+                'discount_type' => ($item['discount_type'] ?? '') ?: 'noDiscount',
+
+                'discount_unit_amount' => $discountUnitAmount,
+
+                'discount_unit_amount_cash' => $unitDiscount,
+
+                'discount_amount' => $discountAmount,
+
+                'total_unit_price' => $totalUnitPrice,
+
+                'total_product_price' => $amount * $totalUnitPrice,
             ];
-            $addProformaInvoiceDetail = ProformaInvoiceDetailsModel::query()->create($makeProformaInvoiceDetail);
-            if ($addProformaInvoiceDetail) {
-                $this->successCallBack('/ProformaInvoice/main', "پیشفاکتور با شماره {$addProformaInvoice->invoice_number} با موفقیت ثبت شد.");
-            } else {
-                $this->failedCallBack("/ProformaInvoice/createProformaInvoice/{$data['price_suggestion_id']}", 'خطا در ثبت اطلاعات پیشفاکتور');
+
+            /*
+            |--------------------------------------------------------------------------
+            | Invoice totals
+            |--------------------------------------------------------------------------
+            */
+
+            $invoice_sum += $amount * $unitPrice;
+
+            $invoice_sum_discount += $unitDiscount * $amount;
+
+            $invoice_net_sum += $totalUnitPrice * $amount;
+
+            /*
+            |--------------------------------------------------------------------------
+            | Save invoice product
+            |--------------------------------------------------------------------------
+            */
+
+            ProformaInvoiceProductsModel::query()->create($invoiceProduct);
+        }
+
+        /*
+        |--------------------------------------------------------------------------
+        | Charges and deductions
+        |--------------------------------------------------------------------------
+        */
+
+        $invoice_sum_tax_details = [];
+
+        $mergeToNetSum = 0;
+
+        foreach ($makeChargesDeductions as $row) {
+
+            if ($row['netSumMerge']) {
+
+                $calculate = $invoice_net_sum * ($row['coefficient'] - 1);
+
+                $mergeToNetSum += $calculate;
+
+                $invoice_sum_tax_details[] = [
+                    'charges_deduction_id' => $row['charges_deduction_id'],
+                    'calculate' => $calculate,
+                    'coefficient' => round(($row['coefficient'] - 1), 2)
+                ];
             }
+        }
+
+        $sumTaxMergeToNetSum = $invoice_net_sum + $mergeToNetSum;
+
+        $sumTaxAfterMerge = 0;
+
+        foreach ($makeChargesDeductions as $row) {
+
+            if (!$row['netSumMerge']) {
+
+                $calculate = $sumTaxMergeToNetSum * ($row['coefficient'] - 1);
+
+                $sumTaxAfterMerge += $calculate;
+
+                $invoice_sum_tax_details[] = [
+                    'charges_deduction_id' => $row['charges_deduction_id'],
+                    'calculate' => $calculate,
+                    'coefficient' => round(($row['coefficient'] - 1), 2)
+                ];
+            }
+        }
+
+        $invoice_sum_tax = $mergeToNetSum + $sumTaxAfterMerge;
+
+        $invoice_sum_total = $invoice_net_sum + $invoice_sum_tax;
+
+        /*
+        |--------------------------------------------------------------------------
+        | Invoice details
+        |--------------------------------------------------------------------------
+        */
+
+        $makeProformaInvoiceDetail = [
+            'proforma_invoice_id' => $addProformaInvoice->id,
+
+            'charges_deductions' => json_encode(
+                $makeChargesDeductions,
+                JSON_UNESCAPED_UNICODE
+            ),
+
+            'invoice_sum' => $invoice_sum,
+
+            'invoice_sum_discount' => $invoice_sum_discount,
+
+            'invoice_net_sum' => $invoice_net_sum,
+
+            'invoice_sum_tax' => $invoice_sum_tax,
+
+            'invoice_sum_tax_details' => json_encode(
+                $invoice_sum_tax_details,
+                JSON_UNESCAPED_UNICODE
+            ),
+
+            'invoice_sum_total' => $invoice_sum_total,
+
+            'payment_terms' => $data['payment_terms'],
+
+            'bottom_invoice_text' => $data['bottom_invoice_text'],
+        ];
+
+        $addProformaInvoiceDetail = ProformaInvoiceDetailsModel::query()
+            ->create($makeProformaInvoiceDetail);
+
+        if ($addProformaInvoiceDetail) {
+
+            $this->successCallBack(
+                '/ProformaInvoice/main',
+                "پیشفاکتور با شماره {$addProformaInvoice->invoice_number} با موفقیت ثبت شد."
+            );
+
+        } else {
+
+            $this->failedCallBack(
+                "/ProformaInvoice/createProformaInvoice/{$data['price_suggestion_id']}",
+                'خطا در ثبت اطلاعات پیشفاکتور'
+            );
+
         }
     }
 
@@ -517,12 +732,23 @@ class ProformaInvoice extends ControllerScheme
                             'شناسه یکی از محصولات معتبر نیست.'
                         );
                     }
-                    $productInfo = ProductModel::query()->find($productId);
-                    if (!$productInfo) {
-                        throw new \RuntimeException(
-                            "محصول با شناسه {$productId} پیدا نشد."
-                        );
+                    $productInfo = ProductModel::query()->findOrFail($item['product_id']);
+
+                    $productChild = null;
+
+                    if (!empty($item['product_child_id'])) {
+                        $productChild = ProductChildModel::query()
+                            ->where('id', $item['product_child_id'])
+                            ->where('product_id', $productInfo->id)
+                            ->firstOrFail();
                     }
+
+                    $baseUnitPrice = $productChild
+                        ? $productChild->sale_price
+                        : $productInfo->sale_price;
+
+                    $unitId = $productInfo->measurement_unit_id;
+
                     $amount = $toNumber($item['product_amount'] ?? 0);
 
                     if ($amount <= 0) {
@@ -562,8 +788,10 @@ class ProformaInvoice extends ControllerScheme
                     $productData = [
                         'proforma_invoice_id' => $find->id,
                         'product_id' => $productId,
+                        'product_child_id' => $productChild?->id,
+                        'unit_id' => $unitId,
+                        'unit_price' => $baseUnitPrice,
                         'amount' => $amount,
-                        'unit_price' => $originalUnitPrice,
                         'unit_price_edit' => $unitPrice,
                         'sum_unit_price' => $sumUnitPrice,
                         'discount_type' => $discountType,
@@ -1085,7 +1313,7 @@ class ProformaInvoice extends ControllerScheme
 
     public function getInvoicePaymentData($id)
     {
-        $invoiceData = ProformaInvoiceDetailsModel::query()->find($id);
+        $invoiceData = ProformaInvoiceModel::query()->find($id);
         $paymentAllocation = PaymentAllocationModel::query()->where('invoice_id', $id);
         $makeData = [
             "invoice_sum" => $invoiceData->invoice_sum,
@@ -1352,7 +1580,7 @@ class ProformaInvoice extends ControllerScheme
                     return [
                         'description' => $item->product->label,
                         'quantity' => $item->amount,
-                        'unit' => $item->product->measurementUnit->label,
+                        'unit' => $item->unit()->label,
                         'unit_price' => $item->total_unit_price,
                         'total' => $item->total_product_price,
                     ];

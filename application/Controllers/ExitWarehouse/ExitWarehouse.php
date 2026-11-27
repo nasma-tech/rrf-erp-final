@@ -11,33 +11,14 @@ class ExitWarehouse extends ControllerScheme
 {
     const string singleName = 'خروج از انبار';
     const string pluralName = 'خروج از انبار';
+
     protected string $defaultModel = ExitWarehouseModel::class;
 
-    public function main()
-    {
-        view->setPageTitle(self::pluralName);
-        view->setSingleName(self::singleName);
-        view->setPluralName(self::pluralName);
-        view->ui([
-            'vendors/js/tables/datatable/datatables.min',
-            'vendors/js/tables/datatable/dataTables.bootstrap4.min',
-            'vendors/js/tables/datatable/dataTables.buttons.min',
-            'vendors/js/tables/datatable/buttons.html5.min',
-            'vendors/js/tables/datatable/buttons.print.min',
-            'vendors/js/tables/datatable/buttons.bootstrap.min',
-            'vendors/js/tables/datatable/jszip.min',
-            'vendors/js/tables/datatable/pdfmake.min',
-            'vendors/js/tables/datatable/vfs_fonts',
-            'vendors/js/tables/datatable/buttons.colVis.min',
-            //'js/ExitWarehouse/ExitWarehouse'
-        ],
-            ['vendors/css/tables/datatable/datatables.min'],
-            [
-                //vars
-            ])->display('ExitWarehouse/ExitWarehouse.tpl');
-    }
-
-    public function addExitPackage(int $warehouseId, string $title, int|null $partId = null)
+    public function addExitPackage(
+        int      $warehouseId,
+        string   $title,
+        int|null $partId = null
+    )
     {
         return ExitWarehousePackageModel::query()->create([
             'warehouse_id' => $warehouseId,
@@ -48,25 +29,53 @@ class ExitWarehouse extends ControllerScheme
     }
 
     public function addExitProduct(
-        int         $exitPackageId,
-        int         $product_id,
-        int         $amount,
-        string|null $exit_datetime = null,
-        bool        $exit_status = false
+        int              $exitPackageId,
+        int              $productId,
+        int|float|string $amount,
+        int|null         $productChildId = null,
+        string|null      $exitDatetime = null,
+        bool             $exitStatus = false
     )
     {
-        $getProduct = ProductModel::query()->find($product_id);
-        if ($product_id) {
-            return ExitWarehouseModel::query()->create([
-                "exit_package_id" => $exitPackageId,
-                "product_id" => $product_id,
-                "amount" => $amount,
-                "unit_id" => $getProduct->measurementUnit->id,
-                "exit_datetime" => $exit_datetime ?: date("Y-m-d H:i:s"),
-                "exit_status" => $exit_status,
-                "user_id" => userObject()->userId,
-            ]);
+        $product = ProductModel::query()
+            ->with('productChildren')
+            ->find($productId);
+
+        if (!$product) {
+            return false;
         }
-        return false;
+
+        $productChild = null;
+
+        if (!empty($productChildId)) {
+            $productChild = $product->productChildren()
+                ->where('id', $productChildId)
+                ->first();
+
+            if (!$productChild) {
+                throw new \InvalidArgumentException(
+                    'بسته‌بندی انتخاب‌شده متعلق به این محصول نیست.'
+                );
+            }
+        }
+
+        $amount = numberNormalizer->removePriceSeparator($amount);
+
+        if (!is_numeric($amount) || (float)$amount <= 0) {
+            throw new \InvalidArgumentException(
+                'مقدار خروج از انبار باید بزرگ‌تر از صفر باشد.'
+            );
+        }
+
+        return ExitWarehouseModel::query()->create([
+            'exit_package_id' => $exitPackageId,
+            'product_id' => $product->id,
+            'product_child_id' => $productChild?->id,
+            'amount' => $amount,
+            'unit_id' => $product->measurement_unit_id,
+            'exit_datetime' => $exitDatetime ?: date('Y-m-d H:i:s'),
+            'exit_status' => $exitStatus,
+            'user_id' => userObject()->userId,
+        ]);
     }
 }
