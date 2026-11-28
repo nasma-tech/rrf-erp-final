@@ -443,11 +443,11 @@ $(function () {
                                                     processData: false,
                                                     contentType: false,
                                                     cache: false,
-                                                    dataType:'json',
+                                                    dataType: 'json',
                                                     success: result => {
-                                                        if (result.success){
-                                                            customAlert('success',result.message)
-                                                        }else {
+                                                        if (result.success) {
+                                                            customAlert('success', result.message)
+                                                        } else {
                                                             swalValidate(result.message)
                                                         }
                                                         return false;
