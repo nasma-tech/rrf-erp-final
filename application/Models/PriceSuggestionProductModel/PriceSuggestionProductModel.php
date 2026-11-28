@@ -10,12 +10,14 @@ class PriceSuggestionProductModel extends Model
     protected $table = 'PriceSuggestionProduct';
     protected $primaryKey = 'id';
     public $timestamps = false;
-    
+
     use SoftDeletes;
 
     protected $fillable = [
         'price_suggestion_id',
         'product_id',
+        'product_child_id',
+        'unit_id',
         'amount',
         'unit_price',
         'discount_type',

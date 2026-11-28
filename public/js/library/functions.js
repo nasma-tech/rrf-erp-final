@@ -250,57 +250,78 @@ const destroyDataTable = (input) => {
     $(input).DataTable().destroy()
 }
 
-const dataTable = (input, dom = "Bfrtip", paging = true, info = true, showButton = true) => {
+
+const dataTable = (
+    input,
+    dom = "Bfrtip",
+    paging = true,
+    info = true,
+    showButton = true,
+    order = [[0, 'desc']]
+) => {
 
     let buttonsData = (showButton ? [{
-        text: 'کپی', extend: 'copyHtml5', exportOptions: {
+        text: 'کپی',
+        extend: 'copyHtml5',
+        exportOptions: {
             columns: [0, ':visible']
         }
     }, {
-        text: 'اکسل', extend: 'excelHtml5', exportOptions: {
+        text: 'اکسل',
+        extend: 'excelHtml5',
+        exportOptions: {
             columns: ':visible'
-        }, customize: function (xlsx) {
+        },
+        customize: function (xlsx) {
             var source = xlsx.xl['workbook.xml'].getElementsByTagName('sheet')[0];
             source.setAttribute('name', 'Roles');
         }
-
     }, {
-        text: 'چاپ', extend: 'print', exportOptions: {
+        text: 'چاپ',
+        extend: 'print',
+        exportOptions: {
             columns: ':visible'
         }
     }, {
-        text: 'فیلتر ستون', extend: 'colvis', exportOptions: {
+        text: 'فیلتر ستون',
+        extend: 'colvis',
+        exportOptions: {
             columns: ':visible'
         }
-    }] : [])
+    }] : []);
 
     return $(input).DataTable({
-        order: [[0, 'desc']],
+        order: order,
         dom: dom,
         paging: paging,
         info: info,
-        "language": {
-            "sEmptyTable": "هیچ داده ای در جدول وجود ندارد",
-            "sInfo": "نمایش _START_ تا _END_ از _TOTAL_ رکورد",
-            "sInfoEmpty": "نمایش 0 تا 0 از 0 رکورد",
-            "sInfoFiltered": "(فیلتر شده از _MAX_ رکورد)",
-            "sInfoPostFix": "",
-            "sInfoThousands": ",",
-            "sLengthMenu": "نمایش _MENU_ رکورد",
-            "sLoadingRecords": "در حال بارگزاری...",
-            "sProcessing": "در حال پردازش...",
-            "sSearch": "جستجو: ",
-            "sZeroRecords": "رکوردی با این مشخصات پیدا نشد",
-            "oPaginate": {
-                "sFirst": "ابتدا", "sLast": "انتها", "sNext": "بعدی", "sPrevious": "قبلی"
+        language: {
+            sEmptyTable: "هیچ داده ای در جدول وجود ندارد",
+            sInfo: "نمایش _START_ تا _END_ از _TOTAL_ رکورد",
+            sInfoEmpty: "نمایش 0 تا 0 از 0 رکورد",
+            sInfoFiltered: "(فیلتر شده از _MAX_ رکورد)",
+            sInfoPostFix: "",
+            sInfoThousands: ",",
+            sLengthMenu: "نمایش _MENU_ رکورد",
+            sLoadingRecords: "در حال بارگزاری...",
+            sProcessing: "در حال پردازش...",
+            sSearch: "جستجو: ",
+            sZeroRecords: "رکوردی با این مشخصات پیدا نشد",
+            oPaginate: {
+                sFirst: "ابتدا",
+                sLast: "انتها",
+                sNext: "بعدی",
+                sPrevious: "قبلی"
             },
-            "oAria": {
-                "sSortAscending": ": فعال سازی نمایش به صورت صعودی",
-                "sSortDescending": ": فعال سازی نمایش به صورت نزولی"
+            oAria: {
+                sSortAscending: ": فعال سازی نمایش به صورت صعودی",
+                sSortDescending: ": فعال سازی نمایش به صورت نزولی"
             }
-        }, buttons: buttonsData
+        },
+        buttons: buttonsData
     });
 };
+
 
 //mask
 const maskInput = (input, maskPattern, placeHolder = '') => {

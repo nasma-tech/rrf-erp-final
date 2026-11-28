@@ -17,11 +17,18 @@
                 </thead>
                 <tbody>
                 {foreach $getData.invoiceProduct as $item}
+                    {$productChild = $item->productChild}
                     <tr>
                         <td class="border">{$item.id}</td>
                         <td class="border">{$item.product.serial_number} - {$item.product.label}</td>
                         <td class="border">{$numberNormalizer->floatNumberFormat($item.amount)}</td>
-                        <td class="border">{$item.product.measurementUnit.label}</td>
+                        {if $productChild}
+                            <td class="border" data-toggle="tooltip"
+                                data-original-title="{$productChild->label}">{$item->unit()->label}<small
+                                        class="primary">?</small></td>
+                        {else}
+                            <td class="border">{$item->unit()->label}</td>
+                        {/if}
                         <td class="border">{$numberNormalizer->floatNumberFormat($item.unit_price_edit)}</td>
                         <td class="border">{$numberNormalizer->floatNumberFormat($item.discount_unit_amount_cash)}</td>
                         <td class="border">{$numberNormalizer->floatNumberFormat($item.discount_amount)}</td>

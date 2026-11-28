@@ -15,6 +15,7 @@
                                 <th class="border">#</th>
                                 <th class="border">کد پروژه</th>
                                 <th class="border">نحوه پرداخت</th>
+                                <th class="border">تاریخ - ساعت ثبت</th>
                                 <th class="border">نوع خرید</th>
                                 <th class="border">نوع صنعت</th>
                                 <th class="border">کارشناس</th>
@@ -29,6 +30,7 @@
                                         <kbd>{$item.project_code}</kbd>
                                     </td>
                                     <td class="border">{(($item.payment_type == 1)?'نقد':'اقساط')}</td>
+                                    <td class="border" dir="ltr">{jdate("Y/m/d H:i" , strtotime($item.created_at))}</td>
                                     <td class="border">{(($item.payment_type == 1)?'نو':'کارکرده')}</td>
                                     <td class="border">{$item.industryTypeData.title}</td>
                                     <td class="border">{$item.expertData.first_name|default:$item.userData.first_name} {$item.expertData.last_name|default:$item.userData.last_name}</td>
@@ -39,7 +41,9 @@
                                                           aria-expanded="false" role="menu">
                                                     </span>
                                             <div class="dropdown-menu" x-placement="bottom-start">
-                                                <a class="dropdown-item text-primary" href="/ContactProjects/ContactProjectDetail/{$item.id}" target="_blank">
+                                                <a class="dropdown-item text-primary"
+                                                   href="/ContactProjects/ContactProjectDetail/{$item.id}"
+                                                   target="_blank">
                                                     <i class="bx bx-circle text-primary mr-1"></i>
                                                     پیگیری
                                                 </a>
