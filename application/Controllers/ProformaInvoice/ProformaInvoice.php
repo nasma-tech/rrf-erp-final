@@ -1390,6 +1390,7 @@ class ProformaInvoice extends ControllerScheme
         }
     }
 
+    #[NoReturn]
     public function getInvoiceList(): void
     {
         Response::success(

@@ -37,6 +37,7 @@ class PaymentManagementModel extends Model
         'deleted_at'
     ];
 
+
     public function bankAccountData(): HasOne
     {
         return $this->hasOne(BankAccountModel::class, 'id', 'bank_account_id');

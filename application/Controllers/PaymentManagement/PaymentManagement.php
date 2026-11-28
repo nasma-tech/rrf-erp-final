@@ -17,7 +17,9 @@ use App\Models\ChequeManagementModel\ChequeManagementModel;
 use App\Models\PaymentAllocationTypeModel\PaymentAllocationTypeModel;
 use App\Models\PaymentManagementModel\PaymentManagementModel;
 use App\Models\PaymentMethodModel\PaymentMethodModel;
+use JetBrains\PhpStorm\NoReturn;
 use Packages\Cartable\Cartable;
+use Packages\Http\Response;
 use PHPMailer\PHPMailer\Exception;
 
 class PaymentManagement extends ControllerScheme
@@ -156,10 +158,7 @@ class PaymentManagement extends ControllerScheme
         }
 
         if (count($validationKey) > 0) {
-            $output = [
-                'status' => false,
-                'errors' => $validationKey,
-            ];
+            Response::error('خطا در ثبت درخواست');
         } else {
             $requestId = '';
             switch ($request['payment_method_id']) {
@@ -167,7 +166,7 @@ class PaymentManagement extends ControllerScheme
                     $arrayFill = [
                         'cheque_deposit_date' => dateTimeHelper->convertDateToTimestamp($request['cheque_deposit_date']),
                         'cheque_number' => persianTextNormalizer->persianNumberToEnglish($request['cheque_number']),
-                        'cheque_amount' => str_replace([',', ' '], '', $request['cheque_amount']),
+                        'cheque_amount' => numberNormalizer->removePriceSeparator($request['cheque_amount']),
                         'cheque_description' => $request['cheque_description'],
                         'user_id' => userObject()->userId
                     ];
@@ -185,8 +184,12 @@ class PaymentManagement extends ControllerScheme
                         ];
                         $add = PaymentManagementModel::query()->create($arrayFill);
                         if ($add) {
-                            $requestId = $add->id;
-                            $output['status'] = true;
+                            Response::success([
+                                'paymentId' => $add->id,
+                                'amount' => $addCheque->cheque_amount
+                            ],'چک با موفقیت ثبت شد');
+                        } else {
+                            Response::error('خطا در ثبت چک');
                         }
                     }
                     break;
@@ -202,15 +205,19 @@ class PaymentManagement extends ControllerScheme
                     ];
                     $add = PaymentManagementModel::query()->create($arrayFill);
                     if ($add) {
-                        $requestId = $add->id;
-                        $document = fileHelper->uploadMultipleFiles('PaymentManagement',fileHelper->normalizeUploadedFiles('payment_documents'), $add->id);
+                        $document = fileHelper->uploadMultipleFiles('PaymentManagement', fileHelper->normalizeUploadedFiles('payment_documents'), $add->id);
                         $add->update([
                             'payment_documents' => json_encode($document)
                         ]);
-                        $output['status'] = true;
+                        Response::success([
+                            'paymentId' => $add->id,
+                            'amount' => $add->payment_amount
+                        ],'واریزی با موفقیت ثبت شد');
                     }
                     break;
             }
+
+
             if ($requestId) {
 //                $cartable = new Cartable();
 //                $cartable->setDataModel(new PaymentManagementModel());
@@ -220,9 +227,6 @@ class PaymentManagement extends ControllerScheme
             }
 
         }
-
-        echo json_encode($output, JSON_UNESCAPED_UNICODE);
-
     }
 
     public function getPayments(): void
@@ -268,6 +272,17 @@ class PaymentManagement extends ControllerScheme
         $paymentManagementId = $this->requestArray()['paymentManagementId'];
         $allocation = new PaymentAllocation();
         echo $allocation->checkRemaining($paymentManagementId);
+    }
+
+    #[NoReturn]
+    public function getPaymentType(): void
+    {
+        Response::success(PaymentAllocationTypeModel::query()
+            ->select([
+                'id',
+                'allocation_title as title'
+            ])
+            ->get());
     }
 
 }

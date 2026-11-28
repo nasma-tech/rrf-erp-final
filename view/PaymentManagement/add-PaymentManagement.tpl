@@ -3,8 +3,6 @@
 {include 'sections/side-menu.tpl'}
 
 <style>
-
-
     /* =========================================
        Payment Create Page
     ========================================= */
