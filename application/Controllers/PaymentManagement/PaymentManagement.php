@@ -211,7 +211,7 @@ class PaymentManagement extends ControllerScheme
                         ]);
                         Response::success([
                             'paymentId' => $add->id,
-                            'amount' => $add->payment_amount
+                            'amount' => $add->amount_paid
                         ],'واریزی با موفقیت ثبت شد');
                     }
                     break;
