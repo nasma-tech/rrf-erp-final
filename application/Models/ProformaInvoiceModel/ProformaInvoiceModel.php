@@ -133,4 +133,5 @@ class ProformaInvoiceModel extends Model
     {
         return $this->hasOne(ProformaInvoiceSettingsModel::class ,'brand_id' , 'brand_id');
     }
+
 }
