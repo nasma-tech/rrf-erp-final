@@ -158,6 +158,18 @@
         border: 1px solid #16845b;
     }
 
+    .cc-process-btn-primary {
+        color: #fff;
+        background: #C94B55;
+        border: 1px solid #C94B55;
+    }
+
+    .cc-process-btn-primary:hover {
+        background: #AD3944;
+        border-color: #AD3944;
+        color: #fff;
+    }
+
     .cc-contract-btn-primary:hover {
         background: #116b49;
     }
@@ -939,7 +951,167 @@
         }
     }
 
+
+
+    /* =========================================
+       FLOATING CONTRACT ACTIONS
+       Kept outside the contract header so overflow:hidden
+       and responsive header rules cannot clip or reposition it.
+    ========================================= */
+    .cc-contract-header-actions {
+        position: fixed !important;
+        top: 110px !important;
+        left: 24px !important;
+        right: auto !important;
+        z-index: 99999 !important;
+
+        display: flex !important;
+        align-items: center;
+        justify-content: center;
+        flex-wrap: wrap;
+        gap: 9px;
+
+        width: max-content;
+        max-width: calc(100vw - 32px);
+        padding: 9px;
+        background: rgba(23, 45, 80, .96);
+        border: 1px solid rgba(255, 255, 255, .16);
+        border-radius: 12px;
+        box-shadow: 0 8px 26px rgba(15, 35, 65, .25);
+        backdrop-filter: blur(10px);
+        -webkit-backdrop-filter: blur(10px);
+    }
+
+    .cc-contract-header-actions .cc-contract-btn {
+        min-height: 39px;
+        padding: 0 14px;
+        border-radius: 8px;
+        white-space: nowrap;
+        text-decoration: none;
+    }
+
+    .cc-contract-header-actions .cc-process-btn-primary {
+        color: #fff;
+        background: #c94b55;
+        border-color: #c94b55;
+    }
+
+    .cc-contract-header-actions .cc-process-btn-primary:hover {
+        color: #fff;
+        background: #ad3944;
+        border-color: #ad3944;
+        transform: translateY(-1px);
+    }
+
+    .cc-contract-header-actions .cc-contract-btn-primary {
+        color: #fff;
+        background: #16845b;
+        border-color: #16845b;
+    }
+
+    .cc-contract-header-actions .cc-contract-btn-primary:hover {
+        color: #fff;
+        background: #116b49;
+        border-color: #116b49;
+        transform: translateY(-1px);
+    }
+
+    .cc-contract-header-actions .cc-contract-btn-light {
+        color: #fff;
+        background: rgba(255, 255, 255, .10);
+        border-color: rgba(255, 255, 255, .23);
+    }
+
+    @media (max-width: 768px) {
+        .cc-contract-header-actions {
+            top: 78px !important;
+            left: 8px !important;
+            right: 8px !important;
+            width: auto;
+            max-width: none;
+            gap: 6px;
+            padding: 7px;
+        }
+
+        .cc-contract-header-actions .cc-contract-btn {
+            flex: 1 1 auto;
+            min-height: 36px;
+            padding: 0 9px;
+            font-size: 11px;
+        }
+    }
+
+    @media (max-width: 380px) {
+        .cc-contract-header-actions {
+            flex-direction: column;
+            align-items: stretch;
+        }
+
+        .cc-contract-header-actions .cc-contract-btn {
+            width: 100%;
+        }
+    }
+    /* Floating action rail: rotated and docked to the left edge */
+    .cc-contract-header-actions {
+        position: fixed !important;
+        top: 58.5% !important;
+        left: 29px !important;
+        right: auto !important;
+        width: max-content !important;
+        max-width: none !important;
+        flex-wrap: nowrap !important;
+        transform: translateY(-50%) rotate(-90deg) !important;
+        transform-origin: left center !important;
+        z-index: 99999 !important;
+        border-radius: 0 0 12px 12px !important;
+    }
+
+    .cc-contract-header-actions .cc-contract-btn {
+        flex: 0 0 auto !important;
+    }
+
+    @media (max-width: 768px) {
+        .cc-contract-header-actions {
+            top: 50% !important;
+            left: 23px !important;
+            right: auto !important;
+            width: max-content !important;
+            padding: 6px !important;
+            gap: 5px !important;
+            transform: translateY(-50%) rotate(-90deg) !important;
+            transform-origin: left center !important;
+        }
+
+        .cc-contract-header-actions .cc-contract-btn {
+            min-height: 34px !important;
+            padding: 0 9px !important;
+            font-size: 10px !important;
+        }
+    }
+
 </style>
+
+<div class="cc-contract-header-actions">
+    <a href="/ProformaInvoice/process/{$getData.proforma_invoice_id}"
+       class="cc-contract-btn cc-process-btn-primary text-white">
+        <i class="bx bx-git-branch"></i>
+        فرایند فروش
+    </a>
+
+    {if !$getData.cancelContract}
+        <a href="/ProformaInvoice/editIndex/{$getData.proforma_invoice_id}"
+           class="cc-contract-btn cc-contract-btn-primary text-white">
+            <i class="bx bxs-file-plus"></i>
+            ثبت الحاقیه جدید
+        </a>
+    {/if}
+
+    <button type="button" class="cc-contract-btn cc-contract-btn-light">
+        <i class="bx bx-dots-vertical-rounded"></i>
+        عملیات
+    </button>
+</div>
+
 <div class="app-content content">
     <div class="content-wrapper">
         {$flashMessageHelper->formCallBack()}
@@ -970,8 +1142,9 @@
                                                 <h4>قرارداد شماره {$getData.proformaInvoice.invoice_number}</h4>
                                                 {if !$getData.cancelContract}
                                                     <span class="cc-contract-status"><i class="bx bx-check-circle"></i>فعال</span>
-                                                    {else}
-                                                    <span class="cc-contract-status-cancel"><i class="bx bx-check-circle"></i>غیر فعال</span>
+                                                {else}
+                                                    <span class="cc-contract-status-cancel"><i
+                                                                class="bx bx-check-circle"></i>غیر فعال</span>
                                                 {/if}
                                             </div>
 
@@ -983,20 +1156,7 @@
                                         </div>
                                     </div>
 
-                                    <div class="cc-contract-header-actions">
-                                        {if !$getData.cancelContract}
-                                        <a href="/ProformaInvoice/editIndex/{$getData.proforma_invoice_id}"
-                                           class="cc-contract-btn cc-contract-btn-primary text-white">
-                                            <i class="bx bx-file-plus"></i>
-                                            ثبت الحاقیه جدید
-                                        </a>
-                                        {/if}
 
-                                        <button type="button" class="cc-contract-btn cc-contract-btn-light">
-                                            <i class="bx bx-dots-vertical-rounded"></i>
-                                            عملیات
-                                        </button>
-                                    </div>
 
                                     <div class="cc-contract-header-meta">
                                         <div class="cc-contract-meta-item">
@@ -1172,12 +1332,12 @@
                                                     <p>تمام تغییرات و اصلاحات ثبت‌شده روی قرارداد</p>
                                                 </div>
                                                 {if !$getData.cancelContract}
-                                                <a target="_blank"
-                                                   href="/ProformaInvoice/editIndex/{$getData.proforma_invoice_id}"
-                                                   class="cc-contract-btn cc-contract-btn-primary text-white">
-                                                    <i class="bx bx-file-plus"></i>
-                                                    ثبت الحاقیه جدید
-                                                </a>
+                                                    <a target="_blank"
+                                                       href="/ProformaInvoice/editIndex/{$getData.proforma_invoice_id}"
+                                                       class="cc-contract-btn cc-contract-btn-primary text-white">
+                                                        <i class="bx bxs-file-plus"></i>
+                                                        ثبت الحاقیه جدید
+                                                    </a>
                                                 {/if}
                                             </div>
 
@@ -1270,17 +1430,18 @@
                                                     </tr>
                                                     </thead>
                                                     <tbody>
-                                                        {foreach $getData.proformaInvoice.invoiceProduct as  $key=>$item}
-                                                            <tr>
-                                                                <td class="border">{$key+1}</td>
-                                                                <td class="border">{$item.product.label} - {$item.product.serial_number}</td>
-                                                                <td class="border">{$numberNormalizer->floatNumberFormat($item.amount)}</td>
-                                                                <td class="border">{$item.product.measurementUnit.label}</td>
-                                                                <td class="border">{$numberNormalizer->floatNumberFormat($item.unit_price)}</td>
-                                                                <td class="border">{$numberNormalizer->floatNumberFormat($item.discount_amount)}</td>
-                                                                <td class="border">{$numberNormalizer->floatNumberFormat($item.sum_unit_price)}</td>
-                                                            </tr>
-                                                        {/foreach}
+                                                    {foreach $getData.proformaInvoice.invoiceProduct as  $key=>$item}
+                                                        <tr>
+                                                            <td class="border">{$key+1}</td>
+                                                            <td class="border">{$item.product.label}
+                                                                - {$item.product.serial_number}</td>
+                                                            <td class="border">{$numberNormalizer->floatNumberFormat($item.amount)}</td>
+                                                            <td class="border">{$item.product.measurementUnit.label}</td>
+                                                            <td class="border">{$numberNormalizer->floatNumberFormat($item.unit_price)}</td>
+                                                            <td class="border">{$numberNormalizer->floatNumberFormat($item.discount_amount)}</td>
+                                                            <td class="border">{$numberNormalizer->floatNumberFormat($item.sum_unit_price)}</td>
+                                                        </tr>
+                                                    {/foreach}
                                                     </tbody>
                                                 </table>
                                             </div>
@@ -1288,70 +1449,70 @@
                                     </div>
                                 </div>
                                 <!-- Payments -->
-{*                                <div class="cc-contract-info-card cc-contract-payments-card">*}
-{*                                    <div class="cc-contract-info-heading">*}
-{*                                        <i class="bx bx-wallet"></i>*}
-{*                                        <h5>آخرین پرداخت‌های قرارداد</h5>*}
-{*                                        <button type="button" class="cc-contract-detail-btn">*}
-{*                                            مشاهده همه پرداخت‌ها*}
-{*                                            <i class="bx bx-left-arrow-alt"></i>*}
-{*                                        </button>*}
-{*                                    </div>*}
+                                {*                                <div class="cc-contract-info-card cc-contract-payments-card">*}
+                                {*                                    <div class="cc-contract-info-heading">*}
+                                {*                                        <i class="bx bx-wallet"></i>*}
+                                {*                                        <h5>آخرین پرداخت‌های قرارداد</h5>*}
+                                {*                                        <button type="button" class="cc-contract-detail-btn">*}
+                                {*                                            مشاهده همه پرداخت‌ها*}
+                                {*                                            <i class="bx bx-left-arrow-alt"></i>*}
+                                {*                                        </button>*}
+                                {*                                    </div>*}
 
-{*                                    <div class="cc-contract-table-wrapper">*}
-{*                                        <table class="cc-contract-table">*}
-{*                                            <thead>*}
-{*                                            <tr>*}
-{*                                                <th>ردیف</th>*}
-{*                                                <th>تاریخ پرداخت</th>*}
-{*                                                <th>مبلغ</th>*}
-{*                                                <th>شماره پیگیری</th>*}
-{*                                                <th>وضعیت</th>*}
-{*                                                <th>عملیات</th>*}
-{*                                            </tr>*}
-{*                                            </thead>*}
-{*                                            <tbody>*}
-{*                                            <tr>*}
-{*                                                <td>۱</td>*}
-{*                                                <td>۱۴۰۵/۰۹/۲۰</td>*}
-{*                                                <td>۲,۰۰۰,۰۰۰,۰۰۰ ریال</td>*}
-{*                                                <td>۱۲۵۸۹۶۳۲</td>*}
-{*                                                <td><span class="cc-contract-payment-status approved">تأیید شده</span>*}
-{*                                                </td>*}
-{*                                                <td>*}
-{*                                                    <button type="button" class="cc-contract-table-action">مشاهده*}
-{*                                                    </button>*}
-{*                                                </td>*}
-{*                                            </tr>*}
-{*                                            <tr>*}
-{*                                                <td>۲</td>*}
-{*                                                <td>۱۴۰۵/۰۹/۱۵</td>*}
-{*                                                <td>۱,۰۰۰,۰۰۰,۰۰۰ ریال</td>*}
-{*                                                <td>۱۲۵۸۹۶۴۵</td>*}
-{*                                                <td>*}
-{*                                                    <span class="cc-contract-payment-status pending">در انتظار تأیید</span>*}
-{*                                                </td>*}
-{*                                                <td>*}
-{*                                                    <button type="button" class="cc-contract-table-action">مشاهده*}
-{*                                                    </button>*}
-{*                                                </td>*}
-{*                                            </tr>*}
-{*                                            <tr>*}
-{*                                                <td>۳</td>*}
-{*                                                <td>۱۴۰۵/۰۹/۰۱</td>*}
-{*                                                <td>۳,۰۰۰,۰۰۰,۰۰۰ ریال</td>*}
-{*                                                <td>۱۲۵۸۹۶۷۸</td>*}
-{*                                                <td><span class="cc-contract-payment-status approved">تأیید شده</span>*}
-{*                                                </td>*}
-{*                                                <td>*}
-{*                                                    <button type="button" class="cc-contract-table-action">مشاهده*}
-{*                                                    </button>*}
-{*                                                </td>*}
-{*                                            </tr>*}
-{*                                            </tbody>*}
-{*                                        </table>*}
-{*                                    </div>*}
-{*                                </div>*}
+                                {*                                    <div class="cc-contract-table-wrapper">*}
+                                {*                                        <table class="cc-contract-table">*}
+                                {*                                            <thead>*}
+                                {*                                            <tr>*}
+                                {*                                                <th>ردیف</th>*}
+                                {*                                                <th>تاریخ پرداخت</th>*}
+                                {*                                                <th>مبلغ</th>*}
+                                {*                                                <th>شماره پیگیری</th>*}
+                                {*                                                <th>وضعیت</th>*}
+                                {*                                                <th>عملیات</th>*}
+                                {*                                            </tr>*}
+                                {*                                            </thead>*}
+                                {*                                            <tbody>*}
+                                {*                                            <tr>*}
+                                {*                                                <td>۱</td>*}
+                                {*                                                <td>۱۴۰۵/۰۹/۲۰</td>*}
+                                {*                                                <td>۲,۰۰۰,۰۰۰,۰۰۰ ریال</td>*}
+                                {*                                                <td>۱۲۵۸۹۶۳۲</td>*}
+                                {*                                                <td><span class="cc-contract-payment-status approved">تأیید شده</span>*}
+                                {*                                                </td>*}
+                                {*                                                <td>*}
+                                {*                                                    <button type="button" class="cc-contract-table-action">مشاهده*}
+                                {*                                                    </button>*}
+                                {*                                                </td>*}
+                                {*                                            </tr>*}
+                                {*                                            <tr>*}
+                                {*                                                <td>۲</td>*}
+                                {*                                                <td>۱۴۰۵/۰۹/۱۵</td>*}
+                                {*                                                <td>۱,۰۰۰,۰۰۰,۰۰۰ ریال</td>*}
+                                {*                                                <td>۱۲۵۸۹۶۴۵</td>*}
+                                {*                                                <td>*}
+                                {*                                                    <span class="cc-contract-payment-status pending">در انتظار تأیید</span>*}
+                                {*                                                </td>*}
+                                {*                                                <td>*}
+                                {*                                                    <button type="button" class="cc-contract-table-action">مشاهده*}
+                                {*                                                    </button>*}
+                                {*                                                </td>*}
+                                {*                                            </tr>*}
+                                {*                                            <tr>*}
+                                {*                                                <td>۳</td>*}
+                                {*                                                <td>۱۴۰۵/۰۹/۰۱</td>*}
+                                {*                                                <td>۳,۰۰۰,۰۰۰,۰۰۰ ریال</td>*}
+                                {*                                                <td>۱۲۵۸۹۶۷۸</td>*}
+                                {*                                                <td><span class="cc-contract-payment-status approved">تأیید شده</span>*}
+                                {*                                                </td>*}
+                                {*                                                <td>*}
+                                {*                                                    <button type="button" class="cc-contract-table-action">مشاهده*}
+                                {*                                                    </button>*}
+                                {*                                                </td>*}
+                                {*                                            </tr>*}
+                                {*                                            </tbody>*}
+                                {*                                        </table>*}
+                                {*                                    </div>*}
+                                {*                                </div>*}
                             </div>
                         </div>
                     </div>
