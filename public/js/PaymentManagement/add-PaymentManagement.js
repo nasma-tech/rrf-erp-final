@@ -448,11 +448,11 @@ $(function () {
                                                         if (result.success){
                                                             customAlert('success',result.message)
                                                         }else {
-                                                            customAlert('error',result.message)
+                                                            swalValidate(result.message)
                                                         }
+                                                        return false;
                                                     }
                                                 })
-
                                             } else {
                                                 swalValidate('موارد را کامل پر کنید')
                                                 return false;
