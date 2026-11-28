@@ -260,6 +260,11 @@ $router->mount('/ProformaInvoice', function () use ($router) {
             'path' => '/ExportInvoice(/\d+)',
             'action' => 'ExportInvoice'
         ],
+        [
+            'method' => 'GET',
+            'path' => '/getInvoiceList',
+            'action' => 'getInvoiceList'
+        ],
     ]);
 });
 $router->mount('/Companies', function () use ($router) {
@@ -577,6 +582,11 @@ $router->mount('/PaymentManagement', function () use ($router) {
             'method' => 'GET',
             'path' => '/viewIndex/(\d+)',
             'action' => 'viewIndex'
+        ],
+        [
+            'method' => 'GET',
+            'path' => '/getPaymentType',
+            'action' => 'getPaymentType'
         ]
     ]);
 });
@@ -610,6 +620,11 @@ $router->mount('/PaymentAllocation', function () use ($router) {
             'method' => 'POST',
             'path' => '/submitPaymentAllocation',
             'action' => 'submitPaymentAllocation'
+        ],
+        [
+            'method' => 'POST',
+            'path' => '/allocationPaymentInPaymentManagement',
+            'action' => 'allocationPaymentInPaymentManagement'
         ]
     ]);
 });

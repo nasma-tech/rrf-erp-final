@@ -356,7 +356,7 @@ class ControllerScheme
         exit;
     }
 
-    public function validateRequestsData(array $needle = [], array|null $hayStack = null, $model = null)
+    public function validateRequestsData(array $needle = [], array|null $hayStack = null, $model = null): bool
     {
         $staticColumns = [
             "cartable_definition_id",
@@ -456,4 +456,5 @@ class ControllerScheme
             handleHttpErrorView::handle(422, array_values($errors));
         }
     }
+
 }

@@ -6,6 +6,8 @@ use App\Controllers\scheme\ControllerScheme;
 use App\Models\PaymentAllocationModel\PaymentAllocationModel;
 use App\Models\PaymentManagementModel\PaymentManagementModel;
 use Helper\Class\Cartable;
+use JetBrains\PhpStorm\NoReturn;
+use Packages\Http\Response;
 
 class PaymentAllocation extends ControllerScheme
 {
@@ -131,5 +133,31 @@ class PaymentAllocation extends ControllerScheme
             1 => $paymentManagement->chequeData->cheque_amount - $sumAllocation,
             default => $paymentManagement->amount_paid - $sumAllocation,
         };
+    }
+
+    public function allocationPaymentInPaymentManagement(): void
+    {
+        $_ENV['APP_DEBUG'] = 1;
+        csrf->csrfValidate();
+        $data = $this->requestArray();
+        $this->checkRequired([
+            'allocation' => 'تخصیص داده نشده'
+        ], $data);
+        $makeData = [];
+        foreach ($data['allocation'] as $item) {
+            $makeData[] = [
+                'payment_management_id' => $data['paymentId'],
+                'payment_allocation_type_id' => $item['allocationType'],
+                'invoice_id' => $item['invoiceId'],
+                'payment_amount' => numberNormalizer->removePriceSeparator($item['paymentAmount']),
+                'user_id' => userObject()->userId
+            ];
+        }
+        $allocation = PaymentAllocationModel::query()->insert($makeData);
+        if ($allocation)
+            Response::success(message: "تخصیص با موفقیت انجام شد");
+        else
+            Response::error("تخصیص با خطا مواجه شد");
+
     }
 }
