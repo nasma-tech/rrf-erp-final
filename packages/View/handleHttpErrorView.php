@@ -17,19 +17,37 @@ class handleHttpErrorView
     #[NoReturn]
     public static function handle(int $code, array|string $errorText = []): void
     {
-        if (file_exists(__SOURCE__.'view/'.self::PAGES[$code])) {
+        $isAjax = !empty($_SERVER['HTTP_X_REQUESTED_WITH'])
+            && strtolower($_SERVER['HTTP_X_REQUESTED_WITH']) === 'xmlhttprequest';
+
+        if ($isAjax) {
             http_response_code($code);
-            view->ui([], [], [
-                'errorText' => $errorText,
+
+            header('Content-Type: application/json; charset=utf-8');
+
+            echo json_encode([
+                'success' => false,
                 'errorCode' => $code,
-            ])->display(self::PAGES[$code] ?? self::PAGES[500]);
-        } else {
-            http_response_code(500);
-            view->ui([], [], [
                 'errorText' => $errorText,
-                'errorCode' => $code,
-            ])->display(self::PAGES[500]);
+            ], JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES);
+
+            exit;
         }
+
+        $page = self::PAGES[$code] ?? self::PAGES[500];
+
+        if (!file_exists(__SOURCE__ . 'view/' . $page)) {
+            http_response_code(500);
+            $page = self::PAGES[500];
+        } else {
+            http_response_code($code);
+        }
+
+        view->ui([], [], [
+            'errorText' => $errorText,
+            'errorCode' => $code,
+        ])->display($page);
+
         exit;
     }
 }

@@ -12,6 +12,7 @@ use App\Controllers\roles\roles;
 use App\Controllers\states\states;
 use App\Controllers\Units\Units;
 use App\Controllers\users\users;
+use App\Controllers\WarehouseInventory\WarehouseInventory;
 use App\Controllers\WorkGroups\WorkGroups;
 use Packages\View\handleHttpErrorView;
 
@@ -645,7 +646,13 @@ $router->mount('/ExitWarehouse', function () use ($router) {
     dynamicRoute($router, App\Controllers\ExitWarehouse\ExitWarehouse::class);
 });
 $router->mount('/WarehouseInventory', function () use ($router) {
-    dynamicRoute($router, App\Controllers\WarehouseInventory\WarehouseInventory::class);
+    dynamicRoute($router, App\Controllers\WarehouseInventory\WarehouseInventory::class, [
+        [
+            'method' => 'POST',
+            'path' => "/checkProductAvailabilityForm",
+            'action' => 'checkProductAvailabilityForm'
+        ]
+    ]);
 });
 $router->mount('/marketers', function () use ($router) {
     dynamicRoute($router, App\Controllers\marketers\marketers::class, [
@@ -768,7 +775,13 @@ $router->mount('/AddendumSaleContracts', function () use ($router) {
 //
 //});
 $router->mount('/ProductPart', function () use ($router) {
-    dynamicRoute($router, App\Controllers\ProductPart\ProductPart::class);
+    dynamicRoute($router, App\Controllers\ProductPart\ProductPart::class, [
+        [
+            'method' => 'POST',
+            'path' => '/removeProductPartForm/(\d+)',
+            'action' => 'removeProductPartForm'
+        ]
+    ]);
 });
 $router->mount('/ProductExitParts', function () use ($router) {
     dynamicRoute($router, App\Controllers\ProductExitParts\ProductExitParts::class);
@@ -790,4 +803,9 @@ $router->mount('/CargoExit', function () use ($router) {
             'action' => 'removeCargoExitInfo'
         ]
     ]);
+});
+$router->get('/valad', function () {
+    $instance = new WarehouseInventory();
+
+    echo json_encode($instance->inventoryInquiry(13), JSON_UNESCAPED_UNICODE);
 });

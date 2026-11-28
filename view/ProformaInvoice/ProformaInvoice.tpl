@@ -19,8 +19,7 @@
                         <div class="card-body">
                             <div class="table-responsive table-responsive-lg table-responsive-sm table-responsive-xl">
                                 <table class="table table-hover table-striped
-{*                                tableDataShow *}
-                                text-center"
+                                tableDataShow text-center"
                                        style="background-color: #fff;border-radius: 5px;">
                                     <thead class="thead-dark">
                                     <tr>

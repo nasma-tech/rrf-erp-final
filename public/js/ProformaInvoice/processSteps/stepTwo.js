@@ -18,7 +18,7 @@ $(function () {
                     data: {
                         invoiceId
                     }, success: result => {
-                        if (result == 'convertSuccess') {
+                        if (result === 'convertSuccess') {
                             customAlert('success', 'با موفقیت تبدیل به قرارداد شد', 1500)
                             setTimeout(function () {
                                 window.location.reload()
